@@ -89,8 +89,11 @@
 					case "NetStream.Play.StreamNotFound":
 						Alert.show("Unable to locate video!", "Information");
 						break;
+					case "NetStream.Play.Start":
+					case "NetStream.Play.Reset":
+						break;
 					default:
-						//Alert.show("Unknown event: " + event.info.code, "Information");
+						Alert.show("Unknown event: " + event.info.code, "Information");
 						break;
 				}
 			}
