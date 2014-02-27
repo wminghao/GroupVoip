@@ -18,12 +18,13 @@
 			import mx.events.FlexEvent;
 			
 			import spark.events.IndexChangeEvent;
-
+			
+			private var streamPub:NetStream; //must declare outside, otherwise, gc will recycle it.
 			private var connectionPub:NetConnection;			
 			private var connectionSub:NetConnection;
 			private var container:UIComponent;
 			
-			private var videoPath:String = "rtmp://192.168.2.104/myRed5App/";//"rtmp://192.168.0.92/myRed5App/";
+			private var videoPath:String = "rtmp://192.168.0.92/myRed5App/";
 			//"rtmp://192.168.2.104/myRed5App/"
 			
 			[Bindable]
@@ -82,7 +83,7 @@
 					container.height = stage.height/2;
 					addElement( container );
 					
-					var streamPub:NetStream = new NetStream(connectionPub);
+					streamPub = new NetStream(connectionPub);
 					var h264settings:H264VideoStreamSettings = new H264VideoStreamSettings(); 
 					h264settings.setProfileLevel(H264Profile.BASELINE, H264Level.LEVEL_1_2);
 					streamPub.videoStreamSettings = h264settings; 
@@ -150,6 +151,13 @@
 						posIndex++;
 					}
 				}
+				/*
+				for (var i:int = 0; i < container.numChildren; i++)
+				{
+					var obj:Video = container.getChildAt(i) as Video;
+					Alert.show(obj.x + " "+ obj.y + " "+obj.width + " "+obj.height + " "+ publishDest);
+				}
+				*/
 			}
 			
 			private function connectStream(stream:NetStream, url:String, x:int, y:int):void {

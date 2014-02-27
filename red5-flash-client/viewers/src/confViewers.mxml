@@ -30,7 +30,7 @@
 			public function onCreationComplete(event:FlexEvent) : void {
 				// setup connection code
 				connection = new NetConnection();
-				connection.connect("rtmp://192.168.2.104/myRed5App/");  //subscribe to live video
+				connection.connect("rtmp://192.168.0.92/myRed5App/");  //subscribe to live video
 				//connection.connect("rtmp://192.168.2.104/myRed5App/");  //subscribe to live video
 				//connection.connect("rtmp://localhost/vod/"); existing flv file/mp4 files
 				connection.addEventListener(NetStatusEvent.NET_STATUS, onConnectionNetStatus);
@@ -91,6 +91,7 @@
 						break;
 					case "NetStream.Play.Start":
 					case "NetStream.Play.Reset":
+					case "NetStream.Video.DimensionChange":
 						break;
 					default:
 						Alert.show("Unknown event: " + event.info.code, "Information");
