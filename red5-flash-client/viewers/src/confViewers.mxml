@@ -28,10 +28,13 @@
 			private var videoHeight:int = 240;
 			
 			public function onCreationComplete(event:FlexEvent) : void {
+			}
+			
+			public function onSubscribeButtonClick():void {
+				var videoPath:String = "rtmp://"+serverIp.text+"/myRed5App/";
 				// setup connection code
 				connection = new NetConnection();
-				connection.connect("rtmp://192.168.0.92/myRed5App/");  //subscribe to live video
-				//connection.connect("rtmp://192.168.2.104/myRed5App/");  //subscribe to live video
+				connection.connect(videoPath);  //subscribe to live video
 				//connection.connect("rtmp://localhost/vod/"); existing flv file/mp4 files
 				connection.addEventListener(NetStatusEvent.NET_STATUS, onConnectionNetStatus);
 				connection.addEventListener(SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler);
@@ -108,4 +111,16 @@
 			}
 		]]>
 	</fx:Script>
+	
+	<s:Group>
+		<s:layout>
+			<s:HorizontalLayout/>
+		</s:layout>
+		<s:TextInput id="serverIp" width="100" text="127.0.0.1"/>
+		<s:Button id="button1" 
+				  label="Subscribe!" 
+				  width="200" 
+				  fontSize="16"
+				  click="onSubscribeButtonClick();"/>
+	</s:Group>
 </s:Application>
