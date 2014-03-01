@@ -1,4 +1,4 @@
 trunk
 =====
 
-trunk for client and server implementation of rtmp based mobile/desktop multi-party voip solution
+trunk for client and server implementation of RTMP-based mobile/desktop multi-party VoIP solution.
