@@ -18,8 +18,6 @@ extern "C" {
 #include "MediaTarget.h"
 #include "CodecInfo.h"
 
-#define MAX_XCODING_INSTANCES = 4;
-
 using namespace std;
 
 class FLVSegmentParser;

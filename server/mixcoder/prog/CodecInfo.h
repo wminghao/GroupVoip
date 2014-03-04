@@ -2,6 +2,8 @@
 #ifndef __CODECINFOCOMMON_H__
 #define __CODECINFOCOMMON_H__
 
+#define MAX_XCODING_INSTANCES = 4;
+
 //video types
 typedef enum
 {
