@@ -45,13 +45,18 @@
 				// did we successfully connect
 				if(event.info.code == "NetConnection.Connect.Success") {
 					//Alert.show("Successful Connection", "Information");
-					connectStream();
+					connectStreams();
 				} else {
 					Alert.show("Unsuccessful Connection", "Information");
+					disconnectStreams();
 				}
 			}
 			
-			private function connectStream():void {
+			private function disconnectStreams():void {
+				//TODO
+			}	
+			
+			private function connectStreams():void {
 				// container ( IVisualElement ) for DisplayObjects
 				var container:UIComponent = new UIComponent();
 				container.width = stage.width/2;

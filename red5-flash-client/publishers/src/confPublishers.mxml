@@ -61,7 +61,7 @@
 				}
 			}
 			
-			function onCameraStatus( evt ):void {
+			private function onCameraStatus( evt:StatusEvent ):void {
 				if (evt.code == "Camera.Muted"){
 					Alert.show("Camera Access Has Been Denied!", "Information");
 				}
@@ -69,12 +69,27 @@
 					//Alert.show("Camera Access Has Been Granted", "Information");
 				}
 			}
+			private function onMicStatus(evt:StatusEvent):void {
+				switch (evt.code) {
+					case "Microphone.Unmuted":
+						//Alert.show("Camera Access Has Been Granted!", "Information");
+						break;
+					case "Microphone.Muted":
+						Alert.show("Camera Access Has Been Denied!", "Information");
+						break;
+				}
+			}
 			private function publishStreamA():void {
 				var camera:Camera = Camera.getCamera() ;
+				var mic:Microphone = Microphone.getMicrophone();
 				camera.addEventListener(StatusEvent.STATUS, onCameraStatus) ;
+				mic.addEventListener(StatusEvent.STATUS, onMicStatus);
 				if (camera == null) {
 					Security.showSettings(SecurityPanel.CAMERA) ;
 				} else{
+					camera.setMode(videoWidth, videoHeight, 30); //30 fps
+					camera.setQuality(0,50); //50% quality, no bw limitation
+					
 					// container ( IVisualElement ) for DisplayObjects
 					container = new UIComponent();
 					container.width = stage.width/2;
@@ -97,6 +112,14 @@
 					video.height = videoHeight;
 					video.x = video.y = 0;
 					video.visible = true;
+					
+					mic.rate = 8;
+					mic.codec = SoundCodec.SPEEX; 
+					mic.setSilenceLevel(0,200);
+					var soundTrans:SoundTransform = new SoundTransform();
+					soundTrans.volume = 6;
+					mic.soundTransform = soundTrans;
+					streamPub.attachAudio(mic);
 				}
 			}
 			private function netStatusHandler(event:NetStatusEvent):void {
@@ -105,6 +128,9 @@
 						Alert.show("Unable to locate video: " + publishDest, "Information");
 						break;
 					case "NetStream.Publish.Start":
+						//Alert.show("Publisher starts here");
+						subscribeStreams();
+						break;
 					case "NetStream.Play.Start":
 					case "NetStream.Play.Reset":
 					case "NetStream.Video.DimensionChange":
@@ -122,7 +148,7 @@
 			private function asyncErrorHandler(event:AsyncErrorEvent):void {
 				// ignore AsyncErrorEvent events.
 			}
-			public function onSubscribeButtonClick():void {
+			public function subscribeStreams():void {
 				var videoPath:String = "rtmp://"+serverIp.text+"/myRed5App/";
 				// setup connection code
 				connectionSub = new NetConnection();
@@ -138,8 +164,13 @@
 					connectStreams();
 				} else {
 					Alert.show("Unsuccessful Connection", "Information");
+					disconnectStreams();
 				}
 			}
+			
+			private function disconnectStreams():void {
+				//TODO
+			}	
 			
 			private function connectStreams():void {
 				var posIndex:int = 1;
@@ -167,6 +198,7 @@
 				var video:Video = new Video();
 				video.attachNetStream(stream);
 				container.addChild(video);
+				//video.opaqueBackground = 0x000000;
 				video.width = videoWidth;
 				video.height = videoHeight;
 				video.x = x;
@@ -191,11 +223,6 @@
 				  click="onPublishButtonClick();"/>
 		<s:DropDownList  id="dropDownList" dataProvider="{dataSet}" 
 						 width="150" change="dropDownList_changeHandler(event)"
-						 selectedIndex="0" labelField="value"/>   
-		<s:Button id="button2" 
-				  label="Subscribe!" 
-				  width="200" 
-				  fontSize="16"
-				  click="onSubscribeButtonClick();"/>
+						 selectedIndex="0" labelField="value"/>
 	</s:Group>
 </s:Application>
