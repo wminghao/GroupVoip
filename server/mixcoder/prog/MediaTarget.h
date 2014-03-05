@@ -9,16 +9,10 @@
 namespace mixcodec
 {
 
-enum StreamType {
-    unknownST = 0,
-    VideoST,
-    AudioST,
-    PrivateST
-};
-
 const u64 INVALID_TS = 0xFFFFFFFFFFFFFFFF;
 
-struct AccessUnit : SmartPtrInterface<AccessUnit> {
+class AccessUnit : SmartPtrInterface<AccessUnit> {
+ public:
     u64 pts, dts;
     SmartPtr<Buffer> payload;
     StreamType st;

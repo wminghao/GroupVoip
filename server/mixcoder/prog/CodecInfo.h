@@ -4,6 +4,13 @@
 
 #define MAX_XCODING_INSTANCES = 4;
 
+enum StreamType {
+    unknownStreamType = 0,
+    VideoStreamType = 8,
+    AudioStreamType = 9,
+    DataStreamType = 18
+};
+
 //video types
 typedef enum
 {

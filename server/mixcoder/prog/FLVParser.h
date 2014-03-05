@@ -4,16 +4,17 @@
 
 #include "SmartBuffer.h"
 #include "CodecInfo.h"
+#include <string>
 
 class FLVParser
 {
  public:
     FLVParser() {}
-    u32 readData(SmartPtr<SmartBuffer> input);
-    SmartPtr<SmartBuffer> getNextFLVFrame();
+    //each read must be at least 1 frame
+    void readData(SmartPtr<SmartBuffer> input); 
+    SmartPtr<AccessUnit> getNextFLVFrame();
  private:
-    u8* remainingData_;
-    u32 remainingDataLen_;
+    std::string curBuf_;
 }
 
 #endif
