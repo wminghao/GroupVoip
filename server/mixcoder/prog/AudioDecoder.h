@@ -10,17 +10,20 @@ extern "C" {
 #include <fwk/SmartBuffer.h>
 #include <queue>
 #include "CodecInfo.h"
+#include "MediaTarget.h"
 
 //audio decoder implementation
-class AudioDecoder
+class AudioDecoder:public MediaTarget
 {
  public:
     AudioDecoder()
         {
-            //aac decoder, speex decoder
+            //speex decoder
             
         }
- private:
+    virtual void newAccessUnit( SmartPtr<AccessUnit> );
+
+    SmartPtr<SmartBuffer> getDecodedResult();
 };
 
 

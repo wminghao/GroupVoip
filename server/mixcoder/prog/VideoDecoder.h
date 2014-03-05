@@ -12,14 +12,17 @@ extern "C" {
 #include "CodecInfo.h"
 
 //video decoder implementation
-class VideoDecoder
+class VideoDecoder : public MediaTarget
 {
  public:
     VideoDecoder()
         {
             //avc decoder
-            
         }
+    virtual void newAccessUnit( SmartPtr<AccessUnit> );
+    virtual void newAVCSeqHeader( SmartPtr<AccessUnit> );
+
+    SmartPtr<SmartBuffer> getDecodedResult();
  private:
 };
 

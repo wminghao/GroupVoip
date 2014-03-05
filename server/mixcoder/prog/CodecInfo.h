@@ -4,11 +4,18 @@
 
 #define MAX_XCODING_INSTANCES = 4;
 
+enum specialProperty {
+    kRawData, //nalu
+    kSpsPps, //avc header
+    kEndSeq, //avc end of sequence
+    kSeqHeader, //aac header
+}
+
 enum StreamType {
-    unknownStreamType = 0,
-    VideoStreamType = 8,
-    AudioStreamType = 9,
-    DataStreamType = 18
+    kUnknownStreamType = 0,
+    kVideoStreamType = 8,
+    kAudioStreamType = 9,
+    kDataStreamType = 18
 };
 
 //video types
@@ -81,7 +88,7 @@ typedef enum
 
 typedef enum
 {
-    kAACSeqNo,
+    kAACSeqHeader,
     kAACRaw
 }AACPacketType;
 

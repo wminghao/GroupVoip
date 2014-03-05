@@ -29,7 +29,7 @@ class VideoDecoder;
 class AudioMixer;
 class VideoMixer;
 
-class MixCoder: public MediaTarget
+class MixCoder
 {
  public:
     MixCoder(int vBitrate, int width, 
@@ -68,12 +68,6 @@ class MixCoder: public MediaTarget
     
     //at the end. flush the input
     void flush();
-
- private:
-    virtual void newAccessUnit( SmartPtr<AccessUnit> ) {};
-
-    virtual void newAVCSeqHeader( SmartPtr<SmartBuffer> ) {}
-    virtual void newAudioHeader( SmartPtr<SmartBuffer> ) {}
 
  private:
 
