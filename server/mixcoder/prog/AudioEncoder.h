@@ -7,7 +7,7 @@ extern "C" {
 #include <samplerate.h>
 }
 
-#include <fwk/SmartBuffer.h>
+#include "fwk/SmartBuffer.h"
 #include <queue>
 #include "CodecInfo.h"
 
@@ -15,13 +15,17 @@ extern "C" {
 class AudioEncoder
 {
  public:
-    AudioEncoder(int aBitrate, int frequency) :
-        aBitrate_(aBitrate),
-        aFrequency_(frequency)
-        {
-            //mp3 encoder
-        }
+    //always encode in mp3
+    AudioEncoder(int aBitrate, int frequency, AudioStreamSetting* inputSetting) : aBitrate_(aBitrate), aFrequency_(frequency)
+    {
+        //mp3 encoder
+        memcpy(&inputSetting_, inputSetting, sizeof(AudioStreamSetting));
+    }
+    SmartPtr<SmartBuffer> encodeOneFrame(SmartPtr<SmartBuffer> input);
  private:
+    //input settings
+    AudioStreamSetting inputSetting_;
+
     //output settings
     int aFrequency_;
     int aBitrate_;

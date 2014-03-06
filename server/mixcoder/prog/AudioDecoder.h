@@ -7,7 +7,7 @@ extern "C" {
 #include <samplerate.h>
 }
 
-#include <fwk/SmartBuffer.h>
+#include "fwk/SmartBuffer.h"
 #include <queue>
 #include "CodecInfo.h"
 #include "MediaTarget.h"
@@ -16,13 +16,16 @@ extern "C" {
 class AudioDecoder:public MediaTarget
 {
  public:
+    //speex settings is always, 16khz, mono, 16bits audio
     AudioDecoder()
         {
             //speex decoder
             
         }
+    //send it to the decoder
     virtual void newAccessUnit( SmartPtr<AccessUnit> );
-
+    
+    //raw audio datax
     SmartPtr<SmartBuffer> getDecodedResult();
 };
 

@@ -7,7 +7,7 @@ extern "C" {
 #include <samplerate.h>
 }
 
-#include <fwk/SmartBuffer.h>
+#include "fwk/SmartBuffer.h"
 #include <queue>
 #include "CodecInfo.h"
 

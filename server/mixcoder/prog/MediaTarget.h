@@ -14,7 +14,7 @@ const u64 INVALID_TS = 0xFFFFFFFFFFFFFFFF;
 class AccessUnit : SmartPtrInterface<AccessUnit> {
  public:
     u64 pts, dts;
-    SmartPtr<Buffer> payload;
+    SmartPtr<SmartBuffer> payload;
     StreamType st;
     int  ct; //codecType, either audio or video
     int  sp; //special properties, for avc, it's either sps/pps or nalu, for aac, it's sequenceheader or nalu, for other codecs, it's raw data

@@ -72,19 +72,19 @@ typedef enum
     k11kHz = 1,
     k22kHz = 2,
     k44kHz = 3
-}SoundRate;
+}AudioRate;
 
 typedef enum
 {
     kSnd8Bit,
     kSnd16Bit
-}SoundSize;
+}AudioSize;
 
 typedef enum
 {
     kSndMono,
     kSndStereo
-}SoundType;
+}AudioType;
 
 typedef enum
 {
@@ -95,13 +95,15 @@ typedef enum
 typedef struct AudioStreamSettings
 {
     AudioCodecId acid;
-    AudioSoundType ast;
-    AudioSoundRate asr;
-    int apt; //aac or something else
+    AudioType at;
+    AudioRate ar;
+    AudioSize as;
+    int ap; //aac or something else, audio property
 }AUdioStreamSettings;
 
 typedef struct VideoStreamSettings
 {
+    VideoCodecId vcid;
     //always yv12 format, y plane + u plane + v plane in one buffer
     int width;
     int height;

@@ -8,7 +8,11 @@ class FLVOutput
 {
  public:
     //vp8 video + mp3 audio
-    FLVOutput(AudioCodecId acid, VideoCodecId vcid, VideoStreamSetting* videoSetting, AudioStreamSetting* audioSetting);
+    FLVOutput(VideoStreamSetting* videoSetting, AudioStreamSetting* audioSetting)
+        {
+            memcpy(&videoSetting_, videoSetting, sizeof(VideoStreamSetting));
+            memcpy(&audioSetting_, audioSetting, sizeof(AudioStreamSetting));
+        }
     
     void newHeader(SmartPtr<SmartBuffer> videoHeader, SmartPtr<SmartBuffer> audioHeader);
     
@@ -18,8 +22,6 @@ class FLVOutput
  private:
     VideoStreamSetting videoSetting_;
     AudioStreamSetting audioSetting_;
-    SmartPtr<SmartBuffer> videoHeader_;
-    SmartPtr<SmartBuffer> audioHeader_;
 };
 
 #endif

@@ -7,7 +7,7 @@ extern "C" {
 #include <samplerate.h>
 }
 
-#include <fwk/SmartBuffer.h>
+#include "fwk/SmartBuffer.h"
 #include <queue>
 #include "CodecInfo.h"
 
@@ -15,16 +15,18 @@ extern "C" {
 class VideoEncoder
 {
  public:
-    VideoEncoder(int vBitrate, int width) : vBitrate_(vBitrate),
-        vWidth_(width)
-        {
-            //vp8 encoder
-        }
+    VideoEncoder(int vBitrate, int width, VideoStreamSetting* inputSetting) : vBitrate_(vBitrate), vWidth_(width)
+    {
+        //vp8 encoder
+        memcpy(&inputSetting_, inputSetting, sizeof(VideoStreamSetting));
+    }
+    SmartPtr<SmartBuffer> encodeOneFrame(SmartPtr<SmartBuffer> input);
  private:
+    //input settings
+    VideoStreamSetting inputSetting_;
+
     //output settings                                                                                                                                                                                     
     int vBitrate_;
     int vWidth_;
 };
-
-
 #endif
