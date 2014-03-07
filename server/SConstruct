@@ -1,0 +1,22 @@
+import os
+import commands
+import string
+
+# Determine the platform for use later
+plat = os.uname()[0]
+mach = os.uname()[4]
+if mach.startswith('sun4'):
+    mach = 'sparc'
+if mach.startswith('i') and mach.find('86') != -1:
+    mach = 'x86'
+if mach == 'intel':
+    mach = 'x86'
+if mach == 'Power Macintosh':
+    mach = 'ppc'
+mach = mach.replace(' ','-')
+mach = mach.replace('/','-')
+platform = plat + '-' + mach
+print "Platform: ", platform
+
+Export("platform")
+SConscript("SConscript", variant_dir='build/'+platform, duplicate=0)

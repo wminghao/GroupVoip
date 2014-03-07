@@ -61,10 +61,10 @@ class MixCoder
     bool initialize();
 
     /* returns false if we hit some badness, true if OK */
-    bool newInput( Ptr<SmartBuffer> );
+    bool newInput( SmartPtr<SmartBuffer> );
 
     //read output from the system
-    Ptr<SmartBuffer> getOutput();
+    SmartPtr<SmartBuffer> getOutput();
     
     //at the end. flush the input
     void flush();

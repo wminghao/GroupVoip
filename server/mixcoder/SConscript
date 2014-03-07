@@ -1,0 +1,40 @@
+Import("*")
+
+mixCoderCflags = CCFLAGS
+mixCoderCflags.append( '-Wno-unused' )
+
+#objects
+
+mixCoderObj = env.Object('prog/MixCoder.cpp', CCFLAGS=mixCoderCflags )
+audioDecoderObj = env.Object('prog/AudioDecoder.cpp', CCFLAGS=mixCoderCflags )
+videoDecoderObj = env.Object('prog/VideoDecoder.cpp', CCFLAGS=mixCoderCflags )
+audioEncoderObj = env.Object('prog/AudioEncoder.cpp', CCFLAGS=mixCoderCflags )
+videoDecoderObj = env.Object('prog/videoEncoder.cpp', CCFLAGS=mixCoderCflags )
+audioMixerObj = env.Object('prog/AudioMixer.cpp', CCFLAGS=mixCoderCflags )
+videoMixerObj = env.Object('prog/VideoMixer.cpp', CCFLAGS=mixCoderCflags )
+
+flvOutputObj = env.Object('prog/FLVOutput.cpp', CCFLAGS=mixCoderCflags )
+flvParserObj = env.Object('prog/FLVParser.cpp', CCFLAGS=mixCoderCflags )
+flvSegmentParserObj = env.Object('prog/FLVSegmentParser.cpp', CCFLAGS=mixCoderCflags )
+
+mainObj = env.Object('prog/MixCoderMain.cpp', CCFLAGS=mixCoderCflags )
+
+#target
+mixCoderProg = File("prog/mix_coder")
+
+progs.append( mixCoderProg )
+
+env.Program( mixCoderProg,
+	     [ mixCoderObj,
+	       audioDecoderObj,
+	       videoDecoderObj,
+	       audioEncoderObj,
+	       videoDecoderObj,
+	       audioMixerObj,
+	       videoMixerObj,
+	       flvOutputObj,
+	       flvParserObj,
+	       flvSegmentParserObj,
+	       mainObj],	
+	       LIBS=["fwk",'pthread', 'avformat', 'avcodec', 'avutil', 'swscale', 'samplerate'], CCFLAGS=mixCoderCflags)
+
