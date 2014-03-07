@@ -27,7 +27,7 @@ void FLVParser::readData(SmartPtr<SmartBuffer> input) {
                     std::string tempStr = curBuf_.substr(1, 3);
                     memcpy(&curFlvTagSize_, tempStr.data(), 3);
                     curBuf_ = curBuf_.substr(4); //skip 4 bytes
-                    curFlvTagSize_ += 4; //add previousTagLen
+                    curFlvTagSize_ += 7+4; //add remaining of the header + previousTagLen
                     scanState_ = SCAN_REMAINING_TAG;
                 }
                 break;
