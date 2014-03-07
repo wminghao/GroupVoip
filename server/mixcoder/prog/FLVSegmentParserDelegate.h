@@ -9,5 +9,5 @@ class FLVSegmentParserDelegate
 {
  public:
     virtual void onFLVFrameParsed( SmartPtr<AccessUnit> au, int index ) = 0;
-}
+};
 #endif

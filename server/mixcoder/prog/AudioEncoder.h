@@ -27,8 +27,8 @@ class AudioEncoder
     AudioStreamSetting inputSetting_;
 
     //output settings
-    int aFrequency_;
     int aBitrate_;
+    int aFrequency_;
 };
 
 

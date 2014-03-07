@@ -1,7 +1,7 @@
 #ifndef __FLVOUTPUT_H__
 #define __FLVOUTPUT_H__
 
-#include "SmartBuffer.h"
+#include "fwk/SmartBuffer.h"
 #include "CodecInfo.h"
 
 class FLVOutput

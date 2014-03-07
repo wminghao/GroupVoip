@@ -2,7 +2,7 @@
 #define __FLVSEGMENTPARSER_H
 
 #include "MediaTarget.h"
-#include "SmartBuffer.h"
+#include "fwk/SmartBuffer.h"
 #include "FLVParser.h"
 #include "CodecInfo.h"
 #include "FLVSegmentParserDelegate.h"
@@ -39,15 +39,17 @@ using namespace std;
 class FLVSegmentParser:public FLVSegmentParserDelegate
 {
  public:
-    FLVSegmentParser(u32 targetVideoFrameRate): streamType_(0), numStreams_(0), targetVideoFrameRate_(targetVideoFrameRate) {
+    FLVSegmentParser(u32 targetVideoFrameRate): numStreams_(0), targetVideoFrameRate_(targetVideoFrameRate) {
         memset(audioStreamStatus, 0, sizeof(StreamStatus)*MAX_XCODING_INSTANCES);
         memset(videoStreamStatus, 0, sizeof(StreamStatus)*MAX_XCODING_INSTANCES);
-        for(int i=0; i < MAX_XCODING_INSTANCES; i++) {
-            parser_[i] = new FLVParser(self);
+        for(u32 i = 0; i < MAX_XCODING_INSTANCES; i++) {
+            parser_[i] = new FLVParser(self, i);
         }
     }
     ~FLVSegmentParser() {
-        delete [] parser_;
+        for(u32 i = 0; i < MAX_XCODING_INSTANCES; i++) {
+            delete parser_[i];
+        }
     }
 
     u32 readData(SmartPtr<SmartBuffer> input);

@@ -5,10 +5,11 @@
 #include <string>
 #include "Units.h"
 
-class BitStream {
+
+class BitStreamParser {
  public:
-    BitStream( const std::string &byteStream ) : byteStream_(byteStream), offset_(0) {}
-    BitStream() : offset_( 0 ) {}
+    BitStreamParser( const std::string &byteStream ) : byteStream_(byteStream), offset_(0) {}
+    BitStreamParser() : offset_( 0 ) {}
     
     const std::string& bytes() { return byteStream_; }
 
@@ -85,8 +86,8 @@ class BitStream {
     }
     
     std::string readBytes( size_t t ) {
-        if ( offset_ % 8 != 0 ) { OUTPUT("BitStream::readBytes() called when not on a byte boundary"); exit(0); }
-        if ( offset_ / 8 + t > byteStream_.length() ) { OUTPUT("not enough bytes in BitStream::readBytes()"); exit(0); }
+        if ( offset_ % 8 != 0 ) { OUTPUT("BitStream::readBytes() called when not on a byte boundary"); ASSERT(0); }
+        if ( offset_ / 8 + t > byteStream_.length() ) { OUTPUT("not enough bytes in BitStream::readBytes()"); ASSERT(0); }
         std::string ret = byteStream_.substr( offset_ / 8, t );
         offset_ += t * 8;
         return ret;

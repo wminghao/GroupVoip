@@ -1,9 +1,6 @@
 #ifndef __FWK_SMARTPTRINTERFACE_H__
 #define __FWK_SMARTPTRINTERFACE_H__
 
-namespace mixcoder
-{
-
 template <typename T>
 class SmartPtrInterface {
  public:
@@ -18,7 +15,7 @@ class SmartPtrInterface {
     unsigned long refCount() const { return ref_; }
 
     virtual void onZeroReferences() {}
-    virtual ~PtrInterface() {}
+    virtual ~SmartPtrInterface() {}
 
  private:
     unsigned long ref_;
@@ -26,6 +23,4 @@ class SmartPtrInterface {
  protected:
     SmartPtrInterface() : ref_(0) {}
 };
-
-}
 #endif /* FWK_PTRINTERFACE_H */

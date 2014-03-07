@@ -2,7 +2,7 @@
 #ifndef __FLVPARSER_H__
 #define __FLVPARSER_H__
 
-#include "SmartBuffer.h"
+#include "fwk/SmartBuffer.h"
 #include "CodecInfo.h"
 #include "FLVSegmentParserDelegate.h"
 #include <string>
@@ -17,9 +17,9 @@ class FLVParser
  private:
     SmartPtr<AccessUnit> getNextFLVFrame();
  private:
-    string curBuf_;
+    string curBuffer_;
     FLVSegmentParserDelegate* delegate_;
     int index_;
-}
+};
 
 #endif

@@ -15,6 +15,7 @@ buildtype = ARGUMENTS.get('type', 'default')
 if buildtype == "debug":
     CCFLAGS.append('-g')
     LINKFLAGS.append('-g')
+    CCFLAGS.append('-DDEBUG=1')
     
 elif buildtype == 'release':
     CPPDEFINES.append('NDEBUG')

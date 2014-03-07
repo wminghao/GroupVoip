@@ -9,14 +9,14 @@ enum specialProperty {
     kSpsPps, //avc header
     kEndSeq, //avc end of sequence
     kSeqHeader, //aac header
-}
+};
 
-enum StreamType {
+typedef enum StreamType {
     kUnknownStreamType = 0,
     kVideoStreamType = 8,
     kAudioStreamType = 9,
     kDataStreamType = 18
-};
+}StreamType;
 
 //video types
 typedef enum
@@ -53,7 +53,7 @@ typedef enum
     kLinearPCM = 0,
     kADPCM = 1,
     kMP3 = 2,
-    kLinearPCM = 3,// little endian
+    kLinearPCMLittleEndian = 3,// little endian
     kNellymoser16 = 4,// 16-kHz mono
     kNellymoser8 = 5, // 8-kHz mono
     kNellymoser = 6,
@@ -92,22 +92,21 @@ typedef enum
     kAACRaw
 }AACPacketType;
 
-typedef struct AudioStreamSettings
+typedef struct AudioStreamSetting
 {
     AudioCodecId acid;
     AudioType at;
     AudioRate ar;
     AudioSize as;
     int ap; //aac or something else, audio property
-}AudioStreamSettings;
+}AudioStreamSetting;
 
-typedef struct VideoStreamSettings
+typedef struct VideoStreamSetting
 {
     VideoCodecId vcid;
     //always yv12 format, y plane + u plane + v plane in one buffer
     int width;
     int height;
-}VideoStreamSettings;
-
+}VideoStreamSetting;
 
 #endif

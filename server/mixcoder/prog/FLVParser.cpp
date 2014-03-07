@@ -1,11 +1,12 @@
 #include "FLVParser.h"
+#include "CodecInfo.h"
 #include "fwk/BitStreamParser.h"
 
 //parsing the raw data to get a complete FLV frame
-void FLVParser::readData(SmartPtr<SmartBuffer> input); {
+void FLVParser::readData(SmartPtr<SmartBuffer> input) {
     //TODO parse a frame out of the stream
     
-    curBuffer_ = string( input->data(), input->dataLength());
+    curBuffer_ = string( (char*)input->data(), input->dataLength());
 }
 
 SmartPtr<AccessUnit> FLVParser::getNextFLVFrame()
@@ -14,7 +15,7 @@ SmartPtr<AccessUnit> FLVParser::getNextFLVFrame()
 
     BitStreamParser bsParser(curBuffer_);
     //parsing logic for FLV frames
-    accessUnit->st = bsParser.readByte(); //streamType
+    accessUnit->st = (StreamType)bsParser.readByte(); //streamType
     std::string tempStr = bsParser.readBytes(3); //3 bytes, length of data
     size_t dataSize = 0;
     memcpy(&dataSize, tempStr.data(), 3);
@@ -30,7 +31,7 @@ SmartPtr<AccessUnit> FLVParser::getNextFLVFrame()
     tsUnion.timestampStr[1] = tempStr[1];
     tsUnion.timestampStr[2] = tempStr[0];
     tsUnion.timestampStr[3] = tempByte;
-    accessUnit->pts = accessUnit->ds = tsUnion.timestamp;
+    accessUnit->pts = accessUnit->dts = tsUnion.timestamp;
     
     //skip 1 byte
     bsParser.readByte();
@@ -55,7 +56,7 @@ SmartPtr<AccessUnit> FLVParser::getNextFLVFrame()
                         }
                     case kAVCNalu:
                         {
-                            accessUnit->sp = kRaw;
+                            accessUnit->sp = kRawData;
                             break;
                         }
                     case kAVCEndOfSeq:
@@ -67,7 +68,7 @@ SmartPtr<AccessUnit> FLVParser::getNextFLVFrame()
                     bsParser.readBytes(3);
                     dataSize -= 4;
                 } else {
-                    accessUnit->sp = kRaw;
+                    accessUnit->sp = kRawData;
                 }
                 if ( dataSize > 0 ) {
                     //read payload. 
@@ -83,7 +84,7 @@ SmartPtr<AccessUnit> FLVParser::getNextFLVFrame()
                 u32 soundType = bsParser.readBits(1);
                 dataSize -= 1;
 
-                if ( codecId == kAAC ) {
+                if ( soundFormat == kAAC ) {
                     u8 aacPacketType = bsParser.readByte();
                     switch( aacPacketType ) {
                     case kAACSeqHeader:
@@ -93,13 +94,13 @@ SmartPtr<AccessUnit> FLVParser::getNextFLVFrame()
                         }
                     case kAACRaw:
                         {
-                            accessUnit->sp = kRaw;
+                            accessUnit->sp = kRawData;
                             break;
                         }
                     }
                     dataSize -= 1;
                 } else {
-                    accessUnit->sp = kRaw;
+                    accessUnit->sp = kRawData;
                 }
                 if ( dataSize > 0 ) {
                     //read payload. 

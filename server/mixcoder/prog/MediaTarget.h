@@ -2,16 +2,14 @@
 #ifndef __MEDIATARGET_H__
 #define __MEDIATARGET_H__
 
+#include "fwk/SmartPtrInterface.h"
 #include "fwk/SmartBuffer.h"
 #include "fwk/SmartPtr.h"
 #include "CodecInfo.h"
 
-namespace mixcodec
-{
-
 const u64 INVALID_TS = 0xFFFFFFFFFFFFFFFF;
 
-class AccessUnit : SmartPtrInterface<AccessUnit> {
+class AccessUnit : public SmartPtrInterface<AccessUnit> {
  public:
     u64 pts, dts;
     SmartPtr<SmartBuffer> payload;
@@ -30,5 +28,4 @@ class MediaTarget {
     //virtual void flush() {};
 };
 
-};
 #endif //__MEDIATARGET_H__
