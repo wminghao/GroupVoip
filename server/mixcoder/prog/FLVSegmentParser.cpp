@@ -1,17 +1,24 @@
 #include "FLVSegmentParser.h"
+#include <assert.h>
 
 const size_t SEGMENT_HEADER_LEN = sizeof(u32);
-const size_t STREAM_HEADER_LEN = sizeof(u16)+sizeof(u32);
+const size_t STREAM_HEADER_LEN = sizeof(u8)+sizeof(u32);
 
-bool isNextStreamAvailable(StreamType streamType)
+bool FLVSegmentParser::isNextStreamAvailable(StreamType streamType)
 {
     //TODO
     return false;
 }
 
-bool isStreamOnlineStarted(int index)
+bool FLVSegmentParser::isStreamOnlineStarted(StreamType streamType, int index)
 {
-    return ( streamStatus[index] == kStreamOnlineStarted );
+    if( streamType == kVideoStreamType ) {
+        return ( videoStreamStatus_[index] == kStreamOnlineStarted );
+    } else if( streamType == kAudioStreamType ) {
+        return ( audioStreamStatus_[index] == kStreamOnlineStarted );
+    } else {
+        return false;
+    }
 }
 
 u32 count_bits(u32 n) {     
@@ -25,9 +32,9 @@ u32 count_bits(u32 n) {
 void FLVSegmentParser::onFLVFrameParsed( SmartPtr<AccessUnit> au, int index )
 {
     if( au->st == kVideoStreamType ) {
-        videoQueue_[index].push_back( au );
+        videoQueue_[index].push( au );
     } else if ( au->st == kAudioStreamType ) {
-        audioQueue_[index].push_back( au );
+        audioQueue_[index].push( au );
     } else {
         //do nothing
     }
@@ -49,10 +56,10 @@ u32 FLVSegmentParser::readData(SmartPtr<SmartBuffer> input)
         totalRead += SEGMENT_HEADER_LEN;
 
         for( int i = 0; i < numStreams_; i++ ) {
-            if ( input->dataLengt() >= (totalRead+STREAM_HEADER_LEN)  ) {
-                u16 streamId = 0;
-                memcpy(&streamId_, data, sizeof(u16)); 
-                data+=sizeof(u16);
+            if ( input->dataLength() >= (totalRead+STREAM_HEADER_LEN)  ) {
+                u8 streamId = 0;
+                memcpy(&streamId, data, sizeof(u8)); 
+                data+=sizeof(u8);
                 
                 u32 curStreamLen = 0;
                 memcpy(&curStreamLen, data, sizeof(u32)); 
@@ -60,9 +67,9 @@ u32 FLVSegmentParser::readData(SmartPtr<SmartBuffer> input)
                 
                 totalRead += STREAM_HEADER_LEN;
                 
-                if ( input->dataLengt() >= (totalRead+curStreamLen)  ) {
+                if ( input->dataLength() >= (totalRead+curStreamLen)  ) {
                     SmartPtr<SmartBuffer> curStream = new SmartBuffer( curStreamLen, data);
-                    parser_[i].readData(curStream);
+                    parser_[i]->readData(curStream);
                     totalRead += curStreamLen;
                 } else {
                     assert(0);
@@ -75,14 +82,16 @@ u32 FLVSegmentParser::readData(SmartPtr<SmartBuffer> input)
     return totalRead;
 }
 
-SmartPtr<AccessUnit> FLVSegmentParser::getNextFLVFrame(int index, StreamType streamType);
+SmartPtr<AccessUnit> FLVSegmentParser::getNextFLVFrame(int index, StreamType streamType)
 {
     assert ( index < numStreams_ );
     SmartPtr<AccessUnit> au;
     if ( streamType == kVideoStreamType ) {
-        au = videoQueue_[index]->front();
+        au = videoQueue_[index].front();
+        videoQueue_[index].pop();
     } else if( streamType == kAudioStreamType ){
-        au = audioQueue_[index]->front();
+        au = audioQueue_[index].front();
+        audioQueue_[index].pop();
     }
     return au;
 }

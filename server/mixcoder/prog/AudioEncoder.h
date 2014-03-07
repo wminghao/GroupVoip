@@ -1,5 +1,5 @@
-#ifndef __AUDIOENCODER_H
-#define __AUDIOENCODER_H
+#ifndef __AUDIOENCODER_H__
+#define __AUDIOENCODER_H__
 
 extern "C" {
 #include <libavcodec/avcodec.h>    // required headers
@@ -21,7 +21,7 @@ class AudioEncoder
         //mp3 encoder
         memcpy(&inputSetting_, inputSetting, sizeof(AudioStreamSetting));
     }
-    SmartPtr<SmartBuffer> encodeOneFrame(SmartPtr<SmartBuffer> input);
+    SmartPtr<SmartBuffer> encodeAFrame(SmartPtr<SmartBuffer> input);
  private:
     //input settings
     AudioStreamSetting inputSetting_;

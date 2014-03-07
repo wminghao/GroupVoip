@@ -10,6 +10,7 @@ extern "C" {
 #include "fwk/SmartBuffer.h"
 #include <queue>
 #include "CodecInfo.h"
+#include "MediaTarget.h"
 
 //video decoder implementation
 class VideoDecoder : public MediaTarget

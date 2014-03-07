@@ -16,7 +16,7 @@ using namespace std;
 //  TotalLength = 4 bytes 
 //  StreamMask = 4 byte
 // Content * NoOfStreams:
-//  streamId = 2 byte
+//  streamId = 1 byte
 //  LengthOfStream = 4 bytes
 //  StreamData = n bytes
 ///////////////////////////////////
@@ -40,14 +40,14 @@ class FLVSegmentParser:public FLVSegmentParserDelegate
 {
  public:
     FLVSegmentParser(u32 targetVideoFrameRate): numStreams_(0), targetVideoFrameRate_(targetVideoFrameRate) {
-        memset(audioStreamStatus, 0, sizeof(StreamStatus)*MAX_XCODING_INSTANCES);
-        memset(videoStreamStatus, 0, sizeof(StreamStatus)*MAX_XCODING_INSTANCES);
-        for(u32 i = 0; i < MAX_XCODING_INSTANCES; i++) {
-            parser_[i] = new FLVParser(self, i);
+        memset(audioStreamStatus_, 0, sizeof(StreamStatus)*MAX_XCODING_INSTANCES);
+        memset(videoStreamStatus_, 0, sizeof(StreamStatus)*MAX_XCODING_INSTANCES);
+        for(int i = 0; i < MAX_XCODING_INSTANCES; i++) {
+            parser_[i] = new FLVParser(this, i);
         }
     }
     ~FLVSegmentParser() {
-        for(u32 i = 0; i < MAX_XCODING_INSTANCES; i++) {
+        for(int i = 0; i < MAX_XCODING_INSTANCES; i++) {
             delete parser_[i];
         }
     }
@@ -57,7 +57,7 @@ class FLVSegmentParser:public FLVSegmentParserDelegate
     //detect whether the next stream is available or not 
     bool isNextStreamAvailable(StreamType streamType);
     //check the status of a stream to see if it's online
-    bool isStreamOnlineStarted(int index);
+    bool isStreamOnlineStarted(StreamType streamType, int index);
     //get next flv frame
     SmartPtr<AccessUnit> getNextFLVFrame(int index, StreamType streamType);
 
@@ -73,9 +73,9 @@ class FLVSegmentParser:public FLVSegmentParserDelegate
     } StreamStatus;
     
     queue< SmartPtr<AccessUnit> > audioQueue_[MAX_XCODING_INSTANCES];
-    StreamStatus audioStreamStatus[MAX_XCODING_INSTANCES]; //tells whether a queue has benn used or not
+    StreamStatus audioStreamStatus_[MAX_XCODING_INSTANCES]; //tells whether a queue has benn used or not
     queue< SmartPtr<AccessUnit> > videoQueue_[MAX_XCODING_INSTANCES];
-    StreamStatus videoStreamStatus[MAX_XCODING_INSTANCES]; //tells whether a queue has been used or not
+    StreamStatus videoStreamStatus_[MAX_XCODING_INSTANCES]; //tells whether a queue has been used or not
 
     FLVParser* parser_[MAX_XCODING_INSTANCES];
     u16 numStreams_;

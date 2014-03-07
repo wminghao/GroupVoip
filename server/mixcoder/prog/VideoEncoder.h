@@ -1,5 +1,5 @@
-#ifndef __VIDEOENCODER_H
-#define __VIDEOENCODER_H
+#ifndef __VIDEOENCODER_H__
+#define __VIDEOENCODER_H__
 
 extern "C" {
 #include <libavcodec/avcodec.h>    // required headers                                                                                                                                                      
@@ -20,7 +20,9 @@ class VideoEncoder
         //vp8 encoder
         memcpy(&inputSetting_, inputSetting, sizeof(VideoStreamSetting));
     }
-    SmartPtr<SmartBuffer> encodeOneFrame(SmartPtr<SmartBuffer> input);
+
+    SmartPtr<SmartBuffer> encodeAFrame(SmartPtr<SmartBuffer> input);
+
  private:
     //input settings
     VideoStreamSetting inputSetting_;

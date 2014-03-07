@@ -7,8 +7,7 @@ int main( int argc, char** argv ) {
     int audioBitrate = 32;
     int audioFrequency = 44100;
     
-    MixCoder mixCoder = new MixCoder();
-    mixCoder->initialize();
+    MixCoder* mixCoder = new MixCoder(videoBitrate, videoWidth, audioBitrate, audioFrequency);
 
     delete mixCoder;
 }

@@ -37,29 +37,19 @@ class MixCoder
         vWidth_(width),
         aBitrate_(aBitrate),
         aFrequency_(frequency),
-        flvSegParser_(NULL) 
+        flvSegParser_(NULL),
         flvOutput_(NULL),
-        audioMixer_(NULL),
-        videoMixer_(NULL),
         audioEncoder_(NULL),
-        videoEncoder_(NULL)
+        videoEncoder_(NULL),
+        audioMixer_(NULL),
+        videoMixer_(NULL)
             {
                 memset(audioDecoder_, 0, sizeof(AudioDecoder*) * MAX_XCODING_INSTANCES); 
                 memset(videoDecoder_, 0, sizeof(AudioDecoder*) * MAX_XCODING_INSTANCES); 
+                //TODO
             }
-    ~MixCoder() {
-        delete flvSegParser_
-        delete flvOutput_;
-        delete [] audioDecoder_;
-        delete [] videoDecoder_;
-        delete audioEncoder_;
-        delete videoEncoder_;
-        delete audioMixer_;
-        delete videoMixer_;
-    }
+    ~MixCoder();
     
-    bool initialize();
-
     /* returns false if we hit some badness, true if OK */
     bool newInput( SmartPtr<SmartBuffer> );
 
@@ -70,6 +60,12 @@ class MixCoder
     void flush();
 
  private:
+    //output settings
+    int vBitrate_;
+    int vWidth_;
+    
+    int aBitrate_;
+    int aFrequency_;
 
     //input
     FLVSegmentParser* flvSegParser_;
@@ -87,13 +83,6 @@ class MixCoder
     //mixer
     AudioMixer* audioMixer_;
     VideoMixer* videoMixer_;
-
-    //output settings
-    int vBitrate_;
-    int vWidth_;
-    
-    int aFrequency_;
-    int aBitrate_;
 };
 
 #endif
