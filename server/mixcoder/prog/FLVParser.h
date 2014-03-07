@@ -4,17 +4,22 @@
 
 #include "SmartBuffer.h"
 #include "CodecInfo.h"
+#include "FLVSegmentParserDelegate.h"
 #include <string>
 
+using namespace std;
 class FLVParser
 {
  public:
-    FLVParser() {}
+    FLVParser(FLVSegmentParserDelegate* delegate, int index):delegate_(delegate), index_(index) {}
     //each read must be at least 1 frame
     void readData(SmartPtr<SmartBuffer> input); 
+ private:
     SmartPtr<AccessUnit> getNextFLVFrame();
  private:
-    std::string curBuf_;
+    string curBuf_;
+    FLVSegmentParserDelegate* delegate_;
+    int index_;
 }
 
 #endif

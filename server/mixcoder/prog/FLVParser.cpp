@@ -1,7 +1,10 @@
 #include "FLVParser.h"
 #include "fwk/BitStreamParser.h"
 
+//parsing the raw data to get a complete FLV frame
 void FLVParser::readData(SmartPtr<SmartBuffer> input); {
+    //TODO parse a frame out of the stream
+    
     curBuffer_ = string( input->data(), input->dataLength());
 }
 

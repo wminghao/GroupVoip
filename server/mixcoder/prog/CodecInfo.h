@@ -99,7 +99,7 @@ typedef struct AudioStreamSettings
     AudioRate ar;
     AudioSize as;
     int ap; //aac or something else, audio property
-}AUdioStreamSettings;
+}AudioStreamSettings;
 
 typedef struct VideoStreamSettings
 {
@@ -107,7 +107,7 @@ typedef struct VideoStreamSettings
     //always yv12 format, y plane + u plane + v plane in one buffer
     int width;
     int height;
-}AUdioStreamSettings;
+}VideoStreamSettings;
 
 
 #endif
