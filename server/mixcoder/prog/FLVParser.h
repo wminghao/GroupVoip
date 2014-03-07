@@ -11,15 +11,23 @@ using namespace std;
 class FLVParser
 {
  public:
-    FLVParser(FLVSegmentParserDelegate* delegate, int index):delegate_(delegate), index_(index) {}
+ FLVParser(FLVSegmentParserDelegate* delegate, int index):delegate_(delegate), index_(index), scanState_ (SCAN_HEADER_TYPE_LEN), curFlvTagSize_(0), curStreamType_(kUnknownStreamType) {}
     //each read must be at least 1 frame
     void readData(SmartPtr<SmartBuffer> input); 
  private:
-    SmartPtr<AccessUnit> getNextFLVFrame();
+    void parseNextFLVFrame(string & flvTag);
  private:
-    string curBuffer_;
+    //each flv tag is 11 bytes + dataSize + 4 bytes of previous tag size
+    enum SCAN_STATE {
+        SCAN_HEADER_TYPE_LEN,
+        SCAN_REMAINING_TAG,
+    };
     FLVSegmentParserDelegate* delegate_;
     int index_;
+    SCAN_STATE scanState_;
+    string curBuf_;
+    u32 curFlvTagSize_;
+    StreamType curStreamType_;
 };
 
 #endif

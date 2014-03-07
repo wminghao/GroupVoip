@@ -2,26 +2,70 @@
 #include "CodecInfo.h"
 #include "fwk/BitStreamParser.h"
 
-//parsing the raw data to get a complete FLV frame
-void FLVParser::readData(SmartPtr<SmartBuffer> input) {
-    //TODO parse a frame out of the stream
-    
-    curBuffer_ = string( (char*)input->data(), input->dataLength());
+inline u32 MIN(u32 a, u32 b) {
+    return a < b? a : b;
 }
 
-SmartPtr<AccessUnit> FLVParser::getNextFLVFrame()
+//parsing the raw data to get a complete FLV frame
+void FLVParser::readData(SmartPtr<SmartBuffer> input) {
+    u8* data = input->data();
+    u32 len = input->dataLength();
+    
+    while( len ) {
+        switch( scanState_ ) {
+        case SCAN_HEADER_TYPE_LEN:
+            {
+                if ( curBuf_.size() < 4 ) {
+                    size_t cpLen = MIN(len, 4-curBuf_.size());
+                    curBuf_ += string((const char*)data, cpLen); //concatenate the string
+                    len -= cpLen;
+                    data += cpLen;
+                }
+                
+                if ( curBuf_.size() >= 4 ) {
+                    curStreamType_ = (StreamType)curBuf_[0];
+                    std::string tempStr = curBuf_.substr(1, 3);
+                    memcpy(&curFlvTagSize_, tempStr.data(), 3);
+                    curBuf_ = curBuf_.substr(4); //skip 4 bytes
+                    curFlvTagSize_ += 4; //add previousTagLen
+                    scanState_ = SCAN_REMAINING_TAG;
+                }
+                break;
+            }
+        case SCAN_REMAINING_TAG:
+            {
+                if ( curBuf_.size() < curFlvTagSize_ ) {
+                    size_t cpLen = MIN(len, curFlvTagSize_-curBuf_.size());
+                    curBuf_ += string((const char*)data, cpLen); //concatenate the string                                                                                                                                                                       
+                    len -= cpLen;
+                    data += cpLen;
+                }
+                if ( curBuf_.size() >= curFlvTagSize_ ) {
+                    parseNextFLVFrame( curBuf_ );
+                    curBuf_ = curBuf_.substr(curFlvTagSize_);
+                    curStreamType_ = kUnknownStreamType;
+                    curFlvTagSize_  = 0; //reset and go to the first state
+                    scanState_ = SCAN_HEADER_TYPE_LEN;
+                }
+                break;
+            }
+        }
+    }
+    
+    curBuf_ = string( (char*)input->data(), input->dataLength());
+}
+
+void FLVParser::parseNextFLVFrame( string & strFlvTag )
 {
     SmartPtr<AccessUnit> accessUnit = new AccessUnit();
 
-    BitStreamParser bsParser(curBuffer_);
-    //parsing logic for FLV frames
-    accessUnit->st = (StreamType)bsParser.readByte(); //streamType
-    std::string tempStr = bsParser.readBytes(3); //3 bytes, length of data
-    size_t dataSize = 0;
-    memcpy(&dataSize, tempStr.data(), 3);
+    BitStreamParser bsParser(strFlvTag);
+    //parsing logic for FLV frames, the first 4 bytes are already parsed
+    accessUnit->st = curStreamType_;
+    size_t dataSize = curFlvTagSize_;
     
     //read 4 bytes of ts
-    tempStr = bsParser.readBytes(3);
+    string tempStr = bsParser.readBytes(3);
     u8 tempByte = bsParser.readByte();
     union TimestampUnion{
         u32 timestamp;
@@ -33,8 +77,8 @@ SmartPtr<AccessUnit> FLVParser::getNextFLVFrame()
     tsUnion.timestampStr[3] = tempByte;
     accessUnit->pts = accessUnit->dts = tsUnion.timestamp;
     
-    //skip 1 byte
-    bsParser.readByte();
+    //skip 3 byte
+    bsParser.readBytes(3);
     
     if ( dataSize > 0 ) {
         switch ( accessUnit->st ) {
@@ -73,6 +117,7 @@ SmartPtr<AccessUnit> FLVParser::getNextFLVFrame()
                 if ( dataSize > 0 ) {
                     //read payload. 
                     accessUnit->payload = new SmartBuffer( dataSize, bsParser.readBytes(dataSize).data());
+                    delegate_->onFLVFrameParsed( accessUnit, index_ );
                 }
                 break;
             }
@@ -105,6 +150,7 @@ SmartPtr<AccessUnit> FLVParser::getNextFLVFrame()
                 if ( dataSize > 0 ) {
                     //read payload. 
                     accessUnit->payload = new SmartBuffer( dataSize, bsParser.readBytes(dataSize).data());
+                    delegate_->onFLVFrameParsed( accessUnit, index_ );
                 }
                 break;
             }
@@ -118,5 +164,4 @@ SmartPtr<AccessUnit> FLVParser::getNextFLVFrame()
             }
         }
     }
-    return accessUnit;
 }
