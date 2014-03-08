@@ -57,19 +57,21 @@ MixCoder::~MixCoder() {
     delete videoMixer_;
 }
 
-/* returns false if we hit some badness, true if OK */
+/* returns false if we hit some bad data, true if OK */
 bool MixCoder::newInput( SmartPtr<SmartBuffer> inputBuf )
 {
-    return false;
+    return (flvSegParser_->readData( inputBuf ) > 0);
 }
 
 //read output from the system
 SmartPtr<SmartBuffer> MixCoder::getOutput()
 {
-    return new SmartBuffer(4, "TODO");
+    //TODO
+    return NULL;
 }
     
 //at the end. flush the input
 void MixCoder::flush()
 {
+    //TODO
 }
