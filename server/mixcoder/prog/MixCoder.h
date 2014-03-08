@@ -32,22 +32,8 @@ class VideoMixer;
 class MixCoder
 {
  public:
-    MixCoder(int vBitrate, int width, 
-             int aBitrate, int frequency) : vBitrate_(vBitrate),
-        vWidth_(width),
-        aBitrate_(aBitrate),
-        aFrequency_(frequency),
-        flvSegParser_(NULL),
-        flvOutput_(NULL),
-        audioEncoder_(NULL),
-        videoEncoder_(NULL),
-        audioMixer_(NULL),
-        videoMixer_(NULL)
-            {
-                memset(audioDecoder_, 0, sizeof(AudioDecoder*) * MAX_XCODING_INSTANCES); 
-                memset(videoDecoder_, 0, sizeof(AudioDecoder*) * MAX_XCODING_INSTANCES); 
-                //TODO
-            }
+    MixCoder(int vBitrate, int width, int height,
+             int aBitrate, int frequency);
     ~MixCoder();
     
     /* returns false if we hit some badness, true if OK */
@@ -63,6 +49,7 @@ class MixCoder
     //output settings
     int vBitrate_;
     int vWidth_;
+    int vHeight_;
     
     int aBitrate_;
     int aFrequency_;

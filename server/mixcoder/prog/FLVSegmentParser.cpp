@@ -7,7 +7,8 @@ const size_t STREAM_HEADER_LEN = sizeof(u8)+sizeof(u32);
 bool FLVSegmentParser::isNextStreamAvailable(StreamType streamType)
 {
     //TODO
-    return false;
+    //algorithm here to detect whether it's avaiable
+    return true;
 }
 
 bool FLVSegmentParser::isStreamOnlineStarted(StreamType streamType, int index)
@@ -50,6 +51,7 @@ u32 FLVSegmentParser::readData(SmartPtr<SmartBuffer> input)
         memcpy(&streamMask, data, sizeof(u32));
         //handle mask here
         numStreams_ = count_bits(streamMask);
+
         //TODO take care of mask here
  
         data+=sizeof(u32);

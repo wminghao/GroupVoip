@@ -33,11 +33,11 @@ typedef enum
     kJpegVideopacket = 1,
     kH263VideoPacket = 2,
     kScreenVideoPacket = 3,
-    kVp6VideoPacket = 4,
-    kVp6AlphaVideoPacket = 5,
+    kVP6VideoPacket = 4,
+    kVP6AlphaVideoPacket = 5,
     kScreenV2VideoPacket = 6,
     kAVCVideoPacket = 7,
-    kVp8VideoPacket = 15
+    kVP8VideoPacket = 15
 }VideoCodecId;
 
 typedef enum
@@ -68,10 +68,14 @@ typedef enum
 
 typedef enum
 {
+    //first 4 enumeration is saved in the flv file
     k5Dot5kHz = 0,
     k11kHz = 1,
     k22kHz = 2,
-    k44kHz = 3
+    k44kHz = 3,
+    //next enumeration is not saved in the flv file
+    k8kHz = 4,
+    k16kHz = 5
 }AudioRate;
 
 typedef enum
@@ -109,4 +113,21 @@ typedef struct VideoStreamSetting
     int height;
 }VideoStreamSetting;
 
+inline AudioRate getAudioRate(int frequency) {
+    if ( frequency == 5500) {
+        return k5Dot5kHz;
+    } else if ( frequency == 11025) {
+        return k11kHz;
+    } else if ( frequency == 22050) {
+        return k22kHz;
+    } else if ( frequency == 44100) {
+        return k44kHz;
+    } else if ( frequency == 8000) {
+        return k8kHz;
+    } else if ( frequency == 16000) {
+        return k16kHz;
+    } else {
+        return k5Dot5kHz;
+    }
+}
 #endif

@@ -15,20 +15,19 @@ extern "C" {
 class VideoEncoder
 {
  public:
-    VideoEncoder(int vBitrate, int width, VideoStreamSetting* inputSetting) : vBitrate_(vBitrate), vWidth_(width)
+ VideoEncoder( VideoStreamSetting* setting, int vBitrate ) : vBitrate_(vBitrate)
     {
         //vp8 encoder
-        memcpy(&inputSetting_, inputSetting, sizeof(VideoStreamSetting));
+        memcpy(&vSetting_, setting, sizeof(VideoStreamSetting));
     }
 
     SmartPtr<SmartBuffer> encodeAFrame(SmartPtr<SmartBuffer> input);
 
  private:
-    //input settings
-    VideoStreamSetting inputSetting_;
+    //input settings and output setting are the same
+    VideoStreamSetting vSetting_;
 
-    //output settings                                                                                                                                                                                     
+    //output bitrate
     int vBitrate_;
-    int vWidth_;
 };
 #endif

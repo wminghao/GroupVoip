@@ -16,10 +16,11 @@ class AudioEncoder
 {
  public:
     //always encode in mp3
-    AudioEncoder(int aBitrate, int frequency, AudioStreamSetting* inputSetting) : aBitrate_(aBitrate), aFrequency_(frequency)
+ AudioEncoder(AudioStreamSetting* inputSetting, AudioStreamSetting* outputSetting, int aBitrate):aBitrate_(aBitrate)
     {
         //mp3 encoder
         memcpy(&inputSetting_, inputSetting, sizeof(AudioStreamSetting));
+        memcpy(&outputSetting_, outputSetting, sizeof(AudioStreamSetting));
     }
     SmartPtr<SmartBuffer> encodeAFrame(SmartPtr<SmartBuffer> input);
  private:
@@ -27,8 +28,8 @@ class AudioEncoder
     AudioStreamSetting inputSetting_;
 
     //output settings
+    AudioStreamSetting outputSetting_;
     int aBitrate_;
-    int aFrequency_;
 };
 
 

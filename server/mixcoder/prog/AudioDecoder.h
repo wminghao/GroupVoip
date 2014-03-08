@@ -17,17 +17,16 @@ class AudioDecoder:public MediaTarget
 {
  public:
     //speex settings is always, 16khz, mono, 16bits audio
-    AudioDecoder()
-        {
-            //speex decoder
-            
-        }
+    AudioDecoder(AudioStreamSetting* setting){
+        //speex decoder
+        memcpy(&setting_, setting, sizeof(AudioStreamSetting));
+    }
     //send it to the decoder
     virtual void newAccessUnit( SmartPtr<AccessUnit> );
     
     //raw audio datax
     SmartPtr<SmartBuffer> getDecodedResult();
+ private:
+    AudioStreamSetting setting_;
 };
-
-
 #endif
