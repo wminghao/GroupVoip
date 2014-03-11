@@ -1,4 +1,4 @@
-#ifndef __FLVSEGMENTPARSER_H
+ #ifndef __FLVSEGMENTPARSER_H
 #define __FLVSEGMENTPARSER_H
 
 #include "MediaTarget.h"
@@ -13,8 +13,8 @@ using namespace std;
 ///////////////////////////////////
 //Segment format as follows
 // Header:
-//  TotalLength = 4 bytes 
-//  StreamMask = 4 byte
+//  Meta data = 3 bytes //starting with SEG
+//  StreamMask = 4 byte //max of 32 streams
 // Content * NoOfStreams:
 //  streamId = 1 byte
 //  LengthOfStream = 4 bytes
@@ -71,6 +71,14 @@ class FLVSegmentParser:public FLVSegmentParserDelegate
         kStreamOnlineNotStarted,
         kStreamOnlineStarted
     } StreamStatus;
+    
+    typedef enum FLVSegmentParsingState
+    {
+        SEARCHING_SEGHEADER,
+        SEARCHING_STREAM_MASK,
+        SEARCHING_STREAM_HEADER,
+        SEARCHING_STREAM_DATA
+    }FLVSegmentParsingState;
     
     queue< SmartPtr<AccessUnit> > audioQueue_[MAX_XCODING_INSTANCES];
     StreamStatus audioStreamStatus_[MAX_XCODING_INSTANCES]; //tells whether a queue has benn used or not

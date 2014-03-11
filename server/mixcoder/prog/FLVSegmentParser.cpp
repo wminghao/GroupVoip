@@ -41,7 +41,7 @@ void FLVSegmentParser::onFLVFrameParsed( SmartPtr<AccessUnit> au, int index )
     }
 }
 
-
+//TODO parse partial data
 u32 FLVSegmentParser::readData(SmartPtr<SmartBuffer> input)
 {
     int totalRead = 0;
