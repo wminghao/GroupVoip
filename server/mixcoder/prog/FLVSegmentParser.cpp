@@ -1,9 +1,6 @@
 #include "FLVSegmentParser.h"
 #include <assert.h>
 
-const size_t SEGMENT_HEADER_LEN = sizeof(u32);
-const size_t STREAM_HEADER_LEN = sizeof(u8)+sizeof(u32);
-
 bool FLVSegmentParser::isNextStreamAvailable(StreamType streamType)
 {
     //TODO
@@ -41,50 +38,106 @@ void FLVSegmentParser::onFLVFrameParsed( SmartPtr<AccessUnit> au, int index )
     }
 }
 
-//TODO parse partial data
-u32 FLVSegmentParser::readData(SmartPtr<SmartBuffer> input)
+
+bool FLVSegmentParser::readData(SmartPtr<SmartBuffer> input)
 {
-    int totalRead = 0;
-    if ( input->dataLength() >= SEGMENT_HEADER_LEN ) {
-        u8* data = input->data();
-        u32 streamMask;
-        memcpy(&streamMask, data, sizeof(u32));
-        //handle mask here
-        numStreams_ = count_bits(streamMask);
+    u8* data = input->data();
+    u32 len = input->dataLength();
 
-        //TODO take care of mask here
- 
-        data+=sizeof(u32);
-        totalRead += SEGMENT_HEADER_LEN;
-
-        for( int i = 0; i < numStreams_; i++ ) {
-            if ( input->dataLength() >= (totalRead+STREAM_HEADER_LEN)  ) {
-                u8 streamId = 0;
-                memcpy(&streamId, data, sizeof(u8)); 
-                data+=sizeof(u8);
-                
-                u32 curStreamLen = 0;
-                memcpy(&curStreamLen, data, sizeof(u32)); 
-                data+=sizeof(u32);
-                
-                totalRead += STREAM_HEADER_LEN;
-                
-                if ( input->dataLength() >= (totalRead+curStreamLen)  ) {
-                    SmartPtr<SmartBuffer> curStream = new SmartBuffer( curStreamLen, data);
-                    parser_[i]->readData(curStream);
-                    totalRead += curStreamLen;
-                } else {
-                    assert(0);
+    while( len ) {
+        switch( parsingState_ ) {
+        case SEARCHING_SEGHEADER:
+            {
+                if ( curBuf_.size() < 3 ) {
+                    size_t cpLen = MIN(len, 3-curBuf_.size());
+                    curBuf_ += string((const char*)data, cpLen); //concatenate the string                                                                                                                 
+                    len -= cpLen;
+                    data += cpLen;
                 }
-            } else {
-                assert(0);
+
+                if ( curBuf_.size() >= 3 ) {
+                    assert(curBuf_[0] == 'S' && curBuf_[1] == 'E' && curBuf_[2] == 'G');
+                    curBuf_.clear();
+                    curSegTagSize_ = 0;
+                    parsingState_ = SEARCHING_STREAM_MASK;
+                }
+                break;
+            }
+        case SEARCHING_STREAM_MASK:
+            {
+                if ( curBuf_.size() < 4 ) {
+                    size_t cpLen = MIN(len, 4-curBuf_.size());
+                    curBuf_ += string((const char*)data, cpLen); //concatenate the string                                                                                                          
+
+                    len -= cpLen;
+                    data += cpLen;
+                }
+
+                if ( curBuf_.size() >= 4 ) {
+                    u32 streamMask;
+                    memcpy(&streamMask, data, sizeof(u32));
+
+                    //handle mask here 
+                    numStreams_ = count_bits(streamMask);
+                    assert(numStreams_ < (u32)MAX_XCODING_INSTANCES);
+                    //TODO take care of mask here     
+
+                    curStreamCnt_ = numStreams_;
+                    curBuf_.clear();
+                    curSegTagSize_ = 0;
+                    parsingState_ = SEARCHING_STREAM_HEADER;
+                }
+                break;
+            }
+        case SEARCHING_STREAM_HEADER:
+            {
+                if ( curBuf_.size() < 5 ) {
+                    size_t cpLen = MIN(len, 5-curBuf_.size());
+                    curBuf_ += string((const char*)data, cpLen); //concatenate the string
+
+                    len -= cpLen;
+                    data += cpLen;
+                }
+                if ( curBuf_.size() >= 5 ) {
+                    curStreamId_ = curBuf_[0]; //read the id
+                    assert(curStreamId_ < (u32)MAX_XCODING_INSTANCES);
+                    memcpy(&curStreamLen_, curBuf_.data()+1, 4); //read the len
+                    curBuf_.clear();
+                    curSegTagSize_ = 0;
+                    parsingState_ = SEARCHING_STREAM_DATA;
+                }
+                break;
+            }
+        case SEARCHING_STREAM_DATA:
+            {
+                if ( curBuf_.size() < curStreamLen_ ) {
+                    size_t cpLen = MIN(len, curStreamLen_-curBuf_.size());
+                    curBuf_ += string((const char*)data, cpLen); //concatenate the string     
+                                  
+                    len -= cpLen;
+                    data += cpLen;
+                }
+                if ( curBuf_.size() >= curStreamLen_ ) {
+                    //read the actual buffer
+                    SmartPtr<SmartBuffer> curStream = new SmartBuffer( curStreamLen_, curBuf_.data());
+                    parser_[curStreamId_]->readData(curStream); 
+                    curBuf_.clear();
+                    curSegTagSize_ = 0;
+                    curStreamCnt_--;
+                    if ( curStreamCnt_ ) {
+                        parsingState_ = SEARCHING_STREAM_HEADER;
+                    } else {
+                        parsingState_ = SEARCHING_SEGHEADER;
+                    }
+                }
+                break;
             }
         }
     }
-    return totalRead;
+    return true;
 }
 
-SmartPtr<AccessUnit> FLVSegmentParser::getNextFLVFrame(int index, StreamType streamType)
+SmartPtr<AccessUnit> FLVSegmentParser::getNextFLVFrame(u32 index, StreamType streamType)
 {
     assert ( index < numStreams_ );
     SmartPtr<AccessUnit> au;

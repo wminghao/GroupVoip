@@ -2,10 +2,6 @@
 #include "CodecInfo.h"
 #include "fwk/BitStreamParser.h"
 
-inline u32 MIN(u32 a, u32 b) {
-    return a < b? a : b;
-}
-
 //parsing the raw data to get a complete FLV frame
 void FLVParser::readData(SmartPtr<SmartBuffer> input) {
     u8* data = input->data();
@@ -51,8 +47,6 @@ void FLVParser::readData(SmartPtr<SmartBuffer> input) {
             }
         }
     }
-    
-    curBuf_ = string( (char*)input->data(), input->dataLength());
 }
 
 void FLVParser::parseNextFLVFrame( string & strFlvTag )

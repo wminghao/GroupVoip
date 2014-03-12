@@ -39,7 +39,10 @@ using namespace std;
 class FLVSegmentParser:public FLVSegmentParserDelegate
 {
  public:
-    FLVSegmentParser(u32 targetVideoFrameRate): numStreams_(0), targetVideoFrameRate_(targetVideoFrameRate) {
+ FLVSegmentParser(u32 targetVideoFrameRate): parsingState_(SEARCHING_SEGHEADER),
+        curSegTagSize_(0), curStreamId_(0), curStreamLen_(0), curStreamCnt_(0),
+        numStreams_(0), targetVideoFrameRate_(targetVideoFrameRate) 
+        {
         memset(audioStreamStatus_, 0, sizeof(StreamStatus)*MAX_XCODING_INSTANCES);
         memset(videoStreamStatus_, 0, sizeof(StreamStatus)*MAX_XCODING_INSTANCES);
         for(int i = 0; i < MAX_XCODING_INSTANCES; i++) {
@@ -52,14 +55,14 @@ class FLVSegmentParser:public FLVSegmentParserDelegate
         }
     }
 
-    u32 readData(SmartPtr<SmartBuffer> input);
+    bool readData(SmartPtr<SmartBuffer> input);
 
     //detect whether the next stream is available or not 
     bool isNextStreamAvailable(StreamType streamType);
     //check the status of a stream to see if it's online
     bool isStreamOnlineStarted(StreamType streamType, int index);
     //get next flv frame
-    SmartPtr<AccessUnit> getNextFLVFrame(int index, StreamType streamType);
+    SmartPtr<AccessUnit> getNextFLVFrame(u32 index, StreamType streamType);
 
  private:
     virtual void onFLVFrameParsed( SmartPtr<AccessUnit> au, int index );
@@ -79,14 +82,20 @@ class FLVSegmentParser:public FLVSegmentParserDelegate
         SEARCHING_STREAM_HEADER,
         SEARCHING_STREAM_DATA
     }FLVSegmentParsingState;
-    
+    FLVSegmentParsingState parsingState_;
+    string curBuf_;
+    u32 curSegTagSize_;
+    u32 curStreamId_;
+    u32 curStreamLen_;
+    u32 curStreamCnt_;
+
     queue< SmartPtr<AccessUnit> > audioQueue_[MAX_XCODING_INSTANCES];
     StreamStatus audioStreamStatus_[MAX_XCODING_INSTANCES]; //tells whether a queue has benn used or not
     queue< SmartPtr<AccessUnit> > videoQueue_[MAX_XCODING_INSTANCES];
     StreamStatus videoStreamStatus_[MAX_XCODING_INSTANCES]; //tells whether a queue has been used or not
 
     FLVParser* parser_[MAX_XCODING_INSTANCES];
-    u16 numStreams_;
+    u32 numStreams_;
     u32 targetVideoFrameRate_;
 };
 #endif

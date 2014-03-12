@@ -12,6 +12,13 @@ typedef int16_t s16;
 typedef int32_t s32;
 typedef int64_t s64;
 
+inline u32 MAX(u32 a, u32 b) {
+    return a > b? a : b;
+}
+inline u32 MIN(u32 a, u32 b) {
+    return a < b? a : b;
+}
+
 #ifdef DEBUG
 #include <assert.h>
 #ifdef ANDROID
