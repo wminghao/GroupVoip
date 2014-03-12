@@ -13,8 +13,8 @@ enum specialProperty {
 
 typedef enum StreamType {
     kUnknownStreamType = 0,
-    kVideoStreamType = 8,
-    kAudioStreamType = 9,
+    kAudioStreamType = 8,
+    kVideoStreamType = 9,
     kDataStreamType = 18
 }StreamType;
 

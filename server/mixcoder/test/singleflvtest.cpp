@@ -1,5 +1,5 @@
 
-#include <sys/stat.h> 
+#include <stdio.h> 
 #include <fcntl.h>
 #include <unistd.h>
 #include <string.h>
@@ -29,22 +29,24 @@ bool doWrite( int fd, const void *buf, size_t len ) {
 
 long runTest(FILE* fd, int totalFlvChunks, int flvChunkStartPos)
 {
-  unsigned char buffer[FIXED_DATA_SIZE+12];
-    
-  //first read the metadata
-  unsigned char metaData []= {'S', 'E', 'G'};
-  memcpy(buffer, metaData, sizeof(metaData));
-  unsigned char mask1Stream = 0x01;
-  memcpy(buffer+sizeof(metaData), &mask1Stream, sizeof(unsigned int));
-  doWrite(1, buffer, sizeof(metaData)+sizeof(unsigned int));
-
-  unsigned int bufLen = FIXED_DATA_SIZE;
   for(int i = 0; i < totalFlvChunks; i++) {
-    unsigned char streamId[] = {0};
-    memcpy(buffer, &streamId, sizeof(streamId));
-    memcpy(buffer+8, &bufLen, sizeof(unsigned int));
-    fread((char*)buffer+sizeof(streamId)+sizeof(unsigned int), 1, bufLen, fd);
-    doWrite(1, buffer, sizeof(buffer));
+      unsigned char buffer[FIXED_DATA_SIZE+12];
+      unsigned int bufLen = FIXED_DATA_SIZE;
+
+      //first send the segHeader
+      unsigned char metaData []= {'S', 'E', 'G'};
+      memcpy(buffer, metaData, sizeof(metaData));
+      unsigned int mask1Stream = 0x01;
+      memcpy(buffer+sizeof(metaData), &mask1Stream, sizeof(unsigned int));
+
+      //then send the stream heaer
+      unsigned char streamId[] = {0};
+      memcpy(buffer+sizeof(metaData)+sizeof(unsigned int), &streamId, sizeof(streamId));
+      memcpy(buffer+sizeof(metaData)+sizeof(unsigned int)+sizeof(streamId), &bufLen, sizeof(unsigned int));
+
+      //then send the buffer
+      fread((char*)buffer+sizeof(metaData)+sizeof(unsigned int)+sizeof(streamId)+sizeof(unsigned int), 1, bufLen, fd);
+      doWrite(1, buffer, sizeof(buffer));
   }    
   return 1;
 }
@@ -75,7 +77,7 @@ int main( int argc, char** argv ) {
   int totalFlvChunks = (file_size-flvChunkStartPos)/FIXED_DATA_SIZE;
   fprintf(stderr, "total file size=%ld, totalflvChunks=%d\r\n", file_size, totalFlvChunks, flvChunkStartPos);
 
-  if (fseek(fp, 0 , SEEK_SET) != 0) {
+  if (fseek(fp, flvChunkStartPos , SEEK_SET) != 0) {
     /* Handle Error */
   }
 

@@ -1,5 +1,6 @@
 #include "FLVSegmentParser.h"
 #include <assert.h>
+#include <stdio.h>
 
 bool FLVSegmentParser::isNextStreamAvailable(StreamType streamType)
 {
@@ -75,7 +76,8 @@ bool FLVSegmentParser::readData(SmartPtr<SmartBuffer> input)
 
                 if ( curBuf_.size() >= 4 ) {
                     u32 streamMask;
-                    memcpy(&streamMask, data, sizeof(u32));
+                    memcpy(&streamMask, curBuf_.data(), sizeof(u32));
+                    //fprintf(stderr, "---streamMask=%d\r\n", streamMask);
 
                     //handle mask here 
                     numStreams_ = count_bits(streamMask);
@@ -118,6 +120,7 @@ bool FLVSegmentParser::readData(SmartPtr<SmartBuffer> input)
                     data += cpLen;
                 }
                 if ( curBuf_.size() >= curStreamLen_ ) {
+                    //fprintf(stderr, "---curStreamId_=%d curStreamLen_=%d\r\n", curStreamId_, curStreamLen_);
                     //read the actual buffer
                     SmartPtr<SmartBuffer> curStream = new SmartBuffer( curStreamLen_, curBuf_.data());
                     parser_[curStreamId_]->readData(curStream); 

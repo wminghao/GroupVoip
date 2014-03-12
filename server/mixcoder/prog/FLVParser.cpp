@@ -1,6 +1,7 @@
 #include "FLVParser.h"
 #include "CodecInfo.h"
 #include "fwk/BitStreamParser.h"
+#include <stdio.h>
 
 //parsing the raw data to get a complete FLV frame
 void FLVParser::readData(SmartPtr<SmartBuffer> input) {
@@ -17,11 +18,18 @@ void FLVParser::readData(SmartPtr<SmartBuffer> input) {
                     len -= cpLen;
                     data += cpLen;
                 }
-                
                 if ( curBuf_.size() >= 4 ) {
                     curStreamType_ = (StreamType)curBuf_[0];
                     std::string tempStr = curBuf_.substr(1, 3);
-                    memcpy(&curFlvTagSize_, tempStr.data(), 3);
+                    union DataSizeUnion{
+                        u32 dataSize;
+                        u8 dataSizeStr[4];
+                    }dsUnion;
+                    dsUnion.dataSizeStr[0] = tempStr[2];
+                    dsUnion.dataSizeStr[1] = tempStr[1];
+                    dsUnion.dataSizeStr[2] = tempStr[0];
+                    dsUnion.dataSizeStr[3] = 0;
+                    curFlvTagSize_ = dsUnion.dataSize;
                     curBuf_ = curBuf_.substr(4); //skip 4 bytes
                     curFlvTagSize_ += 7+4; //add remaining of the header + previousTagLen
                     scanState_ = SCAN_REMAINING_TAG;
@@ -38,7 +46,7 @@ void FLVParser::readData(SmartPtr<SmartBuffer> input) {
                 }
                 if ( curBuf_.size() >= curFlvTagSize_ ) {
                     parseNextFLVFrame( curBuf_ );
-                    curBuf_ = curBuf_.substr(curFlvTagSize_);
+                    curBuf_.clear();
                     curStreamType_ = kUnknownStreamType;
                     curFlvTagSize_  = 0; //reset and go to the first state
                     scanState_ = SCAN_HEADER_TYPE_LEN;
@@ -49,7 +57,7 @@ void FLVParser::readData(SmartPtr<SmartBuffer> input) {
     }
 }
 
-void FLVParser::parseNextFLVFrame( string & strFlvTag )
+void FLVParser::parseNextFLVFrame( string& strFlvTag )
 {
     SmartPtr<AccessUnit> accessUnit = new AccessUnit();
 
@@ -71,8 +79,11 @@ void FLVParser::parseNextFLVFrame( string & strFlvTag )
     tsUnion.timestampStr[3] = tempByte;
     accessUnit->pts = accessUnit->dts = tsUnion.timestamp;
     
+    fprintf(stderr, "---streamType=%d, flvTagSize=%d, pts=%d, remainingSize=%ld\r\n", curStreamType_, curFlvTagSize_, (u32)accessUnit->pts, strFlvTag.size() );
+
     //skip 3 byte
     bsParser.readBytes(3);
+    dataSize -= 7;
     
     if ( dataSize > 0 ) {
         switch ( accessUnit->st ) {
@@ -113,6 +124,8 @@ void FLVParser::parseNextFLVFrame( string & strFlvTag )
                     accessUnit->payload = new SmartBuffer( dataSize, bsParser.readBytes(dataSize).data());
                     delegate_->onFLVFrameParsed( accessUnit, index_ );
                 }
+                fprintf(stderr, "---video accessUnit, isKey=%d, codecType=%d, specialProperty=%d\r\n", accessUnit->isKey, accessUnit->ct, accessUnit->sp);
+                            
                 break;
             }
         case kAudioStreamType:
@@ -123,6 +136,8 @@ void FLVParser::parseNextFLVFrame( string & strFlvTag )
                 u32 soundType = bsParser.readBits(1);
                 dataSize -= 1;
 
+                accessUnit->ct = soundFormat;
+                accessUnit->isKey = true;
                 if ( soundFormat == kAAC ) {
                     u8 aacPacketType = bsParser.readByte();
                     switch( aacPacketType ) {
@@ -146,11 +161,13 @@ void FLVParser::parseNextFLVFrame( string & strFlvTag )
                     accessUnit->payload = new SmartBuffer( dataSize, bsParser.readBytes(dataSize).data());
                     delegate_->onFLVFrameParsed( accessUnit, index_ );
                 }
+                fprintf(stderr, "---audio accessUnit, isKey=%d, codecType=%d, specialProperty=%d\r\n", accessUnit->isKey, accessUnit->ct, accessUnit->sp);
                 break;
             }
         case kDataStreamType:
             {
                 //TODO
+                fprintf(stderr, "---data accessUnit.\r\n");
             }
         default:
             {
