@@ -49,8 +49,10 @@ MixCoder::MixCoder(int vBitrate, int width, int height,
 MixCoder::~MixCoder() {
     delete flvSegParser_;
     delete flvOutput_;
-    delete [] audioDecoder_;
-    delete [] videoDecoder_;
+    for( int i = 0; i < MAX_XCODING_INSTANCES; i ++ ) {
+        delete audioDecoder_[i];
+        delete videoDecoder_[i];
+    }
     delete audioEncoder_;
     delete videoEncoder_;
     delete audioMixer_;

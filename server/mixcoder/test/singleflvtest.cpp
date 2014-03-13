@@ -52,8 +52,8 @@ long runTest(FILE* fd, int totalFlvChunks, int flvChunkStartPos)
 }
 
 int main( int argc, char** argv ) {
-  if ( argc != 3 ) {
-    fprintf(stderr, "usage: %s input_file flvDataStartPos", argv[0]);
+  if ( argc != 2 ) {
+    fprintf(stderr, "usage: %s input_file", argv[0]);
     return -1;
   } 
 
@@ -72,7 +72,7 @@ int main( int argc, char** argv ) {
 
   file_size = ftell(fp);
 
-  int flvChunkStartPos = atoi(argv[2]);
+  int flvChunkStartPos = 13;
 
   int totalFlvChunks = (file_size-flvChunkStartPos)/FIXED_DATA_SIZE;
   fprintf(stderr, "total file size=%ld, totalflvChunks=%d\r\n", file_size, totalFlvChunks, flvChunkStartPos);
