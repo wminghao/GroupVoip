@@ -58,7 +58,7 @@ class FLVSegmentParser:public FLVSegmentParserDelegate
     bool readData(SmartPtr<SmartBuffer> input);
 
     //detect whether the next stream is available or not 
-    bool isNextStreamAvailable(StreamType streamType);
+    bool isNextStreamAvailable(StreamType streamType, u32& timestamp);
     //check the status of a stream to see if it's online
     bool isStreamOnlineStarted(StreamType streamType, int index);
     //get next flv frame

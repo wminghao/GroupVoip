@@ -16,9 +16,9 @@ class AudioMixer
  public:
     AudioMixer() {}
     //do the mixing, for now, always mix n speex streams into 1 speex stream
-    SmartPtr<SmartBuffer> mixStream(SmartPtr<SmartBuffer> buffer[], 
-                                    AudioStreamSetting settings[], 
-                                    int totalStreams);
+    SmartPtr<SmartBuffer> mixStreams(SmartPtr<SmartBuffer> buffer[], 
+                                     AudioStreamSetting settings[], 
+                                     int totalStreams);
 };
 
 

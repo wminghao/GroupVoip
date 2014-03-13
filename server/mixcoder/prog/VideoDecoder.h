@@ -20,10 +20,7 @@ class VideoDecoder : public MediaTarget
         {
             //avc decoder
         }
-    virtual void newAccessUnit( SmartPtr<AccessUnit> );
-    virtual void newAVCSeqHeader( SmartPtr<AccessUnit> );
-
-    SmartPtr<SmartBuffer> getDecodedResult();
+    virtual SmartPtr<SmartBuffer> newAccessUnit( SmartPtr<AccessUnit> );
  private:
 };
 

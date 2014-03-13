@@ -4,12 +4,12 @@ void FLVOutput::newHeader(SmartPtr<SmartBuffer> videoHeader, SmartPtr<SmartBuffe
 {
 }
 
-SmartPtr<SmartBuffer> FLVOutput::packageVideoFrame(SmartPtr<SmartBuffer> videoPacket, u64 ts)
+SmartPtr<SmartBuffer> FLVOutput::packageVideoFrame(SmartPtr<SmartBuffer> videoPacket, u32 ts)
 {
     return new SmartBuffer(4, "TODO");
 }
 
-SmartPtr<SmartBuffer> FLVOutput::packageAudioFrame(SmartPtr<SmartBuffer> audioPacket, u64 ts)
+SmartPtr<SmartBuffer> FLVOutput::packageAudioFrame(SmartPtr<SmartBuffer> audioPacket, u32 ts)
 {
     return new SmartBuffer(4, "TODO");
 }

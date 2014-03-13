@@ -1,10 +1,7 @@
 #include "AudioDecoder.h"
 
-void AudioDecoder::newAccessUnit( SmartPtr<AccessUnit> )
-{
-}
-
-SmartPtr<SmartBuffer> AudioDecoder::getDecodedResult()
+SmartPtr<SmartBuffer> AudioDecoder::newAccessUnit( SmartPtr<AccessUnit> )
 {
     return new SmartBuffer(4, "TODO");
 }
+

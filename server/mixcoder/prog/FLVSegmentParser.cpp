@@ -2,11 +2,31 @@
 #include <assert.h>
 #include <stdio.h>
 
-bool FLVSegmentParser::isNextStreamAvailable(StreamType streamType)
+bool FLVSegmentParser::isNextStreamAvailable(StreamType streamType, u32& timestamp)
 {
     //TODO
     //algorithm here to detect whether it's avaiable
-    return true;
+    if( streamType == kVideoStreamType ) {
+        //using the frist stream timestamp as the base timestamp
+        for(int i = 0; i < MAX_XCODING_INSTANCES; i++ ) {
+            if ( videoStreamStatus_[i] == kStreamOnlineStarted ) {
+                timestamp = videoQueue_[i].front()->pts;
+                break;
+            }
+        }
+        return true; 
+    } else if( streamType == kAudioStreamType ) {
+        //using the frist stream timestamp as the base timestamp
+        for(int i = 0; i < MAX_XCODING_INSTANCES; i++ ) {
+            if ( audioStreamStatus_[i] == kStreamOnlineStarted ) {
+                timestamp = audioQueue_[i].front()->pts;
+                break;
+            }
+        }
+        return true;
+    } else {
+        return false;
+    }
 }
 
 bool FLVSegmentParser::isStreamOnlineStarted(StreamType streamType, int index)

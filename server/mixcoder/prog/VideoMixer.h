@@ -13,13 +13,11 @@ extern "C" {
 class VideoMixer
 {
  public:
-    VideoMixer() {}
+    VideoMixer(VideoStreamSetting* outputSetting) {}
     //do the mixing, for now, always mix n* 640*480 buffers into 1 640*480 buffer
-    SmartPtr<SmartBuffer> mixStreams(SmartPtr<SmartBuffer> buffer[], 
-                                     VideoStreamSetting settings[], 
-                                     int totalStreams, 
-                                     int targetWidth,
-                                     int targetHeight);
+    SmartPtr<SmartBuffer> mixStreams(SmartPtr<SmartBuffer>* buffer, 
+                                     VideoStreamSetting* settings, 
+                                     int totalStreams);
 };
 
 

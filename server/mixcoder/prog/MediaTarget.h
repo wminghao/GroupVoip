@@ -11,7 +11,7 @@ const u64 INVALID_TS = 0xFFFFFFFFFFFFFFFF;
 
 class AccessUnit : public SmartPtrInterface<AccessUnit> {
  public:
-    u64 pts, dts;
+    u32 pts, dts;
     SmartPtr<SmartBuffer> payload;
     StreamType st;
     int  ct; //codecType, either audio or video
@@ -21,10 +21,10 @@ class AccessUnit : public SmartPtrInterface<AccessUnit> {
 
 class MediaTarget {
  private:
-    virtual void newAccessUnit( SmartPtr<AccessUnit> ) {};
+    virtual SmartPtr<SmartBuffer> newAccessUnit( SmartPtr<AccessUnit> ) = 0;
 
-    virtual void newAVCSeqHeader( SmartPtr<AccessUnit> ) {}
-    virtual void newAudioHeader( SmartPtr<AccessUnit> ) {}
+    //virtual void newAVCSeqHeader( SmartPtr<AccessUnit> ) {}
+    //virtual void newAudioHeader( SmartPtr<AccessUnit> ) {}
     //virtual void flush() {};
 };
 

@@ -1,13 +1,7 @@
 #include "VideoDecoder.h"
             
-void VideoDecoder::newAccessUnit( SmartPtr<AccessUnit> )
+SmartPtr<SmartBuffer> VideoDecoder::newAccessUnit( SmartPtr<AccessUnit> )
 {
-}
-
-void VideoDecoder::newAVCSeqHeader( SmartPtr<AccessUnit> )
-{
-}
-SmartPtr<SmartBuffer> VideoDecoder::getDecodedResult()
-{
+    //it can be a sps-pps header or regular nalu
     return new SmartBuffer(4, "TODO");
 }
