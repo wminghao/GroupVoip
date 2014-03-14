@@ -2,6 +2,7 @@
 #include "CodecInfo.h"
 #include "fwk/BitStreamParser.h"
 #include <stdio.h>
+#include <assert.h>
 
 //parsing the raw data to get a complete FLV frame
 void FLVParser::readData(SmartPtr<SmartBuffer> input) {
@@ -96,7 +97,6 @@ void FLVParser::parseNextFLVFrame( string& strFlvTag )
                 dataSize -= 1;
 
                 std::string inputData;
-                int inputDataSize = 0;
                 if ( codecId == kAVCVideoPacket ) {
                     u8 avcPacketType = bsParser.readByte();
                     //skip 3 bytes
@@ -137,7 +137,6 @@ void FLVParser::parseNextFLVFrame( string& strFlvTag )
                             u16 ppsLen = ((u16)ppsLenStr[0]<<8)|ppsLenStr[1];
                             string pps = bsParser.readBytes(ppsLen);                            
                             inputData = naluStarterCode + sps + naluStarterCode + pps;
-                            inputDataSize = 4 + spsLen + 4 + ppsLen;
                             fprintf(stderr, "---spsLen = %d, ppsLen = %d, inputDataLen=%ld\r\n", spsLen, ppsLen, inputData.size());
                             break;
                         }
@@ -147,21 +146,22 @@ void FLVParser::parseNextFLVFrame( string& strFlvTag )
                             
                             //avcodec_decode_video2 & avcodec_decode_audio4 documentation requires an extra of FF_INPUT_BUFFER_PADDING_SIZE padding for each video buffer
                             const string stBytesPadding ("\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 16);// FF_INPUT_BUFFER_PADDING_SIZE = 16
-
-                            string lenStr = bsParser.readBytes(4);//skip the length
-                            union DataSizeUnion{
-                                u32 dataSize;
-                                u8 dataSizeStr[4];
-                            }dsUnion;
-                            dsUnion.dataSizeStr[0] = lenStr[3];
-                            dsUnion.dataSizeStr[1] = lenStr[2];
-                            dsUnion.dataSizeStr[2] = lenStr[1];
-                            dsUnion.dataSizeStr[3] = lenStr[0];
-
-                            dataSize -= 4;
-                            inputData = naluStarterCode + bsParser.readBytes(dataSize) + stBytesPadding;
-                            inputDataSize = 4 + dataSize + 16;
-                            fprintf(stderr, "---inputData size=%ld, len=%d  %x_%x_%x_%x_0x%x__0x%x0x%x\r\n", dataSize, dsUnion.dataSize, inputData[0], inputData[1], inputData[2], inputData[3], inputData[4], inputData[4 + dataSize-2], inputData[4 + dataSize-1]);
+                            inputData.clear();
+                            while ( dataSize > 0 ) {
+                                string lenStr = bsParser.readBytes(4);//skip the length
+                                union DataSizeUnion{
+                                    u32 dataSize;
+                                    u8 dataSizeStr[4];
+                                }dsUnion;
+                                dsUnion.dataSizeStr[0] = lenStr[3];
+                                dsUnion.dataSizeStr[1] = lenStr[2];
+                                dsUnion.dataSizeStr[2] = lenStr[1];
+                                dsUnion.dataSizeStr[3] = lenStr[0];
+                                inputData += (naluStarterCode + bsParser.readBytes(dsUnion.dataSize));
+                                dataSize -= (4+dsUnion.dataSize);
+                            }
+                            inputData += stBytesPadding;
+                            //fprintf(stderr, "---inputData %x_%x_%x_%x_0x%x__0x%x\r\n", inputData[0], inputData[1], inputData[2], inputData[3], inputData[4], inputData[inputData.size()-1-16]);
                             break;
                         }
                     case kAVCEndOfSeq:
@@ -174,12 +174,12 @@ void FLVParser::parseNextFLVFrame( string& strFlvTag )
                     assert(0);
                     accessUnit->sp = kRawData;
                 }
-                if ( inputDataSize > 0 ) {
+                if ( inputData.size() > 0 ) {
                     //read payload. 
-                    accessUnit->payload = new SmartBuffer( inputDataSize, inputData.data());
+                    accessUnit->payload = new SmartBuffer( inputData.size(), inputData.data());
                     delegate_->onFLVFrameParsed( accessUnit, index_ );
                 }
-                fprintf(stderr, "---video accessUnit, isKey=%d, codecType=%d, specialProperty=%d, naluSize=%d\r\n", accessUnit->isKey, accessUnit->ct, accessUnit->sp, inputDataSize);
+                //fprintf(stderr, "---video accessUnit, isKey=%d, codecType=%d, specialProperty=%d, naluSize=%ld\r\n", accessUnit->isKey, accessUnit->ct, accessUnit->sp, inputData.size());
                             
                 break;
             }
@@ -216,13 +216,13 @@ void FLVParser::parseNextFLVFrame( string& strFlvTag )
                     accessUnit->payload = new SmartBuffer( dataSize, bsParser.readBytes(dataSize).data());
                     delegate_->onFLVFrameParsed( accessUnit, index_ );
                 }
-                fprintf(stderr, "---audio accessUnit, isKey=%d, codecType=%d, specialProperty=%d\r\n", accessUnit->isKey, accessUnit->ct, accessUnit->sp);
+                //fprintf(stderr, "---audio accessUnit, isKey=%d, codecType=%d, specialProperty=%d\r\n", accessUnit->isKey, accessUnit->ct, accessUnit->sp);
                 break;
             }
         case kDataStreamType:
             {
                 //TODO
-                fprintf(stderr, "---data accessUnit.\r\n");
+                //fprintf(stderr, "---data accessUnit.\r\n");
             }
         default:
             {

@@ -92,29 +92,40 @@ SmartPtr<SmartBuffer> MixCoder::getOutput()
     
     SmartPtr<SmartBuffer> resultFlvPacket = NULL;
     if ( curStreamType != kUnknownStreamType ) {
-        SmartPtr<SmartBuffer> rawFrame[MAX_XCODING_INSTANCES];
         int totalStreams = 0;
+        int totalNewStreams = 0;
         for( int i = 0; i < MAX_XCODING_INSTANCES; i ++ ) {
             if( flvSegParser_->isStreamOnlineStarted(curStreamType, i ) ) {
                 SmartPtr<AccessUnit> au = flvSegParser_->getNextFLVFrame(i, curStreamType);
-                if ( curStreamType == kVideoStreamType ) {
-                    rawFrame[totalStreams] = videoDecoder_[i]->newAccessUnit(au);
+                if ( au ) {
+                    if ( curStreamType == kVideoStreamType ) {
+                        rawVideoFrame_[totalStreams] = videoDecoder_[i]->newAccessUnit(au);
+                    } else {
+                        rawVideoFrame_[totalStreams] = audioDecoder_[i]->newAccessUnit(au);
+                    }
+                    totalNewStreams++;
                 } else {
-                    rawFrame[totalStreams] = audioDecoder_[i]->newAccessUnit(au);
+                    //TODO not ready?
                 }
                 totalStreams++;
             }
         }
+
+        if ( totalNewStreams > 0 ) {
+            resultFlvPacket = new SmartBuffer(4, "TODO");
+        }
+        /*
         if ( curStreamType == kVideoStreamType ) {
-            SmartPtr<SmartBuffer> rawFrameMixed = videoMixer_->mixStreams(rawFrame, NULL, totalStreams);
+            SmartPtr<SmartBuffer> rawFrameMixed = videoMixer_->mixStreams(rawVideoFrame_, NULL, totalStreams);
             SmartPtr<SmartBuffer> encodedFrame = videoEncoder_->encodeAFrame(rawFrameMixed);
             //TODO sps pps for each packet?
             resultFlvPacket = flvOutput_->packageVideoFrame(encodedFrame, videoPts);
         } else {
-            SmartPtr<SmartBuffer> rawFrameMixed = audioMixer_->mixStreams(rawFrame, NULL, totalStreams);
+            SmartPtr<SmartBuffer> rawFrameMixed = audioMixer_->mixStreams(rawVideoFrame_, NULL, totalStreams);
             SmartPtr<SmartBuffer> encodedFrame = audioEncoder_->encodeAFrame(rawFrameMixed);
             resultFlvPacket = flvOutput_->packageAudioFrame(encodedFrame, audioPts);
         }
+        */
     }
     return resultFlvPacket;
 }

@@ -9,24 +9,21 @@ bool FLVSegmentParser::isNextStreamAvailable(StreamType streamType, u32& timesta
     if( streamType == kVideoStreamType ) {
         //using the frist stream timestamp as the base timestamp
         for(int i = 0; i < MAX_XCODING_INSTANCES; i++ ) {
-            if ( videoStreamStatus_[i] == kStreamOnlineStarted ) {
+            if ( videoStreamStatus_[i] == kStreamOnlineStarted && videoQueue_[i].size() > 0) {
                 timestamp = videoQueue_[i].front()->pts;
-                break;
+                return true;
             }
         }
-        return true; 
     } else if( streamType == kAudioStreamType ) {
         //using the frist stream timestamp as the base timestamp
         for(int i = 0; i < MAX_XCODING_INSTANCES; i++ ) {
-            if ( audioStreamStatus_[i] == kStreamOnlineStarted ) {
+            if ( audioStreamStatus_[i] == kStreamOnlineStarted && audioQueue_[i].size() > 0) {
                 timestamp = audioQueue_[i].front()->pts;
-                break;
+                return true;
             }
         }
-        return true;
-    } else {
-        return false;
     }
+    return false;
 }
 
 bool FLVSegmentParser::isStreamOnlineStarted(StreamType streamType, int index)
@@ -185,10 +182,14 @@ SmartPtr<AccessUnit> FLVSegmentParser::getNextFLVFrame(u32 index, StreamType str
     SmartPtr<AccessUnit> au;
     if ( streamType == kVideoStreamType ) {
         au = videoQueue_[index].front();
-        videoQueue_[index].pop();
+        if ( au ) {
+            videoQueue_[index].pop();
+        }
     } else if( streamType == kAudioStreamType ){
         au = audioQueue_[index].front();
-        audioQueue_[index].pop();
+        if ( au ) {
+            audioQueue_[index].pop();
+        }
     }
     return au;
 }

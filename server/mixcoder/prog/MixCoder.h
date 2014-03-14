@@ -70,6 +70,9 @@ class MixCoder
     //mixer
     AudioMixer* audioMixer_;
     VideoMixer* videoMixer_;
+
+    //raw video frame in case it does not exist
+    SmartPtr<SmartBuffer> rawVideoFrame_[MAX_XCODING_INSTANCES];
 };
 
 #endif
