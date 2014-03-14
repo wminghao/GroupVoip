@@ -88,7 +88,7 @@ SmartPtr<SmartBuffer> VideoDecoder::newAccessUnit( SmartPtr<AccessUnit> au )
                     //yv12/yuv420, 3 planes combined into 1 buffer
                     int totalPixels = inWidth_*inHeight_;
                     result = new SmartBuffer( (totalPixels*3)/2, frame_->data[0] );
-                    fprintf( stderr, "GOTIT, video frame size=%d, stride=%d\n", (totalPixels*3)/2, frame_->linesize[0]);
+                    fprintf( stderr, "GOTIT, video pkt size=%d frame size=%d, stride=%d\n", pkt.size, (totalPixels*3)/2, frame_->linesize[0]);
                 } else {
                     fprintf( stderr, "DIDNT get video frame\n");
                 }
