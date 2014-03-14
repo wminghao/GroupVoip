@@ -30,8 +30,8 @@ void FLVParser::readData(SmartPtr<SmartBuffer> input) {
                     dsUnion.dataSizeStr[2] = tempStr[0];
                     dsUnion.dataSizeStr[3] = 0;
                     curFlvTagSize_ = dsUnion.dataSize;
-                    curBuf_ = curBuf_.substr(4); //skip 4 bytes
                     curFlvTagSize_ += 7+4; //add remaining of the header + previousTagLen
+                    curBuf_ = curBuf_.substr(4, curFlvTagSize_ ); //skip 4 bytes
                     scanState_ = SCAN_REMAINING_TAG;
                 }
                 break;
@@ -82,7 +82,6 @@ void FLVParser::parseNextFLVFrame( string& strFlvTag )
     //skip 3 byte
     bsParser.readBytes(3);
     dataSize -= 7;
-
 
     fprintf(stderr, "---streamType=%d, flvTagSize=%d, pts=%d\r\n", curStreamType_, curFlvTagSize_, (u32)accessUnit->pts );
     
@@ -148,6 +147,7 @@ void FLVParser::parseNextFLVFrame( string& strFlvTag )
                             
                             //avcodec_decode_video2 & avcodec_decode_audio4 documentation requires an extra of FF_INPUT_BUFFER_PADDING_SIZE padding for each video buffer
                             const string stBytesPadding ("\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 16);// FF_INPUT_BUFFER_PADDING_SIZE = 16
+
                             string lenStr = bsParser.readBytes(4);//skip the length
                             union DataSizeUnion{
                                 u32 dataSize;
@@ -161,7 +161,7 @@ void FLVParser::parseNextFLVFrame( string& strFlvTag )
                             dataSize -= 4;
                             inputData = naluStarterCode + bsParser.readBytes(dataSize) + stBytesPadding;
                             inputDataSize = 4 + dataSize + 16;
-                            fprintf(stderr, "---inputData size=%ld, len=%d  %x_%x_%x_%x_0x%x\r\n", dataSize, dsUnion.dataSize, inputData[0], inputData[1], inputData[2], inputData[3], inputData[4]);
+                            fprintf(stderr, "---inputData size=%ld, len=%d  %x_%x_%x_%x_0x%x__0x%x0x%x\r\n", dataSize, dsUnion.dataSize, inputData[0], inputData[1], inputData[2], inputData[3], inputData[4], inputData[4 + dataSize-2], inputData[4 + dataSize-1]);
                             break;
                         }
                     case kAVCEndOfSeq:
