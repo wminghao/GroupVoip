@@ -69,7 +69,7 @@ bool MixCoder::newInput( SmartPtr<SmartBuffer> inputBuf )
 //read output from the system
 SmartPtr<SmartBuffer> MixCoder::getOutput()
 {
-    StreamType curStreamType = kVideoStreamType;
+    StreamType curStreamType = kUnknownStreamType;
     u32 videoPts = 0;
     bool bIsVideoAvailable = flvSegParser_->isNextStreamAvailable( kVideoStreamType, videoPts );
 
@@ -80,40 +80,42 @@ SmartPtr<SmartBuffer> MixCoder::getOutput()
         if ( audioPts < videoPts ) {
             curStreamType = kAudioStreamType;
         } else {
-            //do nothing
+            curStreamType = kVideoStreamType;
         }
     } else if ( bIsAudioAvailable ) {
         curStreamType = kAudioStreamType;
-    } else {
-        //do nothing
+    } else if( bIsVideoAvailable ) {
+        curStreamType = kVideoStreamType;
     }
 
-    SmartPtr<SmartBuffer> rawFrame[MAX_XCODING_INSTANCES];
-    int totalStreams = 0;
-    for( int i = 0; i < MAX_XCODING_INSTANCES; i ++ ) {
-        if( flvSegParser_->isStreamOnlineStarted(curStreamType, i ) ) {
-            SmartPtr<AccessUnit> au = flvSegParser_->getNextFLVFrame(i, curStreamType);
-            if ( curStreamType == kVideoStreamType ) {
-                rawFrame[totalStreams] = videoDecoder_[i]->newAccessUnit(au);
-                
-            } else {
-                rawFrame[totalStreams] = audioDecoder_[i]->newAccessUnit(au);
+    fprintf( stderr, "------curStreamType=%d, audioPts=%d, videoPts=%d\n", curStreamType, audioPts, videoPts );
+    
+    SmartPtr<SmartBuffer> resultFlvPacket = NULL;
+    if ( curStreamType != kUnknownStreamType ) {
+        SmartPtr<SmartBuffer> rawFrame[MAX_XCODING_INSTANCES];
+        int totalStreams = 0;
+        for( int i = 0; i < MAX_XCODING_INSTANCES; i ++ ) {
+            if( flvSegParser_->isStreamOnlineStarted(curStreamType, i ) ) {
+                SmartPtr<AccessUnit> au = flvSegParser_->getNextFLVFrame(i, curStreamType);
+                if ( curStreamType == kVideoStreamType ) {
+                    rawFrame[totalStreams] = videoDecoder_[i]->newAccessUnit(au);
+                } else {
+                    rawFrame[totalStreams] = audioDecoder_[i]->newAccessUnit(au);
+                }
+                totalStreams++;
             }
-            totalStreams++;
+        }
+        if ( curStreamType == kVideoStreamType ) {
+            SmartPtr<SmartBuffer> rawFrameMixed = videoMixer_->mixStreams(rawFrame, NULL, totalStreams);
+            SmartPtr<SmartBuffer> encodedFrame = videoEncoder_->encodeAFrame(rawFrameMixed);
+            //TODO sps pps for each packet?
+            resultFlvPacket = flvOutput_->packageVideoFrame(encodedFrame, videoPts);
+        } else {
+            SmartPtr<SmartBuffer> rawFrameMixed = audioMixer_->mixStreams(rawFrame, NULL, totalStreams);
+            SmartPtr<SmartBuffer> encodedFrame = audioEncoder_->encodeAFrame(rawFrameMixed);
+            resultFlvPacket = flvOutput_->packageAudioFrame(encodedFrame, audioPts);
         }
     }
-    SmartPtr<SmartBuffer> resultFlvPacket = NULL;
-    if ( curStreamType == kVideoStreamType ) {
-        SmartPtr<SmartBuffer> rawFrameMixed = videoMixer_->mixStreams(rawFrame, NULL, totalStreams);
-        SmartPtr<SmartBuffer> encodedFrame = videoEncoder_->encodeAFrame(rawFrameMixed);
-        //TODO sps pps for each packet?
-        resultFlvPacket = flvOutput_->packageVideoFrame(encodedFrame, videoPts);
-    } else {
-        SmartPtr<SmartBuffer> rawFrameMixed = audioMixer_->mixStreams(rawFrame, NULL, totalStreams);
-        SmartPtr<SmartBuffer> encodedFrame = audioEncoder_->encodeAFrame(rawFrameMixed);
-        resultFlvPacket = flvOutput_->packageAudioFrame(encodedFrame, audioPts);
-    }
-
     return resultFlvPacket;
 }
     

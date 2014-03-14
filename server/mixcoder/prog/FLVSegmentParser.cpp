@@ -52,8 +52,10 @@ void FLVSegmentParser::onFLVFrameParsed( SmartPtr<AccessUnit> au, int index )
 {
     if( au->st == kVideoStreamType ) {
         videoQueue_[index].push( au );
+        videoStreamStatus_[index] = kStreamOnlineStarted;
     } else if ( au->st == kAudioStreamType ) {
         audioQueue_[index].push( au );
+        audioStreamStatus_[index] = kStreamOnlineStarted;
     } else {
         //do nothing
     }
@@ -102,7 +104,24 @@ bool FLVSegmentParser::readData(SmartPtr<SmartBuffer> input)
                     //handle mask here 
                     numStreams_ = count_bits(streamMask);
                     assert(numStreams_ < (u32)MAX_XCODING_INSTANCES);
-                    //TODO take care of mask here     
+                    
+                    int index = 0;
+                    while( streamMask ) {
+                        u32 value = ((streamMask<<31)>>31); //mask off all other bits
+                        if( value ) {
+                            if ( videoStreamStatus_[index] == kStreamOffline ) {
+                                videoStreamStatus_[index] = kStreamOnlineNotStarted;
+                            }
+                            if ( audioStreamStatus_[index] == kStreamOffline ) {
+                                audioStreamStatus_[index] = kStreamOnlineNotStarted;
+                            }
+                        } else {
+                            videoStreamStatus_[index] = kStreamOffline;
+                            audioStreamStatus_[index] = kStreamOffline;
+                        }
+                        streamMask >>= 1; //shift 1 bit
+                        index++;
+                    }
 
                     curStreamCnt_ = numStreams_;
                     curBuf_.clear();
