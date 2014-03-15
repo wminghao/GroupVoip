@@ -1,7 +1,6 @@
 extern "C" {
 #include <libavcodec/avcodec.h>    // required headers
 #include <libavformat/avformat.h>
-#include <samplerate.h>
 }
 
 #include "VideoDecoder.h"

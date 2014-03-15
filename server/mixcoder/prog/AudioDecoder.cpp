@@ -1,4 +1,5 @@
 #include "AudioDecoder.h"
+#include <assert.h>
 #include <stdio.h>
 
 AudioDecoder::~AudioDecoder()
