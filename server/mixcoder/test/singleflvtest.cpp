@@ -6,7 +6,7 @@
 #include <stdlib.h>
 
 
-static const unsigned int FIXED_DATA_SIZE = 4096;
+static const unsigned int FIXED_DATA_SIZE = 500;
 
 bool doWrite( int fd, const void *buf, size_t len ) {
   size_t bytesWrote = 0;

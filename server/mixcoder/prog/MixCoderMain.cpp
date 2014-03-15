@@ -5,7 +5,7 @@
 #include <unistd.h>
 
 //big enough buffer
-const int MAX_BUF_SIZE = 100000;
+const int MAX_BUF_SIZE = 100;
 
 int main( int argc, char** argv ) {
     

@@ -1,3 +1,9 @@
+extern "C" {
+#include <libavcodec/avcodec.h>    // required headers
+#include <libavformat/avformat.h>
+#include <samplerate.h>
+}
+
 #include "VideoDecoder.h"
 #include <assert.h>
             
@@ -62,7 +68,7 @@ SmartPtr<SmartBuffer> VideoDecoder::newAccessUnit( SmartPtr<AccessUnit> au )
         //TODO parse sps/pps to get width and height, now assume it's 640*480
         inWidth_ = 640;
         inHeight_ = 480;
-        fprintf( stderr, "Got sps pps, len=%ld\n", spspps_->dataLength());
+        fprintf( stderr, "Video got sps pps, len=%ld\n", spspps_->dataLength());
     } else if( au->sp == kRawData ) {
         assert(inWidth_ && inHeight_);
         if ( spspps_ ) {
@@ -88,7 +94,7 @@ SmartPtr<SmartBuffer> VideoDecoder::newAccessUnit( SmartPtr<AccessUnit> au )
                     //yv12/yuv420, 3 planes combined into 1 buffer
                     int totalPixels = inWidth_*inHeight_;
                     result = new SmartBuffer( (totalPixels*3)/2, frame_->data[0] );
-                    fprintf( stderr, "GOTIT, video pkt size=%d frame size=%d, stride=%d\n", pkt.size, (totalPixels*3)/2, frame_->linesize[0]);
+                    fprintf( stderr, "video got pkt size=%d frame size=%d, stride=%d\n", pkt.size, (totalPixels*3)/2, frame_->linesize[0]);
                 } else {
                     fprintf( stderr, "DIDNT get video frame\n");
                 }

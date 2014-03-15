@@ -88,10 +88,10 @@ SmartPtr<SmartBuffer> MixCoder::getOutput()
         curStreamType = kVideoStreamType;
     }
 
-    fprintf( stderr, "------curStreamType=%d, audioPts=%d, videoPts=%d\n", curStreamType, audioPts, videoPts );
-    
     SmartPtr<SmartBuffer> resultFlvPacket = NULL;
     if ( curStreamType != kUnknownStreamType ) {
+        fprintf( stderr, "------curStreamType=%d, audioPts=%d, videoPts=%d\n", curStreamType, audioPts, videoPts );
+    
         int totalStreams = 0;
         int totalNewStreams = 0;
         for( int i = 0; i < MAX_XCODING_INSTANCES; i ++ ) {
