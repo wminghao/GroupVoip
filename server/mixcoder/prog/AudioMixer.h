@@ -19,6 +19,7 @@ class AudioMixer
     SmartPtr<SmartBuffer> mixStreams(SmartPtr<SmartBuffer> buffer[], 
                                      AudioStreamSetting settings[], 
                                      int totalStreams);
+
 };
 
 

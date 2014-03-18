@@ -9,19 +9,18 @@ extern "C" {
 
 #include "fwk/SmartBuffer.h"
 #include <queue>
+#include <speex/speex.h>
 #include "CodecInfo.h"
+
+#define MAX_WB_BYTES 1000
 
 //audio encoder implementation
 class AudioEncoder
 {
  public:
-    //always encode in mp3
- AudioEncoder(AudioStreamSetting* inputSetting, AudioStreamSetting* outputSetting, int aBitrate):aBitrate_(aBitrate)
-    {
-        //mp3 encoder
-        memcpy(&inputSetting_, inputSetting, sizeof(AudioStreamSetting));
-        memcpy(&outputSetting_, outputSetting, sizeof(AudioStreamSetting));
-    }
+    //always encode in speex
+    AudioEncoder(AudioStreamSetting* inputSetting, AudioStreamSetting* outputSetting, int aBitrate);
+    ~AudioEncoder();
     SmartPtr<SmartBuffer> encodeAFrame(SmartPtr<SmartBuffer> input);
  private:
     //input settings
@@ -30,7 +29,13 @@ class AudioEncoder
     //output settings
     AudioStreamSetting outputSetting_;
     int aBitrate_;
+    
+    //audio encoder
+    void* encoder_;
+    SpeexBits bits_;
+    int frameSize_;
+    
+    char encodedBits_[MAX_WB_BYTES];
 };
-
 
 #endif
