@@ -25,7 +25,7 @@ extern "C" {
 class VideoEncoder
 {
  public:
-    VideoEncoder( VideoStreamSetting* setting, int vBitrate );
+    VideoEncoder( VideoStreamSetting* setting, int vBaseLayerBitrate );
     ~VideoEncoder();
     SmartPtr<SmartBuffer> encodeAFrame(SmartPtr<SmartBuffer> input, u32 timestamp);
 
@@ -34,7 +34,7 @@ class VideoEncoder
     VideoStreamSetting vSetting_;
 
     //output bitrate
-    int vBitrate_;
+    int vBaseLayerBitrate_;
 
     vpx_codec_ctx_t      codec_;
     vpx_codec_enc_cfg_t  cfg_;

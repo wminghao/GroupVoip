@@ -9,7 +9,7 @@ const int MAX_BUF_SIZE = 100;
 
 int main( int argc, char** argv ) {
     
-    int videoBitrate = 400;
+    int videoBitrate = 100;
     int videoWidth = 640;
     int videoHeight = 480;
 

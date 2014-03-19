@@ -64,7 +64,7 @@ static void write_ivf_frame_header(FILE *outfile,
 //we choose to use 5 layers of temporal scalability
 #define NUM_LAYERS 5
 
-VideoEncoder::VideoEncoder( VideoStreamSetting* setting, int vBitrate ) : vBitrate_(vBitrate), frameInputCnt_(0), frameOutputCnt_(0)
+VideoEncoder::VideoEncoder( VideoStreamSetting* setting, int vBaseLayerBitrate ) : vBaseLayerBitrate_(vBaseLayerBitrate), frameInputCnt_(0), frameOutputCnt_(0)
 {
     vpx_codec_err_t      res;
 
@@ -93,7 +93,7 @@ VideoEncoder::VideoEncoder( VideoStreamSetting* setting, int vBitrate ) : vBitra
 
     /* Target bit rate for each layer*/
     for (int i=0; i<NUM_LAYERS; i++) {
-        cfg_.ts_target_bitrate[i] = vBitrate_ + i*10;
+        cfg_.ts_target_bitrate[i] = vBaseLayerBitrate_ + i*10;
     }
 
     /* Real time parameters */
@@ -194,7 +194,7 @@ SmartPtr<SmartBuffer> VideoEncoder::encodeAFrame(SmartPtr<SmartBuffer> input, u3
         int flags = layerFlags_[frameInputCnt_ % cfg_.ts_periodicity];
         memcpy( raw_.planes[0], input->data(), input->dataLength() );
         if(vpx_codec_encode(&codec_, &raw_, timestamp, 1, flags, VPX_DL_REALTIME)) {
-            fprintf(stderr, "Failed to encode frame");
+            fprintf(stderr, "!!!Failed to encode frame");
             return NULL;
         }
         while ( (pkt = vpx_codec_get_cx_data(&codec_, &iter)) ) {
@@ -206,7 +206,7 @@ SmartPtr<SmartBuffer> VideoEncoder::encodeAFrame(SmartPtr<SmartBuffer> input, u3
                     (void) fwrite(pkt->data.frame.buf, 1, pkt->data.frame.sz, outFile_);
 #endif
                     result = new SmartBuffer(pkt->data.frame.sz, (const char*)pkt->data.frame.buf);
-                    fprintf(stderr, "Video Encoded frame size=%ld, ts=%d", pkt->data.frame.sz, timestamp);
+                    fprintf(stderr, "Video Encoded frame size=%ld, ts=%d\r\n", pkt->data.frame.sz, timestamp);
                     frameOutputCnt_++;
                     break;
                 }
