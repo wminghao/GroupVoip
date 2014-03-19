@@ -36,5 +36,5 @@ env.Program( mixCoderProg,
 	       flvParserObj,
 	       flvSegmentParserObj,
 	       mainObj],	
-	       LIBS=['pthread', 'avformat', 'avcodec', 'avutil', 'swscale', 'samplerate', 'speex'], CCFLAGS=mixCoderCflags)
+	       LIBS=['pthread', 'avformat', 'avcodec', 'avutil', 'swscale', 'samplerate', 'speex', 'vpx'], CCFLAGS=mixCoderCflags)
 
