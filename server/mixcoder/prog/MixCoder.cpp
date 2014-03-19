@@ -114,12 +114,16 @@ SmartPtr<SmartBuffer> MixCoder::getOutput()
         if ( totalNewStreams > 0 ) {
             
             if ( curStreamType == kVideoStreamType ) {
-                resultFlvPacket = new SmartBuffer(4, "TODO");
+                //TODO mixing
+                SmartPtr<SmartBuffer> encodedFrame = videoEncoder_->encodeAFrame(rawVideoFrame_[0], videoPts );
+                resultFlvPacket = encodedFrame; //TODO
             } else {
                 SmartPtr<SmartBuffer> rawFrameMixed = audioMixer_->mixStreams(rawVideoFrame_, NULL, totalStreams);
                 SmartPtr<SmartBuffer> encodedFrame = audioEncoder_->encodeAFrame(rawFrameMixed);
                 resultFlvPacket = encodedFrame; //TODO
             }
+            
+
         }
         /*
         if ( curStreamType == kVideoStreamType ) {
