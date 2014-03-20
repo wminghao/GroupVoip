@@ -14,7 +14,7 @@ class FLVOutput
             memcpy(&audioSetting_, audioSetting, sizeof(AudioStreamSetting));
         }
     
-    void newHeader(SmartPtr<SmartBuffer> videoHeader, SmartPtr<SmartBuffer> audioHeader);
+    SmartPtr<SmartBuffer> newHeader();
     
     SmartPtr<SmartBuffer> packageVideoFrame(SmartPtr<SmartBuffer> videoPacket, u32 ts);
     SmartPtr<SmartBuffer> packageAudioFrame(SmartPtr<SmartBuffer> audioPacket, u32 ts);
@@ -22,6 +22,8 @@ class FLVOutput
  private:
     VideoStreamSetting videoSetting_;
     AudioStreamSetting audioSetting_;
+
+    SmartPtr<SmartBuffer> videoHeader_;
 };
 
 #endif

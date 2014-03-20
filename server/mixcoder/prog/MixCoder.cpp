@@ -32,7 +32,6 @@ MixCoder::MixCoder(int vBitrate, int width, int height,
     
     VideoStreamSetting vOutputSetting = { kVP8VideoPacket, vWidth_, vHeight_ }; 
     AudioStreamSetting aOutputSetting = { kMP3, kSndMono, getAudioRate(aBitrate_), kSnd16Bit, 0 };
-    flvOutput_ = new FLVOutput( &vOutputSetting, &aOutputSetting );
     
     AudioStreamSetting aInputSetting = { kSpeex, kSndMono, getAudioRate(16000), kSnd16Bit, 0 };
     audioEncoder_ = new AudioEncoder( &aInputSetting, &aOutputSetting, aBitrate_ );
@@ -45,6 +44,8 @@ MixCoder::MixCoder(int vBitrate, int width, int height,
         audioDecoder_[i] = new AudioDecoder();
         videoDecoder_[i] = new VideoDecoder();
     }
+    flvOutput_ = new FLVOutput( &vOutputSetting, &aOutputSetting );
+    flvOutput_->newHeader();
 }
 
 MixCoder::~MixCoder() {
@@ -120,10 +121,8 @@ SmartPtr<SmartBuffer> MixCoder::getOutput()
             } else {
                 SmartPtr<SmartBuffer> rawFrameMixed = audioMixer_->mixStreams(rawVideoFrame_, NULL, totalStreams);
                 SmartPtr<SmartBuffer> encodedFrame = audioEncoder_->encodeAFrame(rawFrameMixed);
-                resultFlvPacket = encodedFrame; //TODO
+                resultFlvPacket = flvOutput_->packageAudioFrame(encodedFrame, audioPts);
             }
-            
-
         }
         /*
         if ( curStreamType == kVideoStreamType ) {
