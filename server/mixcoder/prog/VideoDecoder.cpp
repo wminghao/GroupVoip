@@ -93,7 +93,8 @@ SmartPtr<SmartBuffer> VideoDecoder::newAccessUnit( SmartPtr<AccessUnit> au )
                     assert(inWidth_ == frame_->width);
                     assert(inHeight_ == frame_->height);
 
-                    //yv12/yuv420, 3 planes combined into 1 buffer
+                    //convert from AV_PIX_FMT_YUV420P
+                    //3 planes combined into 1 buffer
                     int totalPixels = inWidth_*inHeight_;
                     result = new SmartBuffer( (totalPixels*3)/2 );
 
@@ -109,22 +110,22 @@ SmartPtr<SmartBuffer> VideoDecoder::newAccessUnit( SmartPtr<AccessUnit> au )
                         offsetOut += inWidth_;
                     }
 
-                    in += offsetInY;
-                    u32 bytesPerLineInU = frame_->linesize[0]/4;
+                    in = frame_->data[1];
+                    u32 bytesPerLineInU = frame_->linesize[1];
                     u32 offsetInU = 0;
-                    for(int i = 0; i < inHeight_; i ++ ) {
-                        memcpy( out+offsetOut, in+offsetInU, inWidth_/4);
+                    for(int i = 0; i < inHeight_/2; i ++ ) {
+                        memcpy( out+offsetOut, in+offsetInU, inWidth_/2);
                         offsetInU += bytesPerLineInU;
-                        offsetOut += inWidth_/4;
+                        offsetOut += inWidth_/2;
                     }
 
-                    in += offsetInU;
-                    u32 bytesPerLineInV = frame_->linesize[0]/4;
+                    in = frame_->data[2];
+                    u32 bytesPerLineInV = frame_->linesize[2];
                     u32 offsetInV = 0;
-                    for(int i = 0; i < inHeight_; i ++ ) {
-                        memcpy( out+offsetOut, in+offsetInV, inWidth_/4);
+                    for(int i = 0; i < inHeight_/2; i ++ ) {
+                        memcpy( out+offsetOut, in+offsetInV, inWidth_/2);
                         offsetInV += bytesPerLineInV;
-                        offsetOut += inWidth_/4;
+                        offsetOut += inWidth_/2;
                     }
 
                     fprintf( stderr, "video got pkt size=%d frame size=%d, stride0=%d, stride1=%d, stride2=%d, width=%d, height=%d, format=%d\n", pkt.size, (totalPixels*3)/2, 
