@@ -45,7 +45,6 @@ MixCoder::MixCoder(int vBitrate, int width, int height,
         videoDecoder_[i] = new VideoDecoder();
     }
     flvOutput_ = new FLVOutput( &vOutputSetting, &aOutputSetting );
-    flvOutput_->newHeader();
 }
 
 MixCoder::~MixCoder() {
@@ -102,7 +101,7 @@ SmartPtr<SmartBuffer> MixCoder::getOutput()
                     if ( curStreamType == kVideoStreamType ) {
                         rawVideoFrame_[totalStreams] = videoDecoder_[i]->newAccessUnit(au);
                     } else {
-                        rawVideoFrame_[totalStreams] = audioDecoder_[i]->newAccessUnit(au);
+                        rawAudioFrame_[totalStreams] = audioDecoder_[i]->newAccessUnit(au);
                     }
                     totalNewStreams++;
                 } else {
@@ -113,33 +112,30 @@ SmartPtr<SmartBuffer> MixCoder::getOutput()
         }
 
         if ( totalNewStreams > 0 ) {
-            
             if ( curStreamType == kVideoStreamType ) {
+                //            SmartPtr<SmartBuffer> rawFrameMixed = videoMixer_->mixStreams(rawVideoFrame_, NULL, totalStreams);
                 //TODO mixing
                 SmartPtr<SmartBuffer> encodedFrame = videoEncoder_->encodeAFrame(rawVideoFrame_[0] );
-                resultFlvPacket = encodedFrame; //TODO
+                if ( encodedFrame ) {
+                    //TODO causing crash
+                    resultFlvPacket = flvOutput_->packageVideoFrame(encodedFrame, videoPts, false); //TODO key frame
+                }
             } else {
-                SmartPtr<SmartBuffer> rawFrameMixed = audioMixer_->mixStreams(rawVideoFrame_, NULL, totalStreams);
+                SmartPtr<SmartBuffer> rawFrameMixed = audioMixer_->mixStreams(rawAudioFrame_, NULL, totalStreams);
                 SmartPtr<SmartBuffer> encodedFrame = audioEncoder_->encodeAFrame(rawFrameMixed);
-                resultFlvPacket = flvOutput_->packageAudioFrame(encodedFrame, audioPts);
+                if ( encodedFrame ) {
+                    resultFlvPacket = flvOutput_->packageAudioFrame(encodedFrame, audioPts);
+                }
             }
         }
-        /*
-        if ( curStreamType == kVideoStreamType ) {
-            SmartPtr<SmartBuffer> rawFrameMixed = videoMixer_->mixStreams(rawVideoFrame_, NULL, totalStreams);
-            SmartPtr<SmartBuffer> encodedFrame = videoEncoder_->encodeAFrame(rawFrameMixed);
-            //TODO sps pps for each packet?
-            resultFlvPacket = flvOutput_->packageVideoFrame(encodedFrame, videoPts);
-        } else {
-            SmartPtr<SmartBuffer> rawFrameMixed = audioMixer_->mixStreams(rawVideoFrame_, NULL, totalStreams);
-            SmartPtr<SmartBuffer> encodedFrame = audioEncoder_->encodeAFrame(rawFrameMixed);
-            resultFlvPacket = flvOutput_->packageAudioFrame(encodedFrame, audioPts);
-        }
-        */
     }
     return resultFlvPacket;
 }
-    
+
+SmartPtr<SmartBuffer> MixCoder::newHeader()
+{
+    return flvOutput_->newHeader();
+}    
 //at the end. flush the input
 void MixCoder::flush()
 {

@@ -1,9 +1,9 @@
 #include "FLVOutput.h"
-
+#include <stdio.h>
 
 //5th byte 0x01 video, 0x04 audio, 0x05 video+audio
 const u8 flvHeader[210] = {
-    0x46,0x4c,0x56,0x01,0x05,0x00,0x00,0x00,0x09,0x00,0x00,0x00,0x00,0x12,0x00,0x00
+    0x46,0x4c,0x56,0x01,0x04,0x00,0x00,0x00,0x09,0x00,0x00,0x00,0x00,0x12,0x00,0x00
     ,0xb6,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x02,0x00,0x0a,0x6f,0x6e,0x4d,0x65,0x74
     ,0x61,0x44,0x61,0x74,0x61,0x08,0x00,0x00,0x00,0x07,0x00,0x08,0x64,0x75,0x72,0x61
     ,0x74,0x69,0x6f,0x6e,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x05,0x77
@@ -32,24 +32,59 @@ SmartPtr<SmartBuffer> FLVOutput::newHeader()
     memcpy( data, flvHeader, sizeof(flvHeader) );
     offset += sizeof(flvHeader);
     
-    //then build video header
-    u32 videoHeaderLen = 31;
-    videoHeader_ = new SmartBuffer( videoHeaderLen );
-    //TODO
     return header;
 }
 
-SmartPtr<SmartBuffer> FLVOutput::packageVideoFrame(SmartPtr<SmartBuffer> videoPacket, u32 ts)
+SmartPtr<SmartBuffer> FLVOutput::packageVideoFrame(SmartPtr<SmartBuffer> videoPacket, u32 ts, bool bIsKeyFrame)
 {
-    //TODO
-    return NULL;
+    //then build video header
+    u32 videoHeaderLen = 11;
+    u32 videoDataLen = videoPacket->dataLength() + 1;
+    SmartPtr<SmartBuffer> videoFrame = new SmartBuffer( videoHeaderLen + videoDataLen );
+    u8* data = videoFrame->data();
+
+    //frame tag
+    data[0] = (u8)0x09;
+    //frame data length
+    data[1] = (u8)((videoDataLen>>16)&0xff);
+    data[2] = (u8)((videoDataLen>>8)&0xff);
+    data[3] = (u8)(videoDataLen&0xff);
+    //frame time stamp
+    data[4] = (u8)((ts>>16)&0xff);
+    data[5] = (u8)((ts>>8)&0xff);
+    data[6] = (u8)(ts&0xff);
+    //frame time stamp extend
+    data[7] = (u8)((ts>>24)&0xff);
+    //frame reserved
+    data[8] = 0;
+    data[9] = 0;
+    data[10] = 0;
+
+    if ( bIsKeyFrame) {
+        data[11] = (u8)0x18;
+    } else {
+        data[11] = (u8)0x28;
+    }
+    if ( videoDataLen > 1 ) {
+        memcpy(&data[12], videoPacket->data(), videoPacket->dataLength());
+    }
+    //prev tag size
+    int tl = 11 + videoDataLen;
+    data[tl] = (u8)((tl>>24)&0xff);  
+    data[tl+1] = (u8)((tl>>16)&0xff);  
+    data[tl+2] = (u8)((tl>>8)&0xff);  
+    data[tl+3] = (u8)(tl&0xff);  
+
+    fprintf( stderr, "====>video frame len=%d, audioDataLen=%d ts=%d\n", tl, videoDataLen, ts);
+
+    return videoFrame;
 }
 
 SmartPtr<SmartBuffer> FLVOutput::packageAudioFrame(SmartPtr<SmartBuffer> audioPacket, u32 ts)
 {
-    u32 audioHeaderLen = 16;
-    u32 audioDataLen = audioPacket->dataLength();
-    SmartPtr<SmartBuffer> audioFrame = new SmartBuffer(audioHeaderLen + audioDataLen);
+    u32 audioHeaderLen = 11;
+    u32 audioDataLen = audioPacket->dataLength()+1;
+    SmartPtr<SmartBuffer> audioFrame = new SmartBuffer(audioHeaderLen + audioDataLen + 4);
     u8* data = audioFrame->data();
 
     //FLV_TAG_TYPE_AUDIO
@@ -76,16 +111,17 @@ SmartPtr<SmartBuffer> FLVOutput::packageAudioFrame(SmartPtr<SmartBuffer> audioPa
     //
     data[11] = audioTagByte;
 
-    if( audioDataLen > 0 ) {
-        memcpy(&data[12], audioPacket->data(), audioDataLen);
+    if( audioDataLen > 1 ) {
+        memcpy(&data[12], audioPacket->data(), audioPacket->dataLength());
     }
-    //prev tag siz
-    int index = 12 + audioDataLen;
-    int tl = index;
-    data[index] = (u8)((tl>>24)&0xff);
-    data[++index] = (u8)((tl>>16)&0xff);  
-    data[++index] = (u8)((tl>>8)&0xff);    
-    data[++index] = (u8)(tl&0xff);
+    //prev tag size
+    int tl = 11 + audioDataLen;
+    data[tl] = (u8)((tl>>24)&0xff);
+    data[tl+1] = (u8)((tl>>16)&0xff);  
+    data[tl+2] = (u8)((tl>>8)&0xff);    
+    data[tl+3] = (u8)(tl&0xff);
+
+    fprintf( stderr, "====>audio frame len=%d, audioDataLen=%d ts=%d\n", tl, audioDataLen, ts);
 
     return audioFrame;
 }

@@ -22,6 +22,11 @@ int main( int argc, char** argv ) {
     SmartPtr<SmartBuffer> output;
     int totalBytesRead = 0;
 
+    //debug code
+    output = mixCoder->newHeader();
+    write( 1, output->data(), output->dataLength() );
+
+    int totalOutput = 0;
     while ( (totalBytesRead = read( 0, data, MAX_BUF_SIZE)) > 0 ) {
         SmartPtr<SmartBuffer> input = new SmartBuffer( totalBytesRead, data );
         if( !mixCoder->newInput( input ) ) {
@@ -29,6 +34,8 @@ int main( int argc, char** argv ) {
             return -1;
         }
         while( output = mixCoder->getOutput() ) {
+            totalOutput+=output->dataLength();
+            fprintf(stderr, "------totalOutput=%d\r\n", totalOutput);
             write( 1, output->data(), output->dataLength() );
         } 
     }

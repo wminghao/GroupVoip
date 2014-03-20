@@ -39,6 +39,9 @@ class MixCoder
     /* returns false if we hit some badness, true if OK */
     bool newInput( SmartPtr<SmartBuffer> );
 
+    //debug feature
+    SmartPtr<SmartBuffer> newHeader();
+
     //read output from the system
     SmartPtr<SmartBuffer> getOutput();
     
@@ -73,6 +76,7 @@ class MixCoder
 
     //raw video frame in case it does not exist
     SmartPtr<SmartBuffer> rawVideoFrame_[MAX_XCODING_INSTANCES];
+    SmartPtr<SmartBuffer> rawAudioFrame_[MAX_XCODING_INSTANCES];
 };
 
 #endif

@@ -185,6 +185,7 @@ VideoEncoder::~VideoEncoder()
     fclose (outFile_);
 #endif
 }
+
 SmartPtr<SmartBuffer> VideoEncoder::encodeAFrame(SmartPtr<SmartBuffer> input)
 {
     SmartPtr<SmartBuffer> result;
