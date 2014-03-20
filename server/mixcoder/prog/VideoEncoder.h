@@ -27,7 +27,7 @@ class VideoEncoder
  public:
     VideoEncoder( VideoStreamSetting* setting, int vBaseLayerBitrate );
     ~VideoEncoder();
-    SmartPtr<SmartBuffer> encodeAFrame(SmartPtr<SmartBuffer> input, u32 timestamp);
+    SmartPtr<SmartBuffer> encodeAFrame(SmartPtr<SmartBuffer> input);
 
  private:
     //input settings and output setting are the same
@@ -44,7 +44,8 @@ class VideoEncoder
 
     int                  frameInputCnt_;
     int                  frameOutputCnt_;
-    
+    u32                  timestampTick_;
+        
 #ifdef DEBUG_SAVE_IVF
     FILE* outFile_;
 #endif
