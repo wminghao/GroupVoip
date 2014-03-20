@@ -193,7 +193,6 @@ SmartPtr<SmartBuffer> VideoEncoder::encodeAFrame(SmartPtr<SmartBuffer> input)
         const vpx_codec_cx_pkt_t *pkt;
         int flags = layerFlags_[frameInputCnt_ % cfg_.ts_periodicity];
         memcpy( raw_.planes[0], input->data(), input->dataLength() );
-        timestampTick_++;
 
         if(vpx_codec_encode(&codec_, &raw_, timestampTick_, 1, flags, VPX_DL_REALTIME)) {
             fprintf(stderr, "!!!Failed to encode frame");
@@ -216,6 +215,7 @@ SmartPtr<SmartBuffer> VideoEncoder::encodeAFrame(SmartPtr<SmartBuffer> input)
                 break;
             }
         }
+        timestampTick_++;
         frameInputCnt_++;
     }
     return result;
