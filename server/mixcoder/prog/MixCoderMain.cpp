@@ -35,7 +35,7 @@ int main( int argc, char** argv ) {
         }
         while( output = mixCoder->getOutput() ) {
             totalOutput+=output->dataLength();
-            fprintf(stderr, "------totalOutput=%d\r\n", totalOutput);
+            //fprintf(stderr, "------totalOutput=%d\r\n", totalOutput);
             write( 1, output->data(), output->dataLength() );
         } 
     }
