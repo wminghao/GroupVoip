@@ -19,13 +19,4 @@ class AccessUnit : public SmartPtrInterface<AccessUnit> {
     bool isKey;
 };
 
-class MediaTarget {
- private:
-    virtual SmartPtr<SmartBuffer> newAccessUnit( SmartPtr<AccessUnit> ) = 0;
-
-    //virtual void newAVCSeqHeader( SmartPtr<AccessUnit> ) {}
-    //virtual void newAudioHeader( SmartPtr<AccessUnit> ) {}
-    //virtual void flush() {};
-};
-
 #endif //__MEDIATARGET_H__

@@ -99,9 +99,9 @@ SmartPtr<SmartBuffer> MixCoder::getOutput()
                 SmartPtr<AccessUnit> au = flvSegParser_->getNextFLVFrame(i, curStreamType);
                 if ( au ) {
                     if ( curStreamType == kVideoStreamType ) {
-                        rawVideoFrame_[totalStreams] = videoDecoder_[i]->newAccessUnit(au);
+                        videoDecoder_[i]->newAccessUnit(au, rawVideoPlanes_[i], rawVideoStrides_[i], rawVideoSettings_); 
                     } else {
-                        rawAudioFrame_[totalStreams] = audioDecoder_[i]->newAccessUnit(au);
+                        rawAudioFrame_[i] = audioDecoder_[i]->newAccessUnit(au);
                     }
                     totalNewStreams++;
                 } else {
@@ -113,9 +113,8 @@ SmartPtr<SmartBuffer> MixCoder::getOutput()
 
         if ( totalNewStreams > 0 ) {
             if ( curStreamType == kVideoStreamType ) {
-                //            SmartPtr<SmartBuffer> rawFrameMixed = videoMixer_->mixStreams(rawVideoFrame_, NULL, totalStreams);
-                //TODO mixing
-                SmartPtr<SmartBuffer> encodedFrame = videoEncoder_->encodeAFrame(rawVideoFrame_[0] );
+                SmartPtr<SmartBuffer> rawFrameMixed = videoMixer_->mixStreams(rawVideoPlanes_, rawVideoStrides_, rawVideoSettings_, totalStreams);
+                SmartPtr<SmartBuffer> encodedFrame = videoEncoder_->encodeAFrame(rawFrameMixed);
                 if ( encodedFrame ) {
                     //TODO causing crash
                     resultFlvPacket = flvOutput_->packageVideoFrame(encodedFrame, videoPts, false); //TODO key frame

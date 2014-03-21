@@ -2,8 +2,7 @@
 #define __VIDEOMIXER_H__
 
 extern "C" {
-#include <libavcodec/avcodec.h>    // required headers
-#include <libavformat/avformat.h>
+#include <libswscale/swscale.h>
 }
 
 #include "fwk/SmartBuffer.h"
@@ -13,11 +12,25 @@ extern "C" {
 class VideoMixer
 {
  public:
-    VideoMixer(VideoStreamSetting* outputSetting) {}
+    VideoMixer(VideoStreamSetting* outputSetting):totalStreams_(0) {
+        memcpy(&outputSetting_, outputSetting, sizeof(VideoStreamSetting));
+        memset(swsCtx_, 0, sizeof(SwsContext*)*MAX_XCODING_INSTANCES);
+    }
+    ~VideoMixer();
+    
     //do the mixing, for now, always mix n* 640*480 buffers into 1 640*480 buffer
-    SmartPtr<SmartBuffer> mixStreams(SmartPtr<SmartBuffer>* buffer, 
+    SmartPtr<SmartBuffer> mixStreams(SmartPtr<SmartBuffer> planes[][3], 
+                                     int strides[][3], 
                                      VideoStreamSetting* settings, 
                                      int totalStreams);
+ private:
+    bool tryToInitSws(VideoStreamSetting* settings, int totalStreams);
+    void releaseSws();
+
+ private:
+    VideoStreamSetting outputSetting_;
+    SwsContext* swsCtx_[MAX_XCODING_INSTANCES];
+    int totalStreams_;
 };
 
 

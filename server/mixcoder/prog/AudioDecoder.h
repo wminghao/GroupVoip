@@ -12,7 +12,7 @@ extern "C" {
 #include "MediaTarget.h"
 
 //audio decoder implementation
-class AudioDecoder:public MediaTarget
+class AudioDecoder
 {
  public:
     //speex settings is always, 16khz, mono, 16bits audio

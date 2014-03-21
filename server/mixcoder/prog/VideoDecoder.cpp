@@ -54,13 +54,12 @@ void VideoDecoder::initDecoder( SmartPtr<SmartBuffer> spspps ) {
     frame_ = avcodec_alloc_frame();
 }
 
-SmartPtr<SmartBuffer> VideoDecoder::newAccessUnit( SmartPtr<AccessUnit> au )
+void VideoDecoder::newAccessUnit( SmartPtr<AccessUnit> au, SmartPtr<SmartBuffer> plane[], int stride[], VideoStreamSetting* vInputSetting)
 {
     assert( au->st == kVideoStreamType );
     assert( au->ct == kAVCVideoPacket );
 
     //it can be a sps-pps header or regular nalu    
-    SmartPtr<SmartBuffer> result = NULL;
     if ( au->sp == kSpsPps ) {
         spspps_ = au->payload;
         initDecoder( spspps_ );
@@ -93,6 +92,16 @@ SmartPtr<SmartBuffer> VideoDecoder::newAccessUnit( SmartPtr<AccessUnit> au )
                     assert(inWidth_ == frame_->width);
                     assert(inHeight_ == frame_->height);
 
+                    //copy 3 planes and 3 strides
+                    plane[0] = new SmartBuffer( frame_->linesize[0]*inHeight_, frame_->data[0]);
+                    plane[1] = new SmartBuffer( frame_->linesize[1]*inHeight_, frame_->data[1]);
+                    plane[2] = new SmartBuffer( frame_->linesize[2]*inHeight_, frame_->data[2]);
+                    memcpy(stride, frame_->linesize, sizeof(int)*3);
+                    vInputSetting->vcid = kAVCVideoPacket;
+                    vInputSetting->width = inWidth_;
+                    vInputSetting->height =inHeight_; 
+
+                    /*
                     //convert from AV_PIX_FMT_YUV420P
                     //3 planes combined into 1 buffer
                     int totalPixels = inWidth_*inHeight_;
@@ -127,8 +136,9 @@ SmartPtr<SmartBuffer> VideoDecoder::newAccessUnit( SmartPtr<AccessUnit> au )
                         offsetInV += bytesPerLineInV;
                         offsetOut += inWidth_/2;
                     }
+                    */
 
-                    fprintf( stderr, "video got pkt size=%d frame size=%d, stride0=%d, stride1=%d, stride2=%d, width=%d, height=%d, format=%d\n", pkt.size, (totalPixels*3)/2, 
+                    fprintf( stderr, "video got pkt size=%d stride0=%d, stride1=%d, stride2=%d, width=%d, height=%d, format=%d\n", pkt.size, 
                              frame_->linesize[0], frame_->linesize[1], frame_->linesize[2],
                              frame_->width, frame_->height, frame_->format);
                 } else {
@@ -141,5 +151,5 @@ SmartPtr<SmartBuffer> VideoDecoder::newAccessUnit( SmartPtr<AccessUnit> au )
             }
         }
     }
-    return result;
+    return;
 }

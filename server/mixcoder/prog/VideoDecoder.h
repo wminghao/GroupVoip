@@ -7,7 +7,7 @@
 #include "MediaTarget.h"
 
 //video decoder implementation, h264 only
-class VideoDecoder : public MediaTarget
+class VideoDecoder
 {
  public:
  VideoDecoder():codec_(NULL), codecCtx_(NULL), frame_(NULL), inWidth_(0), inHeight_(0)
@@ -16,7 +16,8 @@ class VideoDecoder : public MediaTarget
             av_register_all();
         }
     ~VideoDecoder();
-    virtual SmartPtr<SmartBuffer> newAccessUnit( SmartPtr<AccessUnit> );
+    virtual void newAccessUnit( SmartPtr<AccessUnit> au, SmartPtr<SmartBuffer> plane[], int stride[], VideoStreamSetting* vInputSetting);
+
  private:
     void reset();
     void initDecoder( SmartPtr<SmartBuffer> spspps );
