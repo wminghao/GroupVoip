@@ -27,7 +27,7 @@ class VideoEncoder
  public:
     VideoEncoder( VideoStreamSetting* setting, int vBaseLayerBitrate );
     ~VideoEncoder();
-    SmartPtr<SmartBuffer> encodeAFrame(SmartPtr<SmartBuffer> input);
+    SmartPtr<SmartBuffer> encodeAFrame(SmartPtr<SmartBuffer> input, bool* bIsKeyFrame);
 
  private:
     //input settings and output setting are the same

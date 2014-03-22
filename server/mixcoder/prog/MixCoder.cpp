@@ -121,10 +121,11 @@ SmartPtr<SmartBuffer> MixCoder::getOutput()
 
         if ( totalNewStreams > 0 ) {
             if ( curStreamType == kVideoStreamType ) {
+                bool bIsKeyFrame = false;
                 SmartPtr<SmartBuffer> rawFrameMixed = videoMixer_->mixStreams(rawVideoPlanes_, rawVideoStrides_, rawVideoSettings_, totalStreams);
-                SmartPtr<SmartBuffer> encodedFrame = videoEncoder_->encodeAFrame(rawFrameMixed);
+                SmartPtr<SmartBuffer> encodedFrame = videoEncoder_->encodeAFrame(rawFrameMixed, &bIsKeyFrame);
                 if ( encodedFrame ) {
-                    resultFlvPacket = flvOutput_->packageVideoFrame(encodedFrame, videoPts, false); //TODO key frame
+                    resultFlvPacket = flvOutput_->packageVideoFrame(encodedFrame, videoPts, bIsKeyFrame);
                 }
             } else {
                 SmartPtr<SmartBuffer> rawFrameMixed = audioMixer_->mixStreams(rawAudioFrame_, rawAudioSettings_, totalStreams);

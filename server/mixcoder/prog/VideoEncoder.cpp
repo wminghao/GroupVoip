@@ -186,7 +186,7 @@ VideoEncoder::~VideoEncoder()
 #endif
 }
 
-SmartPtr<SmartBuffer> VideoEncoder::encodeAFrame(SmartPtr<SmartBuffer> input)
+SmartPtr<SmartBuffer> VideoEncoder::encodeAFrame(SmartPtr<SmartBuffer> input, bool* bIsKeyFrame)
 {
     SmartPtr<SmartBuffer> result;
     if ( input && input->dataLength() > 0 ) {
@@ -207,6 +207,7 @@ SmartPtr<SmartBuffer> VideoEncoder::encodeAFrame(SmartPtr<SmartBuffer> input)
                     write_ivf_frame_header(outFile_, pkt);
                     (void) fwrite(pkt->data.frame.buf, 1, pkt->data.frame.sz, outFile_);
 #endif
+                    *bIsKeyFrame = (flags == VPX_EFLAG_FORCE_KF); 
                     result = new SmartBuffer(pkt->data.frame.sz, (const char*)pkt->data.frame.buf);
                     fprintf(stderr, "Video Encoded frame size=%ld\r\n", pkt->data.frame.sz);
                     frameOutputCnt_++;
