@@ -103,6 +103,7 @@ typedef struct AudioStreamSetting
     AudioRate ar;
     AudioSize as;
     int ap; //aac or something else, audio property
+    bool bIsValid;// 0 means it's not a valid stream
 }AudioStreamSetting;
 
 typedef struct VideoStreamSetting
@@ -111,6 +112,7 @@ typedef struct VideoStreamSetting
     //always yv12 format, y plane + u plane + v plane in one buffer
     int width;
     int height;
+    bool bIsValid;// 0 means it's not a valid stream
 }VideoStreamSetting;
 
 inline AudioRate getAudioRate(int frequency) {

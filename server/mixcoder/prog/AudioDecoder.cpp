@@ -9,7 +9,7 @@ AudioDecoder::~AudioDecoder()
     free(outputFrame_);
 }
 
-SmartPtr<SmartBuffer> AudioDecoder::newAccessUnit( SmartPtr<AccessUnit> au )
+SmartPtr<SmartBuffer> AudioDecoder::newAccessUnit( SmartPtr<AccessUnit> au , AudioStreamSetting* aInputSetting)
 {
     assert(au->st == kAudioStreamType);
     SmartPtr<SmartBuffer> result;;
@@ -19,6 +19,12 @@ SmartPtr<SmartBuffer> AudioDecoder::newAccessUnit( SmartPtr<AccessUnit> au )
         speex_decode_int(decoder_, &bits_, outputFrame_);
         result = new SmartBuffer( frameSize_ * sizeof(u16), (u8*)outputFrame_);
         fprintf( stderr, "audio got pkt size=%ld frame size=%d\n", au->payload->dataLength(), frameSize_);
+
+        aInputSetting->acid = kSpeex;
+        aInputSetting->at = kSndMono;
+        aInputSetting->ar = k16kHz;
+        aInputSetting->as = kSnd16Bit;
+        aInputSetting->ap = 0;
     }
     return result;
 }

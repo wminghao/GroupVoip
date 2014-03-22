@@ -16,7 +16,7 @@ class VideoDecoder
             av_register_all();
         }
     ~VideoDecoder();
-    virtual void newAccessUnit( SmartPtr<AccessUnit> au, SmartPtr<SmartBuffer> plane[], int stride[], VideoStreamSetting* vInputSetting);
+    virtual bool newAccessUnit( SmartPtr<AccessUnit> au, SmartPtr<SmartBuffer> plane[], int stride[], VideoStreamSetting* vInputSetting);
 
  private:
     void reset();

@@ -35,7 +35,7 @@ class AudioDecoder
     }
     ~AudioDecoder();
     //send it to the decoder
-    virtual SmartPtr<SmartBuffer>  newAccessUnit( SmartPtr<AccessUnit> );
+    virtual SmartPtr<SmartBuffer>  newAccessUnit( SmartPtr<AccessUnit> au, AudioStreamSetting* aInputSetting);
     
  private:
     /*Holds the state of the decoder*/

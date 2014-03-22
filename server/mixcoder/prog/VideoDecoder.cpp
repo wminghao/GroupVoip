@@ -54,8 +54,9 @@ void VideoDecoder::initDecoder( SmartPtr<SmartBuffer> spspps ) {
     frame_ = avcodec_alloc_frame();
 }
 
-void VideoDecoder::newAccessUnit( SmartPtr<AccessUnit> au, SmartPtr<SmartBuffer> plane[], int stride[], VideoStreamSetting* vInputSetting)
+bool VideoDecoder::newAccessUnit( SmartPtr<AccessUnit> au, SmartPtr<SmartBuffer> plane[], int stride[], VideoStreamSetting* vInputSetting)
 {
+    bool bIsSpsPps = false;
     assert( au->st == kVideoStreamType );
     assert( au->ct == kAVCVideoPacket );
 
@@ -66,6 +67,8 @@ void VideoDecoder::newAccessUnit( SmartPtr<AccessUnit> au, SmartPtr<SmartBuffer>
         //TODO parse sps/pps to get width and height, now assume it's 640*480
         inWidth_ = 640;
         inHeight_ = 480;
+
+        bIsSpsPps = true;
         fprintf( stderr, "Video got sps pps, len=%ld\n", spspps_->dataLength());
     } else if( au->sp == kRawData ) {
         assert(inWidth_ && inHeight_);
@@ -96,7 +99,9 @@ void VideoDecoder::newAccessUnit( SmartPtr<AccessUnit> au, SmartPtr<SmartBuffer>
                     plane[0] = new SmartBuffer( frame_->linesize[0]*inHeight_, frame_->data[0]);
                     plane[1] = new SmartBuffer( frame_->linesize[1]*inHeight_, frame_->data[1]);
                     plane[2] = new SmartBuffer( frame_->linesize[2]*inHeight_, frame_->data[2]);
+
                     memcpy(stride, frame_->linesize, sizeof(int)*3);
+
                     vInputSetting->vcid = kAVCVideoPacket;
                     vInputSetting->width = inWidth_;
                     vInputSetting->height =inHeight_; 
@@ -151,5 +156,5 @@ void VideoDecoder::newAccessUnit( SmartPtr<AccessUnit> au, SmartPtr<SmartBuffer>
             }
         }
     }
-    return;
+    return bIsSpsPps;
 }

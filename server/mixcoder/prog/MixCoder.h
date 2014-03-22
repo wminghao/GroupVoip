@@ -79,8 +79,9 @@ class MixCoder
     int rawVideoStrides_[MAX_XCODING_INSTANCES][3];
     VideoStreamSetting rawVideoSettings_[MAX_XCODING_INSTANCES];
 
-
+    //raw audio frame in case data is late to arrive
     SmartPtr<SmartBuffer> rawAudioFrame_[MAX_XCODING_INSTANCES];
+    AudioStreamSetting rawAudioSettings_[MAX_XCODING_INSTANCES];
 };
 
 #endif
