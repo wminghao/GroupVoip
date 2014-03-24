@@ -75,7 +75,7 @@ SmartPtr<SmartBuffer> FLVOutput::packageVideoFrame(SmartPtr<SmartBuffer> videoPa
     data[tl+2] = (u8)((tl>>8)&0xff);  
     data[tl+3] = (u8)(tl&0xff);  
 
-    fprintf( stderr, "====>video frame len=%d, videoDataLen=%d ts=%d\n", tl, videoDataLen, ts);
+    //fprintf( stderr, "====>video frame len=%d, videoDataLen=%d ts=%d\n", tl, videoDataLen, ts);
 
     return videoFrame;
 }
@@ -121,7 +121,7 @@ SmartPtr<SmartBuffer> FLVOutput::packageAudioFrame(SmartPtr<SmartBuffer> audioPa
     data[tl+2] = (u8)((tl>>8)&0xff);    
     data[tl+3] = (u8)(tl&0xff);
 
-    fprintf( stderr, "====>audio frame len=%d, audioDataLen=%d ts=%d\n", tl, audioDataLen, ts);
+    //fprintf( stderr, "====>audio frame len=%d, audioDataLen=%d ts=%d\n", tl, audioDataLen, ts);
 
     return audioFrame;
 }

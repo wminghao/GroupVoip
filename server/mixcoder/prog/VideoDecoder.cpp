@@ -69,7 +69,7 @@ bool VideoDecoder::newAccessUnit( SmartPtr<AccessUnit> au, SmartPtr<SmartBuffer>
         inHeight_ = 480;
 
         bIsSpsPps = true;
-        fprintf( stderr, "Video got sps pps, len=%ld\n", spspps_->dataLength());
+        fprintf( stderr, "Video decoded sps pps, len=%ld\n", spspps_->dataLength());
     } else if( au->sp == kRawData ) {
         assert(inWidth_ && inHeight_);
         if ( spspps_ ) {
@@ -106,44 +106,7 @@ bool VideoDecoder::newAccessUnit( SmartPtr<AccessUnit> au, SmartPtr<SmartBuffer>
                     vInputSetting->width = inWidth_;
                     vInputSetting->height =inHeight_; 
 
-                    /*
-                    //convert from AV_PIX_FMT_YUV420P
-                    //3 planes combined into 1 buffer
-                    int totalPixels = inWidth_*inHeight_;
-                    result = new SmartBuffer( (totalPixels*3)/2 );
-
-                    u8* in = frame_->data[0];
-                    u8* out = result->data();
-                    u32 offsetOut = 0;
-
-                    u32 bytesPerLineInY = frame_->linesize[0];
-                    u32 offsetInY = 0;
-                    for(int i = 0; i < inHeight_; i ++ ) {
-                        memcpy( out+offsetOut, in+offsetInY, inWidth_);
-                        offsetInY += bytesPerLineInY;
-                        offsetOut += inWidth_;
-                    }
-
-                    in = frame_->data[1];
-                    u32 bytesPerLineInU = frame_->linesize[1];
-                    u32 offsetInU = 0;
-                    for(int i = 0; i < inHeight_/2; i ++ ) {
-                        memcpy( out+offsetOut, in+offsetInU, inWidth_/2);
-                        offsetInU += bytesPerLineInU;
-                        offsetOut += inWidth_/2;
-                    }
-
-                    in = frame_->data[2];
-                    u32 bytesPerLineInV = frame_->linesize[2];
-                    u32 offsetInV = 0;
-                    for(int i = 0; i < inHeight_/2; i ++ ) {
-                        memcpy( out+offsetOut, in+offsetInV, inWidth_/2);
-                        offsetInV += bytesPerLineInV;
-                        offsetOut += inWidth_/2;
-                    }
-                    */
-
-                    fprintf( stderr, "video got pkt size=%d stride0=%d, stride1=%d, stride2=%d, width=%d, height=%d, format=%d\n", pkt.size, 
+                    fprintf( stderr, "video decoded pkt size=%d stride0=%d, stride1=%d, stride2=%d, width=%d, height=%d, format=%d\n", pkt.size, 
                              frame_->linesize[0], frame_->linesize[1], frame_->linesize[2],
                              frame_->width, frame_->height, frame_->format);
                 } else {
