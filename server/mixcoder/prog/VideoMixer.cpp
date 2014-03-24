@@ -30,7 +30,6 @@ SmartPtr<SmartBuffer> VideoMixer::mixStreams(SmartPtr<SmartBuffer> planes[][3],
         SmartPtr<SmartBuffer> scaledVideoPlanes[MAX_XCODING_INSTANCES][3];
         int scaledVideoStrides[MAX_XCODING_INSTANCES][3];
 
-        int curStreamId = -1;
         for(int i=0; i<MAX_XCODING_INSTANCES; i++) {
             if( settings[i].bIsValid ) { 
                 scaledVideoPlanes[i][0] = new SmartBuffer( scaledWidth* scaledHeight );
@@ -51,35 +50,56 @@ SmartPtr<SmartBuffer> VideoMixer::mixStreams(SmartPtr<SmartBuffer> planes[][3],
                 scaledPlanes[2] = scaledVideoPlanes[i][2]->data();
                 sws_scale( swsCtx_[i], inputPlanes, strides[i], 0, settings[i].height,
                            scaledPlanes, scaledVideoStrides[i]);
-                curStreamId = i;
             }
         }
 
-        if(totalStreams == 1 && curStreamId >= 0 ) {
-            int outputWidth = outputSetting_.width;
-            int outputHeight = outputSetting_.height;
-            result = new SmartBuffer( outputWidth*outputHeight*3/2 );
-            u8* out = result->data();
-            u32 offsetOut = 0;
+        if(totalStreams == 1 ) {
+            int curStreamId = -1;
+            for(int i=0; i<MAX_XCODING_INSTANCES; i++) {
+                if( settings[i].bIsValid ) { 
+                    curStreamId = i;
+                    break;
+                }
+            }
+            if ( curStreamId != -1 ) {
+                int outputWidth = outputSetting_.width;
+                int outputHeight = outputSetting_.height;
+                result = new SmartBuffer( outputWidth*outputHeight*3/2 );
+                u8* out = result->data();
+                u32 offsetOut = 0;
 
-            //convert from AV_PIX_FMT_YUV420P
-            //3 planes combined into 1 buffer
-            u8* in = scaledVideoPlanes[curStreamId][0]->data();            
-            u32 bytesPerLineInY = scaledVideoStrides[curStreamId][0];                                                                                                                            
-            u32 offsetInY = 0;                                                                                                                                                                                         for(int i = 0; i < outputHeight; i ++ ) {                                                                                                                                                     
-                memcpy( out+offsetOut, in+offsetInY, outputWidth);                                                                                                                                       
-                offsetInY += bytesPerLineInY;                                                                                                                                                             
-                offsetOut += outputWidth;                                                                                                                                                                 
-            }                                                                                                                                                                                              
-            in = scaledVideoPlanes[curStreamId][1]->data();
-            u32 bytesPerLineInU = scaledVideoStrides[curStreamId][1];
-            u32 offsetInU = 0;                                                                                                                                                                                         for(int i = 0; i < outputHeight/2; i ++ ) {                                                                                                                                                                    memcpy( out+offsetOut, in+offsetInU, outputWidth/2);                                                                                                                                                       offsetInU += bytesPerLineInU;
-                offsetOut += outputWidth/2;                                                                                                                                                               
-            }                                                                                                                                                                                                          in = scaledVideoPlanes[curStreamId][2]->data();
-            u32 bytesPerLineInV = scaledVideoStrides[curStreamId][2];
-            u32 offsetInV = 0;                                                                                                                                                                                         for(int i = 0; i < outputHeight/2; i ++ ) {                                                                                                                                                   
-                memcpy( out+offsetOut, in+offsetInV, outputWidth/2);                                                                                                                                                       offsetInV += bytesPerLineInV;                                                                                                                                                                              offsetOut += outputWidth/2;                                                                                                                                                                            }
-        } else {
+                //convert from AV_PIX_FMT_YUV420P
+                //3 planes combined into 1 buffer
+                u8* in = scaledVideoPlanes[curStreamId][0]->data();            
+                u32 bytesPerLineInY = scaledVideoStrides[curStreamId][0];                                                                                                                            
+                u32 offsetInY = 0;                                                                                                                                                                                         
+                for(int i = 0; i < outputHeight; i ++ ) {          
+                    memcpy( out+offsetOut, in+offsetInY, outputWidth);                                                                                                                                       
+                    offsetInY += bytesPerLineInY;                                                                                                                                                             
+                    offsetOut += outputWidth;                                                                                                                                                                 
+                }                                                                                                                                                                                              
+                in = scaledVideoPlanes[curStreamId][1]->data();
+                u32 bytesPerLineInU = scaledVideoStrides[curStreamId][1];
+                u32 offsetInU = 0;                                                                                                                                                                                         
+                for(int i = 0; i < outputHeight/2; i ++ ) {
+                    memcpy( out+offsetOut, in+offsetInU, outputWidth/2);                                                                
+                    offsetInU += bytesPerLineInU;
+                    offsetOut += outputWidth/2;                                                                                                                                                               
+                }                                                       
+                in = scaledVideoPlanes[curStreamId][2]->data();
+                u32 bytesPerLineInV = scaledVideoStrides[curStreamId][2];
+                u32 offsetInV = 0; 
+                for(int i = 0; i < outputHeight/2; i ++ ) {                                                                                                                                                   
+                    memcpy( out+offsetOut, in+offsetInV, outputWidth/2);
+                    offsetInV += bytesPerLineInV;
+                    offsetOut += outputWidth/2;
+                }
+            }
+        } else if( totalStreams == 2 ) {
+            for(int i=0; i<MAX_XCODING_INSTANCES; i++) {
+                if( settings[i].bIsValid ) {
+                }
+            }            
             //TODO do mixing for other cases
         }
     }
@@ -106,30 +126,16 @@ bool VideoMixer::tryToInitSws(VideoStreamSetting* settings, int totalStreams)
 
     if( mappingToScalingWidth(totalStreams_) != outputWidth ) {
         releaseSws();
-         for(int i=0;  i<MAX_XCODING_INSTANCES; i++) {
-            if ( settings[i].bIsValid ) {
-                swsCtx_[i] = sws_getCachedContext( swsCtx_[i], settings[i].width, settings[i].height, PIX_FMT_YUV420P,
-                                                   outputWidth, outputHeight, PIX_FMT_YUV420P,
-                                                   SWS_BICUBIC, 0, 0, 0 );
-                if( !swsCtx_[i] ) {
-                    fprintf( stderr, "FAILED to create swscale context, inWidth=%d, inHeight=%d, outWith=%d, outHeight=%d\n", settings[i].width, settings[i].height, outputWidth, outputHeight);
-                    assert(0);
-                    ret = false;
-                }
-            }
-        }
-    } else {
-        //else a new stream just became valid
-        for(int i=0;  i<MAX_XCODING_INSTANCES; i++) {
-            if ( settings[i].bIsValid && !swsCtx_[i] ) {
-                swsCtx_[i] = sws_getCachedContext( swsCtx_[i], settings[i].width, settings[i].height, PIX_FMT_YUV420P,
-                                                   outputWidth, outputHeight, PIX_FMT_YUV420P,
-                                                   SWS_BICUBIC, 0, 0, 0 );
-                if( !swsCtx_[i] ) {
-                    fprintf( stderr, "FAILED2 to create swscale context, inWidth=%d, inHeight=%d, outWith=%d, outHeight=%d\n", settings[i].width, settings[i].height, outputWidth, outputHeight);
-                    assert(0);
-                    ret = false;
-                }
+    }
+    for(int i=0;  i<MAX_XCODING_INSTANCES; i++) {
+        if ( settings[i].bIsValid && !swsCtx_[i] ) {
+            swsCtx_[i] = sws_getCachedContext( swsCtx_[i], settings[i].width, settings[i].height, PIX_FMT_YUV420P,
+                                               outputWidth, outputHeight, PIX_FMT_YUV420P,
+                                               SWS_BICUBIC, 0, 0, 0 );
+            if( !swsCtx_[i] ) {
+                fprintf( stderr, "FAILED to create swscale context, inWidth=%d, inHeight=%d, outWith=%d, outHeight=%d\n", settings[i].width, settings[i].height, outputWidth, outputHeight);
+                assert(0);
+                ret = false;
             }
         }
     }

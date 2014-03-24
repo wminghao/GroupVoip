@@ -82,6 +82,7 @@ class FLVSegmentParser:public FLVSegmentParserDelegate
         SEARCHING_STREAM_HEADER,
         SEARCHING_STREAM_DATA
     }FLVSegmentParsingState;
+
     FLVSegmentParsingState parsingState_;
     string curBuf_;
     u32 curSegTagSize_;

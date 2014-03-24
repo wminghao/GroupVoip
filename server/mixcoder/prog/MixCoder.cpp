@@ -94,7 +94,6 @@ SmartPtr<SmartBuffer> MixCoder::getOutput()
     
         //TODO what's the difference here
         int totalStreams = 0;
-        int totalNewStreams = 0;
         for( int i = 0; i < MAX_XCODING_INSTANCES; i ++ ) {
             bool bIsStreamStarted = flvSegParser_->isStreamOnlineStarted(curStreamType, i );
             bool bIsSpsPps = false;
@@ -106,20 +105,24 @@ SmartPtr<SmartBuffer> MixCoder::getOutput()
                     } else {
                         rawAudioFrame_[i] = audioDecoder_[i]->newAccessUnit(au, &rawAudioSettings_[i]);
                     }
-                    totalNewStreams++;
                 } else {
                     //TODO not ready?
                 }
-                totalStreams++;
             }
             if ( curStreamType == kVideoStreamType ) {
                 rawVideoSettings_[i].bIsValid = bIsStreamStarted && !bIsSpsPps;
+                if( rawVideoSettings_[i].bIsValid ) {
+                    totalStreams++;
+                }
             } else {
                 rawAudioSettings_[i].bIsValid = bIsStreamStarted && !bIsSpsPps;
+                if( rawVideoSettings_[i].bIsValid ) {
+                    totalStreams++;
+                }
             }
         }
 
-        if ( totalNewStreams > 0 ) {
+        if ( totalStreams > 0 ) {
             if ( curStreamType == kVideoStreamType ) {
                 bool bIsKeyFrame = false;
                 SmartPtr<SmartBuffer> rawFrameMixed = videoMixer_->mixStreams(rawVideoPlanes_, rawVideoStrides_, rawVideoSettings_, totalStreams);
