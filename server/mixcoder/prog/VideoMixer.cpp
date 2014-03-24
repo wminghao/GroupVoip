@@ -100,7 +100,10 @@ SmartPtr<SmartBuffer> VideoMixer::mixStreams(SmartPtr<SmartBuffer> planes[][3],
                 int startingOffsetY = 0;
                 int startingOffsetUV = 0;
                 //somehow it's green
-                memset(out, 0, outputWidth*outputHeight*3/2);
+                int blackY = 16;
+                memset(out, blackY, outputWidth*outputHeight);
+                int blackUV = 128;
+                memset(out+outputWidth*outputHeight, blackUV, outputWidth*outputHeight/2);
                 
                 for(int i=0; i<totalStreams; i++) {
 
