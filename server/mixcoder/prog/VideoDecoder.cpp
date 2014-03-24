@@ -56,7 +56,7 @@ void VideoDecoder::initDecoder( SmartPtr<SmartBuffer> spspps ) {
 
 bool VideoDecoder::newAccessUnit( SmartPtr<AccessUnit> au, SmartPtr<SmartBuffer> plane[], int stride[], VideoStreamSetting* vInputSetting)
 {
-    bool bIsSpsPps = false;
+    bool bIsValidFrame = false;
     assert( au->st == kVideoStreamType );
     assert( au->ct == kAVCVideoPacket );
 
@@ -68,7 +68,6 @@ bool VideoDecoder::newAccessUnit( SmartPtr<AccessUnit> au, SmartPtr<SmartBuffer>
         inWidth_ = 640;
         inHeight_ = 480;
 
-        bIsSpsPps = true;
         fprintf( stderr, "Video decoded sps pps, len=%ld\n", spspps_->dataLength());
     } else if( au->sp == kRawData ) {
         assert(inWidth_ && inHeight_);
@@ -105,6 +104,8 @@ bool VideoDecoder::newAccessUnit( SmartPtr<AccessUnit> au, SmartPtr<SmartBuffer>
                     vInputSetting->vcid = kAVCVideoPacket;
                     vInputSetting->width = inWidth_;
                     vInputSetting->height =inHeight_; 
+                    bIsValidFrame = true;
+                    bHasFirstFrameStarted = true;
 
                     fprintf( stderr, "video decoded pkt size=%d stride0=%d, stride1=%d, stride2=%d, width=%d, height=%d, format=%d\n", pkt.size, 
                              frame_->linesize[0], frame_->linesize[1], frame_->linesize[2],
@@ -119,5 +120,5 @@ bool VideoDecoder::newAccessUnit( SmartPtr<AccessUnit> au, SmartPtr<SmartBuffer>
             }
         }
     }
-    return bIsSpsPps;
+    return bIsValidFrame;
 }

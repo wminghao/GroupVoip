@@ -30,6 +30,9 @@ SmartPtr<SmartBuffer> VideoMixer::mixStreams(SmartPtr<SmartBuffer> planes[][3],
         SmartPtr<SmartBuffer> scaledVideoPlanes[MAX_XCODING_INSTANCES][3];
         int scaledVideoStrides[MAX_XCODING_INSTANCES][3];
 
+        int validStreamId[totalStreams];
+        int validStreamIdIndex = 0;
+        
         for(int i=0; i<MAX_XCODING_INSTANCES; i++) {
             if( settings[i].bIsValid ) { 
                 scaledVideoPlanes[i][0] = new SmartBuffer( scaledWidth* scaledHeight );
@@ -50,24 +53,23 @@ SmartPtr<SmartBuffer> VideoMixer::mixStreams(SmartPtr<SmartBuffer> planes[][3],
                 scaledPlanes[2] = scaledVideoPlanes[i][2]->data();
                 sws_scale( swsCtx_[i], inputPlanes, strides[i], 0, settings[i].height,
                            scaledPlanes, scaledVideoStrides[i]);
+                validStreamId[validStreamIdIndex++] = i;
+                assert(validStreamIdIndex <= totalStreams);
             }
         }
+        assert( validStreamIdIndex == totalStreams );
 
-        if(totalStreams == 1 ) {
-            int curStreamId = -1;
-            for(int i=0; i<MAX_XCODING_INSTANCES; i++) {
-                if( settings[i].bIsValid ) { 
-                    curStreamId = i;
-                    break;
-                }
-            }
-            if ( curStreamId != -1 ) {
-                int outputWidth = outputSetting_.width;
-                int outputHeight = outputSetting_.height;
-                result = new SmartBuffer( outputWidth*outputHeight*3/2 );
-                u8* out = result->data();
-                u32 offsetOut = 0;
+        if ( totalStreams > 0 ) {
+            int outputWidth = outputSetting_.width;
+            int outputHeight = outputSetting_.height;
+            result = new SmartBuffer( outputWidth*outputHeight*3/2 );
+            u8* out = result->data();
+            u32 offsetOut = 0;
 
+            if( totalStreams == 1 ) {
+                int curStreamId = validStreamId[0];
+                assert( curStreamId != -1 );
+                    
                 //convert from AV_PIX_FMT_YUV420P
                 //3 planes combined into 1 buffer
                 u8* in = scaledVideoPlanes[curStreamId][0]->data();            
@@ -94,13 +96,42 @@ SmartPtr<SmartBuffer> VideoMixer::mixStreams(SmartPtr<SmartBuffer> planes[][3],
                     offsetInV += bytesPerLineInV;
                     offsetOut += outputWidth/2;
                 }
-            }
-        } else if( totalStreams == 2 ) {
-            for(int i=0; i<MAX_XCODING_INSTANCES; i++) {
-                if( settings[i].bIsValid ) {
+            } else if( totalStreams == 2 ) {                
+                int startingOffset = outputWidth*outputHeight/4;
+                for(int i=0; i<totalStreams; i++) {
+                    int curStreamId = validStreamId[i];
+                    //convert from AV_PIX_FMT_YUV420P
+                    //3 planes combined into 1 buffer
+                    u8* in = scaledVideoPlanes[curStreamId][0]->data();            
+                    u32 bytesPerLineInY = scaledVideoStrides[curStreamId][0];                                                                                                                            
+                    u32 offsetInY = 0;                                                                                                                                                                                         
+                    for(int i = 0; i < scaledHeight; i ++ ) {          
+                        memcpy( out+offsetOut+startingOffset, in+offsetInY, scaledWidth);
+                        offsetInY += bytesPerLineInY;                                                                                                                                                             
+                        offsetOut += outputWidth;                                                                                                                                                                 
+                    }                                                                                                                                                                                              
+                    in = scaledVideoPlanes[curStreamId][1]->data();
+                    u32 bytesPerLineInU = scaledVideoStrides[curStreamId][1];
+                    u32 offsetInU = 0;                                                                                                                                                                                         
+                    for(int i = 0; i < scaledHeight/2; i ++ ) {
+                        memcpy( out+offsetOut+startingOffset, in+offsetInU, scaledWidth/2);                                                                
+                        offsetInU += bytesPerLineInU;
+                        offsetOut += outputWidth/2;                                                                                                                                                               
+                    }                                                       
+                    in = scaledVideoPlanes[curStreamId][2]->data();
+                    u32 bytesPerLineInV = scaledVideoStrides[curStreamId][2];
+                    u32 offsetInV = 0; 
+                    for(int i = 0; i < scaledHeight/2; i ++ ) {                                                                                                                                                   
+                        memcpy( out+offsetOut+startingOffset, in+offsetInV, scaledWidth/2);
+                        offsetInV += bytesPerLineInV;
+                        offsetOut += outputWidth/2;
+                    }
+                    startingOffset += scaledWidth;
+                    offsetOut = 0;
                 }
-            }            
-            //TODO do mixing for other cases
+            } else {
+                //TODO do mixing for other cases
+            }
         }
     }
     return result;

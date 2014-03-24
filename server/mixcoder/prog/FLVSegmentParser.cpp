@@ -96,8 +96,7 @@ bool FLVSegmentParser::readData(SmartPtr<SmartBuffer> input)
                 if ( curBuf_.size() >= 4 ) {
                     u32 streamMask;
                     memcpy(&streamMask, curBuf_.data(), sizeof(u32));
-                    //fprintf(stderr, "---streamMask=%d\r\n", streamMask);
-
+                    
                     //handle mask here 
                     numStreams_ = count_bits(streamMask);
                     assert(numStreams_ < (u32)MAX_XCODING_INSTANCES);
@@ -112,6 +111,7 @@ bool FLVSegmentParser::readData(SmartPtr<SmartBuffer> input)
                             if ( audioStreamStatus_[index] == kStreamOffline ) {
                                 audioStreamStatus_[index] = kStreamOnlineNotStarted;
                             }
+                            //fprintf(stderr, "---streamMask index=%d, numStreams=%d\r\n", index, numStreams_);
                         } else {
                             videoStreamStatus_[index] = kStreamOffline;
                             audioStreamStatus_[index] = kStreamOffline;
@@ -181,14 +181,18 @@ SmartPtr<AccessUnit> FLVSegmentParser::getNextFLVFrame(u32 index, StreamType str
     assert ( index < numStreams_ );
     SmartPtr<AccessUnit> au;
     if ( streamType == kVideoStreamType ) {
-        au = videoQueue_[index].front();
-        if ( au ) {
-            videoQueue_[index].pop();
+        if ( videoQueue_[index].size() > 0 ) {
+            au = videoQueue_[index].front();
+            if ( au ) {
+                videoQueue_[index].pop();
+            }
         }
     } else if( streamType == kAudioStreamType ){
-        au = audioQueue_[index].front();
-        if ( au ) {
-            audioQueue_[index].pop();
+        if ( audioQueue_[index].size() > 0 ) {
+            au = audioQueue_[index].front();
+            if ( au ) {
+                audioQueue_[index].pop();
+            }
         }
     }
     return au;

@@ -29,6 +29,7 @@ bool doWrite( int fd, const void *buf, size_t len ) {
 long runTest(FILE* fd1, int totalFlvChunks1, FILE* fd2, int totalFlvChunks2)
 {
     int totalFlvChunks = (totalFlvChunks1<totalFlvChunks2)?totalFlvChunks1:totalFlvChunks2;
+
     for(int i = 0; i < totalFlvChunks; i++) {
         unsigned char bigBuf[FIXED_DATA_SIZE*2+7+5*2];
         unsigned int bufLen = FIXED_DATA_SIZE;
@@ -57,7 +58,7 @@ long runTest(FILE* fd1, int totalFlvChunks1, FILE* fd2, int totalFlvChunks2)
         fread((char*)buffer+sizeof(streamId)+sizeof(unsigned int), 1, bufLen, fd2);
         buffer += (sizeof(streamId)+sizeof(unsigned int)+bufLen);
 
-        doWrite(1, buffer, sizeof(buffer));
+        doWrite(1, bigBuf, sizeof(bigBuf));
     }    
     return 1;
 }

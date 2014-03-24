@@ -10,14 +10,14 @@
 class VideoDecoder
 {
  public:
- VideoDecoder():codec_(NULL), codecCtx_(NULL), frame_(NULL), inWidth_(0), inHeight_(0)
+ VideoDecoder():codec_(NULL), codecCtx_(NULL), frame_(NULL), inWidth_(0), inHeight_(0), bHasFirstFrameStarted(false)
         {
             //avc decoder
             av_register_all();
         }
     ~VideoDecoder();
     virtual bool newAccessUnit( SmartPtr<AccessUnit> au, SmartPtr<SmartBuffer> plane[], int stride[], VideoStreamSetting* vInputSetting);
-
+    bool hasFirstFrameDecoded() { return bHasFirstFrameStarted; }
  private:
     void reset();
     void initDecoder( SmartPtr<SmartBuffer> spspps );
@@ -30,6 +30,7 @@ class VideoDecoder
 
     int inWidth_;
     int inHeight_;
+    bool bHasFirstFrameStarted;
 
     SmartPtr<SmartBuffer> spspps_;
 };
