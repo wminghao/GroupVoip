@@ -78,14 +78,21 @@ void FLVParser::parseNextFLVFrame( string& strFlvTag )
     tsUnion.timestampStr[1] = tempStr[1];
     tsUnion.timestampStr[2] = tempStr[0];
     tsUnion.timestampStr[3] = tempByte;
-    accessUnit->pts = accessUnit->dts = tsUnion.timestamp;
+
+    //if there is NO global timestamp, we use a relative timestamp to re-adjust the clock
+    if( MAX_U32 == relTimeStampOffset_ ) {
+        u64 curEpocTime = getEpocTime();
+        assert( curEpocTime > startEpocTime_ );
+        relTimeStampOffset_ = ( curEpocTime - startEpocTime_ ) - tsUnion.timestamp;
+    }
+    accessUnit->pts = accessUnit->dts = tsUnion.timestamp + relTimeStampOffset_;
     
     //skip 3 byte
     bsParser.readBytes(3);
     dataSize -= 7;
 
-    fprintf(stderr, "---streamType=%d, flvTagSize=%d, pts=%d\r\n", curStreamType_, curFlvTagSize_, (u32)accessUnit->pts );
-    
+    fprintf(stderr, "---streamType=%d, flvTagSize=%d, pts=%d, relTimeStampOffset_=%d\r\n", curStreamType_, curFlvTagSize_, (u32)accessUnit->pts, relTimeStampOffset_ );
+
     if ( dataSize > 0 ) {
         switch ( accessUnit->st ) {
         case kVideoStreamType:

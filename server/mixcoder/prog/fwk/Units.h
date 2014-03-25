@@ -19,6 +19,8 @@ inline u32 MIN(u32 a, u32 b) {
     return a < b? a : b;
 }
 
+#define MAX_U32 0xffffffff
+
 #ifdef DEBUG
 #include <assert.h>
 #ifdef ANDROID
