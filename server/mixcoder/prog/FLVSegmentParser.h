@@ -33,13 +33,13 @@ using namespace std;
 //    for video, there could be frame drop, if the TARGET framerate is 30 fps, (timestamp diff is no bigger than 33.33 ms)
 //        Every 33.33ms, video data pops out as well, whether there is data or not in the queue, 
 //        if there is no data, mixer will reuse the previous frame to mix it, if there is no previous frame(in the beginning), it will fill with blank.
-//    TODO: Will the timestamp be adjusted???
+// Timestamp must be adjusted to be the same as the 1st stream's timestamp
 ///////////////////////////////////
 
 class FLVSegmentParser:public FLVSegmentParserDelegate
 {
  public:
- FLVSegmentParser(u32 targetVideoFrameRate): parsingState_(SEARCHING_SEGHEADER),
+    FLVSegmentParser(u32 targetVideoFrameRate): parsingState_(SEARCHING_SEGHEADER),
         curSegTagSize_(0), curStreamId_(0), curStreamLen_(0), curStreamCnt_(0),
         numStreams_(0), targetVideoFrameRate_(targetVideoFrameRate) 
         {
