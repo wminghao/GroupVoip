@@ -32,10 +32,14 @@ class AudioDecoder
 
         speex_decoder_ctl(decoder_, SPEEX_GET_FRAME_SIZE, &frameSize_);  
         outputFrame_ = (short*)malloc(sizeof(short)*frameSize_);
+
+        hasFirstFrameDecoded_ = false;
     }
     ~AudioDecoder();
     //send it to the decoder
     virtual SmartPtr<SmartBuffer>  newAccessUnit( SmartPtr<AccessUnit> au, AudioStreamSetting* aInputSetting);
+
+    bool hasFirstFrameDecoded(){ return hasFirstFrameDecoded_; }
     
  private:
     /*Holds the state of the decoder*/
@@ -46,5 +50,7 @@ class AudioDecoder
     int frameSize_;
 
     AudioStreamSetting setting_;
+
+    bool hasFirstFrameDecoded_;
 };
 #endif

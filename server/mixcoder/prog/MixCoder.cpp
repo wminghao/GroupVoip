@@ -92,53 +92,65 @@ SmartPtr<SmartBuffer> MixCoder::getOutput()
     if ( curStreamType != kUnknownStreamType ) {
         //fprintf( stderr, "------curStreamType=%d, audioPts=%d, videoPts=%d\n", curStreamType, audioPts, videoPts );
     
-        //TODO what's the difference here
         int totalStreams = 0;
-        fprintf( stderr, "------begin iteration\n" );
-        for( int i = 0; i < MAX_XCODING_INSTANCES; i ++ ) {
-            bool bIsStreamStarted = flvSegParser_->isStreamOnlineStarted(curStreamType, i );
-            bool bIsValidFrame = false;
-            if( bIsStreamStarted ) {
-                SmartPtr<AccessUnit> au = flvSegParser_->getNextFLVFrame(i, curStreamType);
-                if ( au ) {
-                    if ( curStreamType == kVideoStreamType ) {
+        //fprintf( stderr, "------begin iteration\n" );
+        if ( curStreamType == kVideoStreamType ) {
+            for( int i = 0; i < MAX_XCODING_INSTANCES; i ++ ) {
+                bool bIsStreamStarted = flvSegParser_->isStreamOnlineStarted(curStreamType, i );
+                bool bIsValidFrame = false;
+                if( bIsStreamStarted ) {
+                    SmartPtr<AccessUnit> au = flvSegParser_->getNextFLVFrame(i, curStreamType);
+                    if ( au ) {
                         bIsValidFrame = videoDecoder_[i]->newAccessUnit(au, rawVideoPlanes_[i], rawVideoStrides_[i], &rawVideoSettings_[i]); 
-                        fprintf( stderr, "------i = %d. bIsValidFrame=%d\n", i, bIsValidFrame );
+                        //fprintf( stderr, "------i = %d. bIsValidFrame=%d\n", i, bIsValidFrame );
                     } else {
-                        rawAudioFrame_[i] = audioDecoder_[i]->newAccessUnit(au, &rawAudioSettings_[i]);
-                    }
-                } else {
-                    //no frame generated, and never has any frames generated before
-                    if ( curStreamType == kVideoStreamType ) {
+                        //if no frame generated, and never has any frames generated before, do nothing, 
+                        //else use the cached video frame 
                         if( videoDecoder_[i]->hasFirstFrameDecoded()) {
                             bIsValidFrame = true; //use the cached frame
                         }
                     }
                 }
-            }
-            if ( curStreamType == kVideoStreamType ) {
                 rawVideoSettings_[i].bIsValid = bIsStreamStarted && bIsValidFrame;
                 if( rawVideoSettings_[i].bIsValid ) {
                     totalStreams++;
                 }
-            } else {
-                rawAudioSettings_[i].bIsValid = bIsStreamStarted && bIsValidFrame;
-                if( rawVideoSettings_[i].bIsValid ) {
-                    totalStreams++;
-                }
             }
-        }
 
-        if ( totalStreams > 0 ) {
-            if ( curStreamType == kVideoStreamType ) {
+            if ( totalStreams > 0 ) {
                 bool bIsKeyFrame = false;
-                fprintf( stderr, "------totalStreams = %d\n", totalStreams );
+                fprintf( stderr, "------totalVideoStreams = %d\n", totalStreams );
                 SmartPtr<SmartBuffer> rawFrameMixed = videoMixer_->mixStreams(rawVideoPlanes_, rawVideoStrides_, rawVideoSettings_, totalStreams);
                 SmartPtr<SmartBuffer> encodedFrame = videoEncoder_->encodeAFrame(rawFrameMixed, &bIsKeyFrame);
                 if ( encodedFrame ) {
                     resultFlvPacket = flvOutput_->packageVideoFrame(encodedFrame, videoPts, bIsKeyFrame);
                 }
-            } else {
+            } 
+        } else {
+            for( int i = 0; i < MAX_XCODING_INSTANCES; i ++ ) {
+                bool bIsStreamStarted = flvSegParser_->isStreamOnlineStarted(curStreamType, i );
+                bool bIsValidFrame = false;
+                if( bIsStreamStarted ) {
+                    SmartPtr<AccessUnit> au = flvSegParser_->getNextFLVFrame(i, curStreamType);
+                    if ( au ) {
+                        rawAudioFrame_[i] = audioDecoder_[i]->newAccessUnit(au, &rawAudioSettings_[i]);
+                        bIsValidFrame = true;
+                    } else {
+                        //if no frame generated, and never has any frames generated before, do nothing, 
+                        //else use the cached audio frame 
+                        if( audioDecoder_[i]->hasFirstFrameDecoded()) {
+                            bIsValidFrame = true; //use the cached frame
+                        } 
+                    }
+                }
+                rawAudioSettings_[i].bIsValid = bIsStreamStarted && bIsValidFrame;
+                if( rawAudioSettings_[i].bIsValid ) {
+                    totalStreams++;
+                }
+            }
+
+            if ( totalStreams > 0 ) {
+                fprintf( stderr, "------totalAudioStreams = %d\n", totalStreams );
                 SmartPtr<SmartBuffer> rawFrameMixed = audioMixer_->mixStreams(rawAudioFrame_, rawAudioSettings_, totalStreams);
                 SmartPtr<SmartBuffer> encodedFrame = audioEncoder_->encodeAFrame(rawFrameMixed);
                 if ( encodedFrame ) {

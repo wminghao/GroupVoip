@@ -25,6 +25,8 @@ SmartPtr<SmartBuffer> AudioDecoder::newAccessUnit( SmartPtr<AccessUnit> au , Aud
         aInputSetting->ar = k16kHz;
         aInputSetting->as = kSnd16Bit;
         aInputSetting->ap = 0;
+
+        hasFirstFrameDecoded_ = true;
     }
     return result;
 }
