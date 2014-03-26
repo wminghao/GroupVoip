@@ -2,7 +2,7 @@
 #ifndef __CODECINFOCOMMON_H__
 #define __CODECINFOCOMMON_H__
 
-const int MAX_XCODING_INSTANCES = 4;
+const int MAX_XCODING_INSTANCES = 32;
 
 enum specialProperty {
     kRawData, //nalu
@@ -121,6 +121,14 @@ typedef struct VideoStreamSetting
     int height;
     bool bIsValid;// 0 means it's not a valid stream
 }VideoStreamSetting;
+
+typedef struct VideoRect
+{
+    int x;
+    int y;
+    int width;
+    int height;
+}VideoRect;
 
 inline AudioRate getAudioRate(int frequency) {
     if ( frequency == 5500) {

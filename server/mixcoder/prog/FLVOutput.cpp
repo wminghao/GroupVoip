@@ -35,8 +35,13 @@ SmartPtr<SmartBuffer> FLVOutput::newHeader()
     return header;
 }
 
-SmartPtr<SmartBuffer> FLVOutput::packageVideoFrame(SmartPtr<SmartBuffer> videoPacket, u32 ts, bool bIsKeyFrame, int x, int y, int width, int height)
+SmartPtr<SmartBuffer> FLVOutput::packageVideoFrame(SmartPtr<SmartBuffer> videoPacket, u32 ts, bool bIsKeyFrame, VideoRect* videoRect)
 {
+    int x = videoRect->x;
+    int y = videoRect->y;
+    int width = videoRect->width;
+    int height = videoRect->height;
+
     //then build video header
     u32 videoHeaderLen = 11;
     u32 videoDataLen = videoPacket->dataLength() + 9;
@@ -87,7 +92,20 @@ SmartPtr<SmartBuffer> FLVOutput::packageVideoFrame(SmartPtr<SmartBuffer> videoPa
 
     //fprintf( stderr, "====>video frame len=%d, videoDataLen=%d ts=%d\n", tl, videoDataLen, ts);
 
-    return videoFrame;
+    if( !flvHeaderSent_ ) {
+        SmartPtr<SmartBuffer> header = newHeader();
+        int totalLen = header->dataLength() + videoFrame->dataLength();
+        
+        SmartPtr<SmartBuffer> result = new SmartBuffer(totalLen);
+        u8* data = result->data();
+        memcpy(data, header->data(), header->dataLength());
+        memcpy(data + header->dataLength(), videoFrame->data(), videoFrame->dataLength());
+
+        flvHeaderSent_  = true;
+        return result;
+    } else {
+        return videoFrame;
+    }
 }
 
 SmartPtr<SmartBuffer> FLVOutput::packageAudioFrame(SmartPtr<SmartBuffer> audioPacket, u32 ts)
@@ -132,6 +150,18 @@ SmartPtr<SmartBuffer> FLVOutput::packageAudioFrame(SmartPtr<SmartBuffer> audioPa
     data[tl+3] = (u8)(tl&0xff);
 
     //fprintf( stderr, "====>audio frame len=%d, audioDataLen=%d ts=%d\n", tl, audioDataLen, ts);
+    if( !flvHeaderSent_ ) {
+        SmartPtr<SmartBuffer> header = newHeader();
+        int totalLen = header->dataLength() + audioFrame->dataLength();
+        
+        SmartPtr<SmartBuffer> result = new SmartBuffer(totalLen);
+        u8* data = result->data();
+        memcpy(data, header->data(), header->dataLength());
+        memcpy(data + header->dataLength(), audioFrame->data(), audioFrame->dataLength());
 
-    return audioFrame;
+        flvHeaderSent_  = true;
+        return result;
+    } else {
+        return audioFrame;
+    }
 }
