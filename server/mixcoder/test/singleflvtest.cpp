@@ -34,18 +34,18 @@ long runTest(FILE* fd, int totalFlvChunks, int flvChunkStartPos)
       unsigned int bufLen = FIXED_DATA_SIZE;
 
       //first send the segHeader
-      unsigned char metaData []= {'S', 'E', 'G'};
+      unsigned char metaData []= {'S', 'G', 'I'};
       memcpy(buffer, metaData, sizeof(metaData));
       unsigned int mask1Stream = 0x01;
       memcpy(buffer+sizeof(metaData), &mask1Stream, sizeof(unsigned int));
 
       //then send the stream heaer
-      unsigned char streamId[] = {0};
-      memcpy(buffer+sizeof(metaData)+sizeof(unsigned int), &streamId, sizeof(streamId));
-      memcpy(buffer+sizeof(metaData)+sizeof(unsigned int)+sizeof(streamId), &bufLen, sizeof(unsigned int));
+      unsigned char streamIdSource[] = {0x02}; //mobile stream
+      memcpy(buffer+sizeof(metaData)+sizeof(unsigned int), &streamIdSource, sizeof(streamIdSource));
+      memcpy(buffer+sizeof(metaData)+sizeof(unsigned int)+sizeof(streamIdSource), &bufLen, sizeof(unsigned int));
 
       //then send the buffer
-      fread((char*)buffer+sizeof(metaData)+sizeof(unsigned int)+sizeof(streamId)+sizeof(unsigned int), 1, bufLen, fd);
+      fread((char*)buffer+sizeof(metaData)+sizeof(unsigned int)+sizeof(streamIdSource)+sizeof(unsigned int), 1, bufLen, fd);
       doWrite(1, buffer, sizeof(buffer));
   }    
   return 1;

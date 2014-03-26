@@ -21,6 +21,7 @@ extern "C" {
 using namespace std;
 
 class FLVSegmentParser;
+class FLVSegmentOutput;
 class FLVOutput;
 class AudioEncoder;
 class VideoEncoder;
@@ -60,6 +61,7 @@ class MixCoder
     //input
     FLVSegmentParser* flvSegParser_;
     //output
+    FLVSegmentOutput* flvSegOutput_;
     FLVOutput* flvOutput_;
     
     //decoders

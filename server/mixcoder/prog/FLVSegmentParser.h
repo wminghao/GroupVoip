@@ -13,10 +13,11 @@ using namespace std;
 ///////////////////////////////////
 //Segment format as follows
 // Header:
-//  Meta data = 3 bytes //starting with SEG
+//  Meta data = 3 bytes //starting with SGI
 //  StreamMask = 4 byte //max of 32 streams
 // Content * NoOfStreams:
-//  streamId = 1 byte
+//  streamId = 5 bits
+//  streamSource = 3 bits //desktop or mobile
 //  LengthOfStream = 4 bytes
 //  StreamData = n bytes
 ///////////////////////////////////
@@ -54,7 +55,8 @@ class FLVSegmentParser:public FLVSegmentParserDelegate
             delete parser_[i];
         }
     }
-
+    StreamSource getStreamSource(int streamId) { return streamSource[streamId]; }
+    
     bool readData(SmartPtr<SmartBuffer> input);
 
     //detect whether the next stream is available or not 
@@ -98,5 +100,7 @@ class FLVSegmentParser:public FLVSegmentParserDelegate
     FLVParser* parser_[MAX_XCODING_INSTANCES];
     u32 numStreams_;
     u32 targetVideoFrameRate_;
+
+    StreamSource streamSource[MAX_XCODING_INSTANCES];
 };
 #endif

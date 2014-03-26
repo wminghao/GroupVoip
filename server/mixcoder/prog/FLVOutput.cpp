@@ -35,11 +35,11 @@ SmartPtr<SmartBuffer> FLVOutput::newHeader()
     return header;
 }
 
-SmartPtr<SmartBuffer> FLVOutput::packageVideoFrame(SmartPtr<SmartBuffer> videoPacket, u32 ts, bool bIsKeyFrame)
+SmartPtr<SmartBuffer> FLVOutput::packageVideoFrame(SmartPtr<SmartBuffer> videoPacket, u32 ts, bool bIsKeyFrame, int streamId, int totalStreams)
 {
     //then build video header
     u32 videoHeaderLen = 11;
-    u32 videoDataLen = videoPacket->dataLength() + 1;
+    u32 videoDataLen = videoPacket->dataLength() + 3;
     SmartPtr<SmartBuffer> videoFrame = new SmartBuffer( videoHeaderLen + videoDataLen + 4 );
     u8* data = videoFrame->data();
 
@@ -65,12 +65,15 @@ SmartPtr<SmartBuffer> FLVOutput::packageVideoFrame(SmartPtr<SmartBuffer> videoPa
     } else {
         data[11] = (u8)0x28;
     }
+    //tell the playback side where the stream is located.
+    data[12] = (u8)streamId;
+    data[13] = (u8)totalStreams;
     if ( videoDataLen > 1 ) {
-        memcpy(&data[12], videoPacket->data(), videoPacket->dataLength());
+        memcpy(&data[14], videoPacket->data(), videoPacket->dataLength());
     }
     //prev tag size
     int tl = 11 + videoDataLen;
-    data[tl] = (u8)((tl>>24)&0xff);  
+    data[tl] = (u8)((tl>>24)&0xff);
     data[tl+1] = (u8)((tl>>16)&0xff);  
     data[tl+2] = (u8)((tl>>8)&0xff);  
     data[tl+3] = (u8)(tl&0xff);  

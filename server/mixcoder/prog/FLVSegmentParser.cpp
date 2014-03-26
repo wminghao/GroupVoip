@@ -7,7 +7,7 @@ bool FLVSegmentParser::isNextStreamAvailable(StreamType streamType, u32& timesta
     bool isAvailable = true;
     int totalStreams = 0;
 
-    //TODO assume all video streams frame rate is the same
+    //TODO assume all video streams frame rate is the same and no frame drop, which is wrong assumption
     //For now, Wait until all streams are available at that moment
     //algorithm here to detect whether it's avaiable
     if( streamType == kVideoStreamType ) {
@@ -89,7 +89,7 @@ bool FLVSegmentParser::readData(SmartPtr<SmartBuffer> input)
                 }
 
                 if ( curBuf_.size() >= 3 ) {
-                    assert(curBuf_[0] == 'S' && curBuf_[1] == 'E' && curBuf_[2] == 'G');
+                    assert(curBuf_[0] == 'S' && curBuf_[1] == 'G' && curBuf_[2] == 'I');
                     curBuf_.clear();
                     curSegTagSize_ = 0;
                     parsingState_ = SEARCHING_STREAM_MASK;
@@ -150,8 +150,14 @@ bool FLVSegmentParser::readData(SmartPtr<SmartBuffer> input)
                     data += cpLen;
                 }
                 if ( curBuf_.size() >= 5 ) {
-                    curStreamId_ = curBuf_[0]; //read the id
+                    u32 curStreamIdAndSource = 0x000000ff && ((u32)curBuf_[0]); //read the id
+                    curStreamId_ = (curStreamIdAndSource >>3)<<3; //first 5 bits
                     assert(curStreamId_ < (u32)MAX_XCODING_INSTANCES);
+
+                    u32 curStreamSource = (curStreamIdAndSource <<5)<<5; //last 3 bits
+                    assert( curStreamSource < kTotalStreamSource);
+                    streamSource[curStreamId_] = (StreamSource)curStreamSource;
+
                     memcpy(&curStreamLen_, curBuf_.data()+1, 4); //read the len
                     curBuf_.clear();
                     curSegTagSize_ = 0;

@@ -11,6 +11,13 @@ enum specialProperty {
     kSeqHeader, //aac header
 };
 
+typedef enum StreamSource {
+    kUnknownStreamSource = 0,
+    kDesktopStreamSource = 1, //desktop don't need a seperate audio mixing
+    kMobileStreamSource = 2, //mobile needs a seperate audio mixing for each mobile stream
+    kTotalStreamSource
+}StreamSource;
+
 typedef enum StreamType {
     kUnknownStreamType = 0,
     kAudioStreamType = 8,

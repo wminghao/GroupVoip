@@ -16,7 +16,8 @@ class FLVOutput
     
     SmartPtr<SmartBuffer> newHeader();
     
-    SmartPtr<SmartBuffer> packageVideoFrame(SmartPtr<SmartBuffer> videoPacket, u32 ts, bool bIsKeyFrame);
+    //streamId and totalStream tells the flv format where is the video located inside the video output
+    SmartPtr<SmartBuffer> packageVideoFrame(SmartPtr<SmartBuffer> videoPacket, u32 ts, bool bIsKeyFrame, int streamId, int totalStreams);
     SmartPtr<SmartBuffer> packageAudioFrame(SmartPtr<SmartBuffer> audioPacket, u32 ts);
 
  private:
