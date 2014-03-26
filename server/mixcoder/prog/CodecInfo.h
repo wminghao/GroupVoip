@@ -2,7 +2,12 @@
 #ifndef __CODECINFOCOMMON_H__
 #define __CODECINFOCOMMON_H__
 
-const int MAX_XCODING_INSTANCES = 32;
+const u32 MAX_XCODING_INSTANCES = 32;
+
+typedef  enum VideoLayout {
+    kEvenLayout, //evenly distribute streams across the screen
+    kMainLayout //main window + many small window layout
+}VideoLayout;
 
 enum specialProperty {
     kRawData, //nalu
@@ -110,6 +115,7 @@ typedef struct AudioStreamSetting
     AudioRate ar;
     AudioSize as;
     int ap; //aac or something else, audio property
+    StreamSource ss; //mobile or desktop
     bool bIsValid;// 0 means it's not a valid stream
 }AudioStreamSetting;
 
@@ -119,6 +125,7 @@ typedef struct VideoStreamSetting
     //always yv12 format, y plane + u plane + v plane in one buffer
     int width;
     int height;
+    StreamSource ss; //mobile or desktop
     bool bIsValid;// 0 means it's not a valid stream
 }VideoStreamSetting;
 

@@ -36,27 +36,27 @@ long runTest(FILE* fd1, int totalFlvChunks1, FILE* fd2, int totalFlvChunks2)
         unsigned char* buffer = bigBuf;
 
         //first send the segHeader
-        unsigned char metaData []= {'S', 'G', 'O'};
+        unsigned char metaData []= {'S', 'G', 'I', 0x0}; //even layout
         memcpy(buffer, metaData, sizeof(metaData));
         unsigned int mask2Stream = 0x03;
         memcpy(buffer+sizeof(metaData), &mask2Stream, sizeof(unsigned int));
         buffer += (sizeof(metaData)+sizeof(unsigned int));
 
         //then send the stream heaer of stream 1
-        unsigned char streamIdSource[] = {0x01}; //desktop stream
+        unsigned char streamIdSource[] = {0x01, 0x0}; //desktop stream
         memcpy(buffer, &streamIdSource, sizeof(streamIdSource));
-        memcpy(buffer+sizeof(streamId), &bufLen, sizeof(unsigned int));
+        memcpy(buffer+sizeof(streamIdSource), &bufLen, sizeof(unsigned int));
         //then send the buffer
-        fread((char*)buffer+sizeof(streamId)+sizeof(unsigned int), 1, bufLen, fd1);
-        buffer += (sizeof(streamId)+sizeof(unsigned int)+bufLen);
+        fread((char*)buffer+sizeof(streamIdSource)+sizeof(unsigned int), 1, bufLen, fd1);
+        buffer += (sizeof(streamIdSource)+sizeof(unsigned int)+bufLen);
         
         //then send the stream heaer of stream 2
         streamIdSource[0] = {0x0a};//mobile stream
         memcpy(buffer, &streamIdSource, sizeof(streamIdSource));
-        memcpy(buffer+sizeof(streamId), &bufLen, sizeof(unsigned int));
+        memcpy(buffer+sizeof(streamIdSource), &bufLen, sizeof(unsigned int));
         //then send the buffer
-        fread((char*)buffer+sizeof(streamId)+sizeof(unsigned int), 1, bufLen, fd2);
-        buffer += (sizeof(streamId)+sizeof(unsigned int)+bufLen);
+        fread((char*)buffer+sizeof(streamIdSource)+sizeof(unsigned int), 1, bufLen, fd2);
+        buffer += (sizeof(streamIdSource)+sizeof(unsigned int)+bufLen);
 
         doWrite(1, bigBuf, sizeof(bigBuf));
     }    

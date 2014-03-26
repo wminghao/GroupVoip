@@ -11,7 +11,7 @@ bool FLVSegmentParser::isNextStreamAvailable(StreamType streamType, u32& timesta
     //For now, Wait until all streams are available at that moment
     //algorithm here to detect whether it's avaiable
     if( streamType == kVideoStreamType ) {
-        for(int i = 0; i < MAX_XCODING_INSTANCES; i++ ) {
+        for(u32 i = 0; i < MAX_XCODING_INSTANCES; i++ ) {
             if ( videoStreamStatus_[i] == kStreamOnlineStarted ) {
                 if( videoQueue_[i].size() > 0) {
                     timestamp = MIN(videoQueue_[i].front()->pts, timestamp);
@@ -24,7 +24,7 @@ bool FLVSegmentParser::isNextStreamAvailable(StreamType streamType, u32& timesta
         }
     } else if( streamType == kAudioStreamType ) {
         //all audio frame rate is the same
-        for(int i = 0; i < MAX_XCODING_INSTANCES; i++ ) {
+        for(u32 i = 0; i < MAX_XCODING_INSTANCES; i++ ) {
             if ( audioStreamStatus_[i] == kStreamOnlineStarted ) { 
                 if( audioQueue_[i].size() > 0) {
                     timestamp = MIN(audioQueue_[i].front()->pts, timestamp);
@@ -81,15 +81,16 @@ bool FLVSegmentParser::readData(SmartPtr<SmartBuffer> input)
         switch( parsingState_ ) {
         case SEARCHING_SEGHEADER:
             {
-                if ( curBuf_.size() < 3 ) {
-                    size_t cpLen = MIN(len, 3-curBuf_.size());
+                if ( curBuf_.size() < 4 ) {
+                    size_t cpLen = MIN(len, 4-curBuf_.size());
                     curBuf_ += string((const char*)data, cpLen); //concatenate the string                                                                                                                 
                     len -= cpLen;
                     data += cpLen;
                 }
 
-                if ( curBuf_.size() >= 3 ) {
+                if ( curBuf_.size() >= 4 ) {
                     assert(curBuf_[0] == 'S' && curBuf_[1] == 'G' && curBuf_[2] == 'I');
+                    assert(curBuf_[3] == 0); //even layout for now
                     curBuf_.clear();
                     curSegTagSize_ = 0;
                     parsingState_ = SEARCHING_STREAM_MASK;
@@ -142,14 +143,14 @@ bool FLVSegmentParser::readData(SmartPtr<SmartBuffer> input)
             }
         case SEARCHING_STREAM_HEADER:
             {
-                if ( curBuf_.size() < 5 ) {
-                    size_t cpLen = MIN(len, 5-curBuf_.size());
+                if ( curBuf_.size() < 6 ) {
+                    size_t cpLen = MIN(len, 6-curBuf_.size());
                     curBuf_ += string((const char*)data, cpLen); //concatenate the string
 
                     len -= cpLen;
                     data += cpLen;
                 }
-                if ( curBuf_.size() >= 5 ) {
+                if ( curBuf_.size() >= 6 ) {
                     u32 curStreamIdAndSource = 0x000000ff && ((u32)curBuf_[0]); //read the id
                     curStreamId_ = (curStreamIdAndSource >>3)<<3; //first 5 bits
                     assert(curStreamId_ < (u32)MAX_XCODING_INSTANCES);
@@ -158,7 +159,9 @@ bool FLVSegmentParser::readData(SmartPtr<SmartBuffer> input)
                     assert( curStreamSource < kTotalStreamSource);
                     streamSource[curStreamId_] = (StreamSource)curStreamSource;
 
-                    memcpy(&curStreamLen_, curBuf_.data()+1, 4); //read the len
+                    assert(curBuf_[1] == 0x0); //ignore the special property
+
+                    memcpy(&curStreamLen_, curBuf_.data()+2, 4); //read the len
                     curBuf_.clear();
                     curSegTagSize_ = 0;
                     parsingState_ = SEARCHING_STREAM_DATA;

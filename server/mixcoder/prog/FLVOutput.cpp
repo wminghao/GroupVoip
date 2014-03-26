@@ -37,10 +37,17 @@ SmartPtr<SmartBuffer> FLVOutput::newHeader()
 
 SmartPtr<SmartBuffer> FLVOutput::packageVideoFrame(SmartPtr<SmartBuffer> videoPacket, u32 ts, bool bIsKeyFrame, VideoRect* videoRect)
 {
-    int x = videoRect->x;
-    int y = videoRect->y;
-    int width = videoRect->width;
-    int height = videoRect->height;
+    int x = 0;
+    int y = 0;
+    int width = 0;
+    int height = 0;
+
+    if( videoRect ) {
+        x = videoRect->x;
+        y = videoRect->y;
+        width = videoRect->width;
+        height = videoRect->height;
+    }
 
     //then build video header
     u32 videoHeaderLen = 11;

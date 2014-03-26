@@ -22,7 +22,8 @@ class VideoMixer
     SmartPtr<SmartBuffer> mixStreams(SmartPtr<SmartBuffer> planes[][3], 
                                      int strides[][3], 
                                      VideoStreamSetting* settings, 
-                                     int totalStreams);
+                                     int totalStreams,
+                                     VideoRect* videoRect);
  private:
     bool tryToInitSws(VideoStreamSetting* settings, int totalStreams);
     void releaseSws();

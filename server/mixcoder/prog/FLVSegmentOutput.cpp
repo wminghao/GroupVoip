@@ -3,14 +3,14 @@
 #include <stdio.h>
 
 FLVSegmentOutput::FLVSegmentOutput(VideoStreamSetting* videoSetting, AudioStreamSetting* audioSetting) {
-    for( int i = 0; i < MAX_XCODING_INSTANCES+1; i++ ) {
+    for( u32 i = 0; i < MAX_XCODING_INSTANCES+1; i++ ) {
         output_[i] = new FLVOutput(videoSetting, audioSetting);
         outputBuffer_[i] = NULL;
     }
 }
     
 FLVSegmentOutput::~FLVSegmentOutput() {
-    for( int i = 0; i < MAX_XCODING_INSTANCES+1; i++ ) {
+    for( u32 i = 0; i < MAX_XCODING_INSTANCES+1; i++ ) {
         delete(output_[i]);
     }
 }
@@ -30,7 +30,7 @@ SmartPtr<SmartBuffer> FLVSegmentOutput::getOneFrameForAllStreams()
     u32 streamMask = 0;
     u32 totalLen = 0;
     int totalStreams = 0;
-    for( int i = 0; i < MAX_XCODING_INSTANCES+1; i++ ) {
+    for( u32 i = 0; i < MAX_XCODING_INSTANCES+1; i++ ) {
         if( outputBuffer_[i] && outputBuffer_[i]->dataLength() ) {
             totalLen += outputBuffer_[i]->dataLength();
             totalStreams++;
@@ -54,7 +54,7 @@ SmartPtr<SmartBuffer> FLVSegmentOutput::getOneFrameForAllStreams()
     data[2] = 'O';
     memcpy(data+3, &streamMask, sizeof(streamMask));
     int offset = 7;
-    for( int i = 0; i < MAX_XCODING_INSTANCES+1; i++ ) {
+    for( u32 i = 0; i < MAX_XCODING_INSTANCES+1; i++ ) {
         if( outputBuffer_[i] && outputBuffer_[i]->dataLength() ) {
             u8 streamIdByte = i << 3;
             memcpy(data+offset, &streamIdByte, sizeof(u8));

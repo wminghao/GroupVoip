@@ -14,10 +14,12 @@ using namespace std;
 //Segment format as follows
 // Header:
 //  Meta data = 3 bytes //starting with SGI
+//  LayoutMode = 1 byte //Even or Main
 //  StreamMask = 4 byte //max of 32 streams
 // Content * NoOfStreams:
 //  streamId = 5 bits
 //  streamSource = 3 bits //desktop or mobile
+//  special property = 1 byte //Main layout, whether it's main
 //  LengthOfStream = 4 bytes
 //  StreamData = n bytes
 ///////////////////////////////////
@@ -44,14 +46,14 @@ class FLVSegmentParser:public FLVSegmentParserDelegate
         curSegTagSize_(0), curStreamId_(0), curStreamLen_(0), curStreamCnt_(0),
         numStreams_(0), targetVideoFrameRate_(targetVideoFrameRate) 
         {
-        memset(audioStreamStatus_, 0, sizeof(StreamStatus)*MAX_XCODING_INSTANCES);
-        memset(videoStreamStatus_, 0, sizeof(StreamStatus)*MAX_XCODING_INSTANCES);
-        for(int i = 0; i < MAX_XCODING_INSTANCES; i++) {
-            parser_[i] = new FLVParser(this, i);
+            memset(audioStreamStatus_, 0, sizeof(StreamStatus)*MAX_XCODING_INSTANCES);
+            memset(videoStreamStatus_, 0, sizeof(StreamStatus)*MAX_XCODING_INSTANCES);
+            for(u32 i = 0; i < MAX_XCODING_INSTANCES; i++) {
+                parser_[i] = new FLVParser(this, i);
+            }
         }
-    }
     ~FLVSegmentParser() {
-        for(int i = 0; i < MAX_XCODING_INSTANCES; i++) {
+        for(u32 i = 0; i < MAX_XCODING_INSTANCES; i++) {
             delete parser_[i];
         }
     }

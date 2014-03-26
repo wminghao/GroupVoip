@@ -22,7 +22,6 @@ using namespace std;
 
 class FLVSegmentParser;
 class FLVSegmentOutput;
-class FLVOutput;
 class AudioEncoder;
 class VideoEncoder;
 class AudioDecoder;
@@ -39,9 +38,6 @@ class MixCoder
     
     /* returns false if we hit some badness, true if OK */
     bool newInput( SmartPtr<SmartBuffer> );
-
-    //debug feature
-    SmartPtr<SmartBuffer> newHeader();
 
     //read output from the system
     SmartPtr<SmartBuffer> getOutput();
@@ -62,18 +58,17 @@ class MixCoder
     FLVSegmentParser* flvSegParser_;
     //output
     FLVSegmentOutput* flvSegOutput_;
-    FLVOutput* flvOutput_;
     
     //decoders
     AudioDecoder* audioDecoder_[ MAX_XCODING_INSTANCES ];
     VideoDecoder* videoDecoder_[ MAX_XCODING_INSTANCES ];
     
     //encoders
-    AudioEncoder* audioEncoder_;
+    AudioEncoder* audioEncoder_[ MAX_XCODING_INSTANCES+1 ];;
     VideoEncoder* videoEncoder_;
 
     //mixer
-    AudioMixer* audioMixer_;
+    AudioMixer* audioMixer_[ MAX_XCODING_INSTANCES+1 ]; //need max+1 audio mixer since the mobile viewer should not hear his own voice from the mixing
     VideoMixer* videoMixer_;
 
     //raw video frame in case it does not exist, yuv 3 planes

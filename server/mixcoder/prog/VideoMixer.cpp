@@ -20,7 +20,8 @@ int mappingToScalingHeight(int totalStream) {
 SmartPtr<SmartBuffer> VideoMixer::mixStreams(SmartPtr<SmartBuffer> planes[][3],
                                              int strides[][3],
                                              VideoStreamSetting* settings, 
-                                             int totalStreams)
+                                             int totalStreams,
+                                             VideoRect* videoRect)
 {
     SmartPtr<SmartBuffer> result;
     if( tryToInitSws(settings, totalStreams) ) {
@@ -33,7 +34,7 @@ SmartPtr<SmartBuffer> VideoMixer::mixStreams(SmartPtr<SmartBuffer> planes[][3],
         int validStreamId[totalStreams];
         int validStreamIdIndex = 0;
         
-        for(int i=0; i<MAX_XCODING_INSTANCES; i++) {
+        for(u32 i=0; i<MAX_XCODING_INSTANCES; i++) {
             if( settings[i].bIsValid ) { 
                 scaledVideoPlanes[i][0] = new SmartBuffer( scaledWidth* scaledHeight );
                 scaledVideoPlanes[i][1] = new SmartBuffer( ( scaledWidth * scaledHeight  + 4) / 4 );
@@ -69,6 +70,15 @@ SmartPtr<SmartBuffer> VideoMixer::mixStreams(SmartPtr<SmartBuffer> planes[][3],
             if( totalStreams == 1 ) {
                 int curStreamId = validStreamId[0];
                 assert( curStreamId != -1 );
+
+                //in theory it should not need to set it
+                if(videoRect) {
+                    assert(0);
+                    videoRect[curStreamId].x = 0;
+                    videoRect[curStreamId].y = 0;
+                    videoRect[curStreamId].width = outputWidth;
+                    videoRect[curStreamId].height = outputHeight;
+                }
                     
                 //convert from AV_PIX_FMT_YUV420P
                 //3 planes combined into 1 buffer
@@ -109,6 +119,13 @@ SmartPtr<SmartBuffer> VideoMixer::mixStreams(SmartPtr<SmartBuffer> planes[][3],
 
                     int curStreamId = validStreamId[i];
 
+                    if(videoRect) {
+                        videoRect[curStreamId].x = startingOffsetY%outputWidth;
+                        videoRect[curStreamId].y = outputHeight/4;
+                        videoRect[curStreamId].width = scaledWidth;
+                        videoRect[curStreamId].height = scaledHeight;
+                    }
+
                     //convert from AV_PIX_FMT_YUV420P
                     //3 planes combined into 1 buffer
                     offsetOut = outputWidth*outputHeight/4 + startingOffsetY;
@@ -141,7 +158,7 @@ SmartPtr<SmartBuffer> VideoMixer::mixStreams(SmartPtr<SmartBuffer> planes[][3],
                         offsetOut += outputWidth/2;
                     }
                     startingOffsetY += scaledWidth;
-                    startingOffsetUV += scaledWidth/2;
+                    startingOffsetUV += scaledWidth/2;                    
                 }
             } else {
                 //TODO do mixing for other cases
@@ -156,7 +173,7 @@ VideoMixer::~VideoMixer()
 }
 void VideoMixer::releaseSws()
 {
-    for(int i=0; i<MAX_XCODING_INSTANCES; i++) {
+    for(u32 i=0; i<MAX_XCODING_INSTANCES; i++) {
         if( swsCtx_[i] ) {
             sws_freeContext( swsCtx_[i] );
             swsCtx_[i] = 0;
@@ -172,7 +189,7 @@ bool VideoMixer::tryToInitSws(VideoStreamSetting* settings, int totalStreams)
     if( mappingToScalingWidth(totalStreams_) != outputWidth ) {
         releaseSws();
     }
-    for(int i=0;  i<MAX_XCODING_INSTANCES; i++) {
+    for(u32 i=0;  i<MAX_XCODING_INSTANCES; i++) {
         if ( settings[i].bIsValid && !swsCtx_[i] ) {
             swsCtx_[i] = sws_getCachedContext( swsCtx_[i], settings[i].width, settings[i].height, PIX_FMT_YUV420P,
                                                outputWidth, outputHeight, PIX_FMT_YUV420P,
