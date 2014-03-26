@@ -123,8 +123,10 @@ SmartPtr<SmartBuffer> MixCoder::getOutput()
                 SmartPtr<SmartBuffer> rawFrameMixed = videoMixer_->mixStreams(rawVideoPlanes_, rawVideoStrides_, rawVideoSettings_, totalStreams, videoRect);
                 SmartPtr<SmartBuffer> encodedFrame = videoEncoder_->encodeAFrame(rawFrameMixed, &bIsKeyFrame);
                 if ( encodedFrame ) {
-                    //for each individual mobile stream
-                    if ( totalMobileStreams ) { //for non-mobile stream, there is nothing to mix
+                    //for each individual mobile stream, except for 1 stream case
+                    bool bIsOnlyOneMobileStream = (totalMobileStreams == 1 && totalStreams == 1);
+                    if ( totalMobileStreams && !bIsOnlyOneMobileStream) { 
+                        //for non-mobile stream, there is nothing to mix
                         for( u32 i = 0; i < MAX_XCODING_INSTANCES; i ++ ) {
                             if( rawVideoSettings_[i].bIsValid && kMobileStreamSource == rawVideoSettings_[i].ss) {
                                 flvSegOutput_->packageVideoFrame(encodedFrame, videoPts, bIsKeyFrame, i, &videoRect[i]);
@@ -166,7 +168,9 @@ SmartPtr<SmartBuffer> MixCoder::getOutput()
             if ( totalStreams > 0 ) {
                 fprintf( stderr, "------totalAudioStreams = %d\n", totalStreams );
                 //for each individual mobile stream
-                if ( totalMobileStreams ) { //for non-mobile stream, there is nothing to mix
+                bool bIsOnlyOneMobileStream = (totalMobileStreams == 1 && totalStreams == 1);
+                if ( totalMobileStreams && !bIsOnlyOneMobileStream) { 
+                    //for non-mobile stream, there is nothing to mix
                     for( u32 i = 0; i < MAX_XCODING_INSTANCES; i ++ ) {
                         if( rawVideoSettings_[i].bIsValid && kMobileStreamSource == rawVideoSettings_[i].ss) {
                             SmartPtr<SmartBuffer> rawFrameMixed = audioMixer_[i]->mixStreams(rawAudioFrame_, rawAudioSettings_, totalStreams, i);
