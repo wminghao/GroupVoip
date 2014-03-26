@@ -4,26 +4,39 @@
 
 bool FLVSegmentParser::isNextStreamAvailable(StreamType streamType, u32& timestamp)
 {
-    //TODO
+    bool isAvailable = true;
+    int totalStreams = 0;
+
+    //TODO assume all video streams frame rate is the same
+    //For now, Wait until all streams are available at that moment
     //algorithm here to detect whether it's avaiable
     if( streamType == kVideoStreamType ) {
-        //using the frist stream timestamp as the base timestamp
         for(int i = 0; i < MAX_XCODING_INSTANCES; i++ ) {
-            if ( videoStreamStatus_[i] == kStreamOnlineStarted && videoQueue_[i].size() > 0) {
-                timestamp = videoQueue_[i].front()->pts;
-                return true;
-            }
+            if ( videoStreamStatus_[i] == kStreamOnlineStarted ) {
+                if( videoQueue_[i].size() > 0) {
+                    timestamp = MIN(videoQueue_[i].front()->pts, timestamp);
+                } else {
+                    isAvailable = false;
+                    break;
+                }
+                totalStreams++;
+            } 
         }
     } else if( streamType == kAudioStreamType ) {
-        //using the frist stream timestamp as the base timestamp
+        //all audio frame rate is the same
         for(int i = 0; i < MAX_XCODING_INSTANCES; i++ ) {
-            if ( audioStreamStatus_[i] == kStreamOnlineStarted && audioQueue_[i].size() > 0) {
-                timestamp = audioQueue_[i].front()->pts;
-                return true;
+            if ( audioStreamStatus_[i] == kStreamOnlineStarted ) { 
+                if( audioQueue_[i].size() > 0) {
+                    timestamp = MIN(audioQueue_[i].front()->pts, timestamp);
+                } else {
+                    isAvailable = false;
+                    break;
+                }   
+                totalStreams++;
             }
         }
     }
-    return false;
+    return totalStreams?isAvailable:false;
 }
 
 bool FLVSegmentParser::isStreamOnlineStarted(StreamType streamType, int index)
