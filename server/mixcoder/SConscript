@@ -24,7 +24,6 @@ mainObj = env.Object('prog/MixCoderMain.cpp', CCFLAGS=mixCoderCflags )
 mixCoderProg = File("prog/mix_coder")
 
 progs.append( mixCoderProg )
-
 env.Program( mixCoderProg,
 	     [ mixCoderObj,
 	       audioDecoderObj,
@@ -40,3 +39,11 @@ env.Program( mixCoderProg,
 	       mainObj],	
 	       LIBS=['pthread', 'avformat', 'avcodec', 'avutil', 'swscale', 'samplerate', 'speex', 'vpx'], CCFLAGS=mixCoderCflags)
 
+#test
+segOutputParserObj = env.Object('prog/SegOutputParser.cpp', CCFLAGS=mixCoderCflags )
+segOutputParserProg = File("prog/seg_output_parser")
+
+progs.append( segOutputParserProg )
+env.Program( segOutputParserProg,
+	     [ segOutputParserObj ], 
+	     CCFLAGS=mixCoderCflags)

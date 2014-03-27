@@ -10,8 +10,7 @@
 //  Meta data = 3 bytes //starting with SGO //segment output
 //  StreamMask = 4 byte //max of 32 output streams
 // Content * (NoOfStreams+1): //0 is the all-mixed stream, 1-NoOfStreams are for each mobile stream
-//  streamId = 5 bits
-//  reserved = 3 bits 
+//  streamId = 8 bits
 //  LengthOfStream = 4 bytes
 //  StreamData = n bytes
 ///////////////////////////////////
