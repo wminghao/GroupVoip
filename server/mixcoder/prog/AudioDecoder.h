@@ -30,8 +30,8 @@ class AudioDecoder
         int tmp=1;
         speex_decoder_ctl(decoder_, SPEEX_SET_ENH, &tmp);
 
-        speex_decoder_ctl(decoder_, SPEEX_GET_FRAME_SIZE, &frameSize_);  
-        outputFrame_ = (short*)malloc(sizeof(short)*frameSize_);
+        speex_decoder_ctl(decoder_, SPEEX_GET_FRAME_SIZE, &sampleSize_);  
+        outputFrame_ = (short*)malloc(sizeof(short)*sampleSize_);
 
         hasFirstFrameDecoded_ = false;
     }
@@ -41,7 +41,7 @@ class AudioDecoder
 
     bool hasFirstFrameDecoded(){ return hasFirstFrameDecoded_; }
     
-    int getFrameSize() { return frameSize_; }
+    int getSampleSize() { return sampleSize_; }
     
  private:
     /*Holds the state of the decoder*/
@@ -49,7 +49,7 @@ class AudioDecoder
     SpeexBits bits_;
     
     short* outputFrame_;
-    int frameSize_;
+    int sampleSize_;
 
     AudioStreamSetting setting_;
 
