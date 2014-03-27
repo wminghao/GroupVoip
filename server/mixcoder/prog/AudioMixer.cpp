@@ -16,12 +16,12 @@ inline int CLIP(int val, int max, int min)
 //do the mixing, for now, always mix n speex streams into 1 speex stream
 SmartPtr<SmartBuffer> AudioMixer::mixStreams(SmartPtr<SmartBuffer> buffer[], 
                                              AudioStreamSetting settings[], 
+                                             u32 frameTotalLen,
                                              int totalStreams,
                                              u32 excludeStreamId)
 {
     SmartPtr<SmartBuffer> result;
     if ( totalStreams > 0 ) {
-        u32 frameTotalLen = buffer[0]->dataLength();
         short valShort[frameTotalLen/2];
         for ( u32 i = 0; i < frameTotalLen; i+=2 ) {
             int val = 0;

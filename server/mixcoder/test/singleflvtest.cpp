@@ -30,7 +30,7 @@ bool doWrite( int fd, const void *buf, size_t len ) {
 long runTest(FILE* fd, int totalFlvChunks, int flvChunkStartPos)
 {
   for(int i = 0; i < totalFlvChunks; i++) {
-      unsigned char buffer[FIXED_DATA_SIZE+12];
+      unsigned char buffer[FIXED_DATA_SIZE+14];
       unsigned int bufLen = FIXED_DATA_SIZE;
 
       //first send the segHeader

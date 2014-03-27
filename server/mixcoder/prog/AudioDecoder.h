@@ -41,6 +41,8 @@ class AudioDecoder
 
     bool hasFirstFrameDecoded(){ return hasFirstFrameDecoded_; }
     
+    int getFrameSize() { return frameSize_; }
+    
  private:
     /*Holds the state of the decoder*/
     void *decoder_;

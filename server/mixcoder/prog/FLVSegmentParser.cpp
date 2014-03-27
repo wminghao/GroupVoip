@@ -151,11 +151,12 @@ bool FLVSegmentParser::readData(SmartPtr<SmartBuffer> input)
                     data += cpLen;
                 }
                 if ( curBuf_.size() >= 6 ) {
-                    u32 curStreamIdAndSource = 0x000000ff && ((u32)curBuf_[0]); //read the id
-                    curStreamId_ = (curStreamIdAndSource >>3)<<3; //first 5 bits
+                    curStreamId_ = (curBuf_[0]&0xf8)>>3; //first 5 bits
                     assert(curStreamId_ < (u32)MAX_XCODING_INSTANCES);
 
-                    u32 curStreamSource = (curStreamIdAndSource <<5)<<5; //last 3 bits
+                    u32 curStreamSource = (curBuf_[0]&0x7); //last 3 bits
+                    //fprintf(stderr, "---curBuf_[0]=%d, curStreamId_=%d curStreamSource=%d\r\n", curBuf_[0], curStreamId_, curStreamSource);
+
                     assert( curStreamSource < kTotalStreamSource);
                     streamSource[curStreamId_] = (StreamSource)curStreamSource;
 

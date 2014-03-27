@@ -48,9 +48,11 @@ MixCoder::~MixCoder() {
         delete audioDecoder_[i];
         delete videoDecoder_[i];
     }
-    delete audioEncoder_;
+    for( u32 i = 0; i < MAX_XCODING_INSTANCES+1; i ++ ) {
+        delete audioEncoder_[i];
+        delete audioMixer_[i];
+    }
     delete videoEncoder_;
-    delete audioMixer_;
     delete videoMixer_;
 }
 
@@ -118,7 +120,7 @@ SmartPtr<SmartBuffer> MixCoder::getOutput()
 
             if ( totalStreams > 0 ) {
                 bool bIsKeyFrame = false;
-                fprintf( stderr, "------totalVideoStreams = %d\n", totalStreams );
+                fprintf( stderr, "------totalVideoStreams = %d, totalMobileStreams=%d\n", totalStreams, totalMobileStreams );
                 VideoRect videoRect[MAX_XCODING_INSTANCES];
                 SmartPtr<SmartBuffer> rawFrameMixed = videoMixer_->mixStreams(rawVideoPlanes_, rawVideoStrides_, rawVideoSettings_, totalStreams, videoRect);
                 SmartPtr<SmartBuffer> encodedFrame = videoEncoder_->encodeAFrame(rawFrameMixed, &bIsKeyFrame);
@@ -139,6 +141,7 @@ SmartPtr<SmartBuffer> MixCoder::getOutput()
                 }
             } 
         } else {
+            int audioRawFrameSize = 0;
             for( u32 i = 0; i < MAX_XCODING_INSTANCES; i ++ ) {
                 bool bIsStreamStarted = flvSegParser_->isStreamOnlineStarted(curStreamType, i );
                 bool bIsValidFrame = false;
@@ -159,6 +162,7 @@ SmartPtr<SmartBuffer> MixCoder::getOutput()
                 rawAudioSettings_[i].bIsValid = bIsStreamStarted && bIsValidFrame;
                 if( rawAudioSettings_[i].bIsValid ) {
                     totalStreams++;
+                    audioRawFrameSize = audioDecoder_[i]->getFrameSize();
                     if( kMobileStreamSource == rawVideoSettings_[i].ss ) {
                         totalMobileStreams++;
                     }
@@ -166,14 +170,15 @@ SmartPtr<SmartBuffer> MixCoder::getOutput()
             }
 
             if ( totalStreams > 0 ) {
-                fprintf( stderr, "------totalAudioStreams = %d\n", totalStreams );
+                fprintf( stderr, "------totalAudioStreams = %d, totalMobileStreams=%d\n", totalStreams, totalMobileStreams );
                 //for each individual mobile stream
                 bool bIsOnlyOneMobileStream = (totalMobileStreams == 1 && totalStreams == 1);
-                if ( totalMobileStreams && !bIsOnlyOneMobileStream) { 
+                if ( totalMobileStreams && !bIsOnlyOneMobileStream ) { 
                     //for non-mobile stream, there is nothing to mix
                     for( u32 i = 0; i < MAX_XCODING_INSTANCES; i ++ ) {
                         if( rawVideoSettings_[i].bIsValid && kMobileStreamSource == rawVideoSettings_[i].ss) {
-                            SmartPtr<SmartBuffer> rawFrameMixed = audioMixer_[i]->mixStreams(rawAudioFrame_, rawAudioSettings_, totalStreams, i);
+                            fprintf( stderr, "------totalAudioStreams = %d, mobileStream index=%d\n", totalStreams, i );
+                            SmartPtr<SmartBuffer> rawFrameMixed = audioMixer_[i]->mixStreams(rawAudioFrame_, rawAudioSettings_, audioRawFrameSize, totalStreams, i);
                             SmartPtr<SmartBuffer> encodedFrame = audioEncoder_[i]->encodeAFrame(rawFrameMixed);
                             if ( encodedFrame ) {
                                 flvSegOutput_->packageAudioFrame(encodedFrame, audioPts, i);
@@ -182,12 +187,13 @@ SmartPtr<SmartBuffer> MixCoder::getOutput()
                     }
                 }
                 //for all in stream
-                SmartPtr<SmartBuffer> rawFrameMixed = audioMixer_[MAX_XCODING_INSTANCES]->mixStreams(rawAudioFrame_, rawAudioSettings_, totalStreams, 0xffffffff);
+                SmartPtr<SmartBuffer> rawFrameMixed = audioMixer_[MAX_XCODING_INSTANCES]->mixStreams(rawAudioFrame_, rawAudioSettings_, audioRawFrameSize, totalStreams, 0xffffffff);
                 SmartPtr<SmartBuffer> encodedFrame = audioEncoder_[MAX_XCODING_INSTANCES]->encodeAFrame(rawFrameMixed);
                 if ( encodedFrame ) {
                     flvSegOutput_->packageAudioFrame(encodedFrame, audioPts, MAX_XCODING_INSTANCES);
                 }
                 resultFlvPacket = flvSegOutput_->getOneFrameForAllStreams();
+                fprintf( stderr, "------done\n" );
             }
         }
     }

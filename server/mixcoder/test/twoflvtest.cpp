@@ -31,7 +31,7 @@ long runTest(FILE* fd1, int totalFlvChunks1, FILE* fd2, int totalFlvChunks2)
     int totalFlvChunks = (totalFlvChunks1<totalFlvChunks2)?totalFlvChunks1:totalFlvChunks2;
 
     for(int i = 0; i < totalFlvChunks; i++) {
-        unsigned char bigBuf[FIXED_DATA_SIZE*2+7+5*2];
+        unsigned char bigBuf[FIXED_DATA_SIZE*2+8+6*2];
         unsigned int bufLen = FIXED_DATA_SIZE;
         unsigned char* buffer = bigBuf;
 
@@ -43,7 +43,8 @@ long runTest(FILE* fd1, int totalFlvChunks1, FILE* fd2, int totalFlvChunks2)
         buffer += (sizeof(metaData)+sizeof(unsigned int));
 
         //then send the stream heaer of stream 1
-        unsigned char streamIdSource[] = {0x01, 0x0}; //desktop stream
+        //unsigned char streamIdSource[] = {0x02, 0x0}; //desktop stream
+        unsigned char streamIdSource[] = {0x02, 0x0}; //mobile stream
         memcpy(buffer, &streamIdSource, sizeof(streamIdSource));
         memcpy(buffer+sizeof(streamIdSource), &bufLen, sizeof(unsigned int));
         //then send the buffer
