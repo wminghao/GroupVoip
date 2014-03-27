@@ -71,6 +71,8 @@ class MixCoder
     AudioMixer* audioMixer_[ MAX_XCODING_INSTANCES+1 ]; //need max+1 audio mixer since the mobile viewer should not hear his own voice from the mixing
     VideoMixer* videoMixer_;
 
+    //TODO needs to reset those buffers when a stream ends
+
     //raw video frame in case it does not exist, yuv 3 planes
     SmartPtr<SmartBuffer> rawVideoPlanes_[MAX_XCODING_INSTANCES][3];
     int rawVideoStrides_[MAX_XCODING_INSTANCES][3];

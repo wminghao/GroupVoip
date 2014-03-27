@@ -85,7 +85,10 @@ SmartPtr<SmartBuffer> VideoMixer::mixStreams(SmartPtr<SmartBuffer> planes[][3],
                 u32 bytesPerLineInY = scaledVideoStrides[curStreamId][0];                                                                                                                            
                 u32 offsetInY = 0;                                                                                                                                                                                         
                 for(int i = 0; i < outputHeight; i ++ ) {          
-                    memcpy( out+offsetOut, in+offsetInY, outputWidth);                                                                                                                                                         offsetInY += bytesPerLineInY;                                                                                                                                                                              offsetOut += outputWidth;                                                                                                                                                                              }                                                                                                                                                                                              
+                    memcpy( out+offsetOut, in+offsetInY, outputWidth);
+                    offsetInY += bytesPerLineInY;
+                    offsetOut += outputWidth;
+                }                                                                                                                                                                                              
                 in = scaledVideoPlanes[curStreamId][1]->data();
                 u32 bytesPerLineInU = scaledVideoStrides[curStreamId][1];
                 u32 offsetInU = 0;                                                                                                                                                                                         
@@ -97,7 +100,8 @@ SmartPtr<SmartBuffer> VideoMixer::mixStreams(SmartPtr<SmartBuffer> planes[][3],
                 in = scaledVideoPlanes[curStreamId][2]->data();
                 u32 bytesPerLineInV = scaledVideoStrides[curStreamId][2];
                 u32 offsetInV = 0; 
-                for(int i = 0; i < outputHeight/2; i ++ ) {                                                                                                                                                                    memcpy( out+offsetOut, in+offsetInV, outputWidth/2);
+                for(int i = 0; i < outputHeight/2; i ++ ) {
+                    memcpy( out+offsetOut, in+offsetInV, outputWidth/2);
                     offsetInV += bytesPerLineInV;
                     offsetOut += outputWidth/2;
                 }
@@ -148,7 +152,8 @@ SmartPtr<SmartBuffer> VideoMixer::mixStreams(SmartPtr<SmartBuffer> planes[][3],
                     in = scaledVideoPlanes[curStreamId][2]->data();
                     u32 bytesPerLineInV = scaledVideoStrides[curStreamId][2];
                     u32 offsetInV = 0; 
-                    for(int i = 0; i < scaledHeight/2; i ++ ) {                                                                                                                                                                    memcpy( out+offsetOut, in+offsetInV, scaledWidth/2);
+                    for(int i = 0; i < scaledHeight/2; i ++ ) {
+                        memcpy( out+offsetOut, in+offsetInV, scaledWidth/2);
                         offsetInV += bytesPerLineInV;
                         offsetOut += outputWidth/2;
                     }

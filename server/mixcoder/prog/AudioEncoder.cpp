@@ -30,10 +30,10 @@ SmartPtr<SmartBuffer> AudioEncoder::encodeAFrame(SmartPtr<SmartBuffer> input)
         /*Flush all the bits in the struct so we can encode a new frame*/
         speex_bits_reset(&bits_);
         
-        int frameSize = input->dataLength()/2;
+        int sampleSize = input->dataLength()/2;
         
-        short in[frameSize];
-        memcpy(in, input->data(), frameSize*2);
+        short in[sampleSize];
+        memcpy(in, input->data(), sampleSize*2);
         
         /*Encode the frame*/
         speex_encode_int(encoder_, in, &bits_);
@@ -41,7 +41,7 @@ SmartPtr<SmartBuffer> AudioEncoder::encodeAFrame(SmartPtr<SmartBuffer> input)
         /*Copy the bits to an array of char that can be written*/
         int nbBytes = speex_bits_write(&bits_, encodedBits_, MAX_WB_BYTES);
         
-        fprintf( stderr, "audio encoded pkt size=%d frame size=%d\n", nbBytes, frameSize); 
+        fprintf( stderr, "audio encoded pkt size=%d sample size=%d\n", nbBytes, sampleSize); 
         result = new SmartBuffer( nbBytes,  encodedBits_);
     }
     return result;

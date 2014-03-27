@@ -29,9 +29,9 @@ SmartPtr<SmartBuffer> AudioMixer::mixStreams(SmartPtr<SmartBuffer> buffer[],
                 if( settings[j].bIsValid && j != excludeStreamId ) { 
                     short* data = (short*)buffer[j]->data();
                     val += data[i/2];
+                    //fprintf( stderr, "i=%d j=%d audio mixed val = %d, flen=%d, excludeStreamId=%d\n", i, j, val, frameTotalLen, excludeStreamId);       
                 }
             }
-            //fprintf( stderr, "audio mixed val = %d\n", val);       
             valShort[i/2] = CLIP(val, 32767, -32768);
         }
         result = new SmartBuffer( frameTotalLen, (u8*)valShort);

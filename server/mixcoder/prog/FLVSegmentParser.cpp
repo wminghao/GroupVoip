@@ -7,6 +7,8 @@ bool FLVSegmentParser::isNextStreamAvailable(StreamType streamType, u32& timesta
     bool isAvailable = true;
     int totalStreams = 0;
 
+    timestamp = 0xffffffff;
+
     //TODO assume all video streams frame rate is the same and no frame drop, which is wrong assumption
     //For now, Wait until all streams are available at that moment
     //algorithm here to detect whether it's avaiable
