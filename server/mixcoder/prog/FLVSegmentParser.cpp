@@ -116,7 +116,7 @@ bool FLVSegmentParser::readData(SmartPtr<SmartBuffer> input)
                     //handle mask here 
                     numStreams_ = count_bits(streamMask);
                     assert(numStreams_ < (u32)MAX_XCODING_INSTANCES);
-                    
+                    //fprintf(stderr, "---streamMask=0x%x\r\n", streamMask);
                     int index = 0;
                     while( streamMask ) {
                         u32 value = ((streamMask<<31)>>31); //mask off all other bits
@@ -157,8 +157,7 @@ bool FLVSegmentParser::readData(SmartPtr<SmartBuffer> input)
                     assert(curStreamId_ < (u32)MAX_XCODING_INSTANCES);
 
                     u32 curStreamSource = (curBuf_[0]&0x7); //last 3 bits
-                    //fprintf(stderr, "---curBuf_[0]=%d, curStreamId_=%d curStreamSource=%d\r\n", curBuf_[0], curStreamId_, curStreamSource);
-
+                    //fprintf(stderr, "---curBuf_[0]=0x%x, curStreamId_=%d curStreamSource=%d\r\n", curBuf_[0], curStreamId_, curStreamSource);
                     assert( curStreamSource < kTotalStreamSource);
                     streamSource[curStreamId_] = (StreamSource)curStreamSource;
 
@@ -203,7 +202,6 @@ bool FLVSegmentParser::readData(SmartPtr<SmartBuffer> input)
 
 SmartPtr<AccessUnit> FLVSegmentParser::getNextFLVFrame(u32 index, StreamType streamType)
 {
-    assert ( index < numStreams_ );
     SmartPtr<AccessUnit> au;
     if ( streamType == kVideoStreamType ) {
         if ( videoQueue_[index].size() > 0 ) {

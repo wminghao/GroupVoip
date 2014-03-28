@@ -101,12 +101,12 @@ bool readData(u8* data, u32 len)
                     numStreams_ = count_bits(streamMask)+1;
                     assert(numStreams_ < (u32)MAX_XCODING_INSTANCES);
                     
-                    fprintf(stderr, "---streamMask=%d numStreams_=%d\r\n", streamMask, numStreams_);
+                    //fprintf(stderr, "---streamMask=%d numStreams_=%d\r\n", streamMask, numStreams_);
                     int index = 0;
                     while( streamMask ) {
                         u32 value = ((streamMask<<31)>>31); //mask off all other bits
                         if( value ) {
-                            fprintf(stderr, "---streamMask index=%d is valid\r\n", index);
+                            //fprintf(stderr, "---streamMask index=%d is valid\r\n", index);
                         }
                         streamMask >>= 1; //shift 1 bit
                         index++;
