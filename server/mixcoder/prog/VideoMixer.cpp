@@ -76,7 +76,7 @@ SmartPtr<SmartBuffer> VideoMixer::mixStreams(SmartPtr<SmartBuffer> planes[][3],
                     videoRect[curStreamId].y = 0;
                     videoRect[curStreamId].width = outputWidth;
                     videoRect[curStreamId].height = outputHeight;
-                    fprintf( stderr, "----i=%d, x=%d, y=%d, w=%d,h=%d\r\n", curStreamId, videoRect[curStreamId].x, videoRect[curStreamId].y, videoRect[curStreamId].width, videoRect[curStreamId].height);
+                    //fprintf( stderr, "----i=%d, x=%d, y=%d, w=%d,h=%d\r\n", curStreamId, videoRect[curStreamId].x, videoRect[curStreamId].y, videoRect[curStreamId].width, videoRect[curStreamId].height);
                 }
                     
                 //convert from AV_PIX_FMT_YUV420P
@@ -123,7 +123,7 @@ SmartPtr<SmartBuffer> VideoMixer::mixStreams(SmartPtr<SmartBuffer> planes[][3],
                         videoRect[curStreamId].y = outputHeight/4;
                         videoRect[curStreamId].width = scaledWidth;
                         videoRect[curStreamId].height = scaledHeight;
-                        fprintf( stderr, "----i=%d, x=%d, y=%d, w=%d,h=%d\r\n", curStreamId, videoRect[curStreamId].x, videoRect[curStreamId].y, videoRect[curStreamId].width, videoRect[curStreamId].height);
+                        //fprintf( stderr, "----i=%d, x=%d, y=%d, w=%d,h=%d\r\n", curStreamId, videoRect[curStreamId].x, videoRect[curStreamId].y, videoRect[curStreamId].width, videoRect[curStreamId].height);
                     }
 
                     //convert from AV_PIX_FMT_YUV420P
@@ -176,7 +176,7 @@ SmartPtr<SmartBuffer> VideoMixer::mixStreams(SmartPtr<SmartBuffer> planes[][3],
                         videoRect[curStreamId].y = outputHeight/4;
                         videoRect[curStreamId].width = scaledWidth;
                         videoRect[curStreamId].height = scaledHeight;
-                        fprintf( stderr, "----i=%d, x=%d, y=%d, w=%d,h=%d\r\n", curStreamId, videoRect[curStreamId].x, videoRect[curStreamId].y, videoRect[curStreamId].width, videoRect[curStreamId].height);
+                        //fprintf( stderr, "----i=%d, x=%d, y=%d, w=%d,h=%d\r\n", curStreamId, videoRect[curStreamId].x, videoRect[curStreamId].y, videoRect[curStreamId].width, videoRect[curStreamId].height);
                     }
 
                     //convert from AV_PIX_FMT_YUV420P
@@ -237,7 +237,8 @@ SmartPtr<SmartBuffer> VideoMixer::mixStreams(SmartPtr<SmartBuffer> planes[][3],
                         videoRect[curStreamId].y = outputHeight/4;
                         videoRect[curStreamId].width = scaledWidth;
                         videoRect[curStreamId].height = scaledHeight;
-                        fprintf( stderr, "----i=%d, x=%d, y=%d, w=%d,h=%d\r\n", curStreamId, videoRect[curStreamId].x, videoRect[curStreamId].y, videoRect[curStreamId].width, videoRect[curStreamId].height);
+                        //fprintf( stderr, "----i=%d, x=%d, y=%d, w=%d,h=%d\r\n", 
+                        //curStreamId, videoRect[curStreamId].x, videoRect[curStreamId].y, videoRect[curStreamId].width, videoRect[curStreamId].height);
                     }
                     //convert from AV_PIX_FMT_YUV420P
                     //3 planes combined into 1 buffer

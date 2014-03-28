@@ -79,21 +79,13 @@ void FLVParser::parseNextFLVFrame( string& strFlvTag )
     tsUnion.timestampStr[2] = tempStr[0];
     tsUnion.timestampStr[3] = tempByte;
 
-    //if there is NO global timestamp, we use a relative timestamp to re-adjust the clock
-    if( MAX_U32 == relTimeStampOffset_ ) {
-        u64 curEpocTime = getEpocTime();
-        assert( curEpocTime > startEpocTime_ );
-        relTimeStampOffset_ = ( curEpocTime - startEpocTime_ ) - tsUnion.timestamp;
-    }
-    accessUnit->pts = accessUnit->dts = tsUnion.timestamp + relTimeStampOffset_;
-    
     //skip 3 byte
     bsParser.readBytes(3);
     dataSize -= 7;
 
-    fprintf(stderr, "---streamType=%d, flvTagSize=%d, pts=%d, relTimeStampOffset_=%d\r\n", curStreamType_, curFlvTagSize_, (u32)accessUnit->pts, relTimeStampOffset_ );
-
     if ( dataSize > 0 ) {
+        bool frameReady = false;
+
         switch ( accessUnit->st ) {
         case kVideoStreamType:
             {
@@ -184,7 +176,7 @@ void FLVParser::parseNextFLVFrame( string& strFlvTag )
                 if ( inputData.size() > 0 ) {
                     //read payload. 
                     accessUnit->payload = new SmartBuffer( inputData.size(), inputData.data());
-                    delegate_->onFLVFrameParsed( accessUnit, index_ );
+                    frameReady = true;
                 }
                 //fprintf(stderr, "---video accessUnit, isKey=%d, codecType=%d, specialProperty=%d, naluSize=%ld\r\n", accessUnit->isKey, accessUnit->ct, accessUnit->sp, inputData.size());
                             
@@ -221,7 +213,7 @@ void FLVParser::parseNextFLVFrame( string& strFlvTag )
                 if ( dataSize > 0 ) {
                     //read payload. 
                     accessUnit->payload = new SmartBuffer( dataSize, bsParser.readBytes(dataSize).data());
-                    delegate_->onFLVFrameParsed( accessUnit, index_ );
+                    frameReady = true;
                 }
                 //fprintf(stderr, "---audio accessUnit, isKey=%d, codecType=%d, specialProperty=%d\r\n", accessUnit->isKey, accessUnit->ct, accessUnit->sp);
                 break;
@@ -235,6 +227,20 @@ void FLVParser::parseNextFLVFrame( string& strFlvTag )
             {
                 break;
             }
+        }
+
+        //if there is NO global timestamp, we use a relative timestamp to re-adjust the clock
+        //based on the very 1st audio frame or very 1st video frame(not sps)
+        if( MAX_U32 == relTimeStampOffset_ && accessUnit->st != kDataStreamType && accessUnit->sp != kSpsPps) {
+            u64 curEpocTime = getEpocTime();
+            assert( curEpocTime > startEpocTime_ );
+            relTimeStampOffset_ = ( curEpocTime - startEpocTime_ ) - tsUnion.timestamp;
+        }
+        accessUnit->pts = accessUnit->dts = tsUnion.timestamp + ((relTimeStampOffset_ == MAX_U32)?0:relTimeStampOffset_);
+        fprintf(stderr, "---index=%d, streamType=%d, flvTagSize=%d, oPts=%d,  relTsOffset_=%d, npts=%d\r\n", index_, curStreamType_, curFlvTagSize_, tsUnion.timestamp, relTimeStampOffset_, (u32)accessUnit->pts  );
+
+        if( frameReady ) {
+            delegate_->onFLVFrameParsed( accessUnit, index_ );
         }
     }
 }

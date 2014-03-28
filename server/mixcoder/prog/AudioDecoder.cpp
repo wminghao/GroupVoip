@@ -18,7 +18,7 @@ SmartPtr<SmartBuffer> AudioDecoder::newAccessUnit( SmartPtr<AccessUnit> au , Aud
         speex_bits_read_from(&bits_, (char*)au->payload->data(), au->payload->dataLength());
         speex_decode_int(decoder_, &bits_, outputFrame_);
         result = new SmartBuffer( sampleSize_ * sizeof(u16), (u8*)outputFrame_);
-        fprintf( stderr, "audio decoded pkt size=%ld sample size=%d\n", au->payload->dataLength(), sampleSize_);
+        //fprintf( stderr, "audio decoded pkt size=%ld sample size=%d\n", au->payload->dataLength(), sampleSize_);
 
         aInputSetting->acid = kSpeex;
         aInputSetting->at = kSndMono;

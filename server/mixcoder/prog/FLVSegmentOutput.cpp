@@ -43,7 +43,7 @@ SmartPtr<SmartBuffer> FLVSegmentOutput::getOneFrameForAllStreams()
     }
     SmartPtr<SmartBuffer> result;
     if( totalLen > 0 ) {
-        fprintf(stderr, "------getOneFrameForAllStreams totalStreams=%d, streamMask=0x%x\r\n", totalStreams, streamMask);
+        //fprintf(stderr, "------getOneFrameForAllStreams totalStreams=%d, streamMask=0x%x\r\n", totalStreams, streamMask);
     
         //Headers
         //  Meta data = 3 bytes //starting with SGO //segment output

@@ -90,7 +90,6 @@ SmartPtr<SmartBuffer> MixCoder::getOutput()
     
         int totalStreams = 0;
         int totalMobileStreams = 0;
-        //fprintf( stderr, "------begin iteration\n" );
         if ( curStreamType == kVideoStreamType ) {
             for( u32 i = 0; i < MAX_XCODING_INSTANCES; i ++ ) {
                 bool bIsStreamStarted = flvSegParser_->isStreamOnlineStarted(curStreamType, i );
@@ -99,7 +98,6 @@ SmartPtr<SmartBuffer> MixCoder::getOutput()
                     SmartPtr<AccessUnit> au = flvSegParser_->getNextFLVFrame(i, curStreamType);
                     if ( au ) {
                         bIsValidFrame = videoDecoder_[i]->newAccessUnit(au, rawVideoPlanes_[i], rawVideoStrides_[i], &rawVideoSettings_[i]); 
-                        //fprintf( stderr, "------i = %d. bIsValidFrame=%d\n", i, bIsValidFrame );
                     } else {
                         //if no frame generated, and never has any frames generated before, do nothing, 
                         //else use the cached video frame 
@@ -170,7 +168,7 @@ SmartPtr<SmartBuffer> MixCoder::getOutput()
             }
 
             if ( totalStreams > 0 ) {
-                fprintf( stderr, "------totalAudioStreams = %d, totalMobileStreams=%d\n", totalStreams, totalMobileStreams );
+                //fprintf( stderr, "------totalAudioStreams = %d, totalMobileStreams=%d\n", totalStreams, totalMobileStreams );
                 //for each individual mobile stream
                 bool bIsOnlyOneMobileStream = (totalMobileStreams == 1 && totalStreams == 1);
                 if ( totalMobileStreams && !bIsOnlyOneMobileStream ) { 
