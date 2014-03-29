@@ -35,7 +35,7 @@ long runTest(FILE* fd1, FILE* fd2)
     FLVRealTimeParser realtimeParser1;
     FLVRealTimeParser realtimeParser2;
     unsigned char* result = NULL;
-    while(!bFile1Done && !bFile2Done) {
+    while(!(bFile1Done && bFile2Done)) {
         unsigned char* buffer = bigBuf;
         totalLen = 0;
 
@@ -43,34 +43,56 @@ long runTest(FILE* fd1, FILE* fd2)
         unsigned char metaData []= {'S', 'G', 'I', 0x0}; //even layout
         memcpy(buffer, metaData, sizeof(metaData));
         unsigned int mask2Stream = 0x03;
+        if( bFile1Done ) {
+            mask2Stream &= 0xfe;
+        } else if ( bFile2Done ) {
+            mask2Stream &= 0xfd;
+        }
         memcpy(buffer+sizeof(metaData), &mask2Stream, sizeof(unsigned int));
         buffer += (sizeof(metaData)+sizeof(unsigned int));
         totalLen += (sizeof(metaData)+sizeof(unsigned int));
 
+        //fprintf(stderr, "===read fp1===\r\n");
         //then send the stream heaer of stream 1
-        result = realtimeParser1.readData(fd1, &bufLen);
-        if ( result ) {
-            //unsigned char streamIdSource[] = {0x01, 0x0}; //desktop stream
-            unsigned char streamIdSource[] = {0x02, 0x0}; //mobile stream
-            memcpy(buffer, &streamIdSource, sizeof(streamIdSource));
-            memcpy(buffer+sizeof(streamIdSource), &bufLen, sizeof(unsigned int));
-            memcpy((char*)buffer+sizeof(streamIdSource)+sizeof(unsigned int), result, bufLen);
-            buffer += (sizeof(streamIdSource)+sizeof(unsigned int)+bufLen);
-            totalLen += (sizeof(streamIdSource)+sizeof(unsigned int)+bufLen);
-        } else {
-            bFile1Done = true;
+        if ( !bFile1Done ) {
+            result = realtimeParser1.readData(fd1, &bufLen);
+            if ( result ) {
+                //unsigned char streamIdSource[] = {0x01, 0x0}; //desktop stream
+                unsigned char streamIdSource[] = {0x02, 0x0}; //mobile stream
+                memcpy(buffer, &streamIdSource, sizeof(streamIdSource));
+                memcpy(buffer+sizeof(streamIdSource), &bufLen, sizeof(unsigned int));
+                memcpy((char*)buffer+sizeof(streamIdSource)+sizeof(unsigned int), result, bufLen);
+                buffer += (sizeof(streamIdSource)+sizeof(unsigned int)+bufLen);
+                totalLen += (sizeof(streamIdSource)+sizeof(unsigned int)+bufLen);
+                //fprintf(stderr, "===result for file 1, totalLen =%d===\r\n", totalLen);
+            } else {
+                fprintf(stderr, "===No result for file 1, totalLen =%d===\r\n", totalLen);
+                //fix the mask byte
+                mask2Stream &= 0xfe;
+                memcpy(bigBuf+sizeof(metaData), &mask2Stream, sizeof(unsigned int));
+                bFile1Done = true;
+            }
         }
+
+        //fprintf(stderr, "===read fp2===\r\n");
         //then send the stream heaer of stream 2
-        result = realtimeParser2.readData(fd2, &bufLen);
-        if ( result ) {
-            unsigned char streamIdSource[] = {0x0a, 0x0}; //mobile stream
-            memcpy(buffer, &streamIdSource, sizeof(streamIdSource));
-            memcpy(buffer+sizeof(streamIdSource), &bufLen, sizeof(unsigned int));
-            memcpy((char*)buffer+sizeof(streamIdSource)+sizeof(unsigned int), result, bufLen);
-            buffer += (sizeof(streamIdSource)+sizeof(unsigned int)+bufLen);
-            totalLen += (sizeof(streamIdSource)+sizeof(unsigned int)+bufLen);
-        } else {
-            bFile2Done = true;
+        if ( !bFile2Done ) {
+            result = realtimeParser2.readData(fd2, &bufLen);
+            if ( result ) {
+                unsigned char streamIdSource[] = {0x0a, 0x0}; //mobile stream
+                memcpy(buffer, &streamIdSource, sizeof(streamIdSource));
+                memcpy(buffer+sizeof(streamIdSource), &bufLen, sizeof(unsigned int));
+                memcpy((char*)buffer+sizeof(streamIdSource)+sizeof(unsigned int), result, bufLen);
+                buffer += (sizeof(streamIdSource)+sizeof(unsigned int)+bufLen);
+                totalLen += (sizeof(streamIdSource)+sizeof(unsigned int)+bufLen);
+                //fprintf(stderr, "===result for file 2, totalLen =%d===\r\n", totalLen);
+            } else {
+                fprintf(stderr, "===No result for file 2, totalLen =%d===\r\n", totalLen);
+                //fix the mask byte
+                mask2Stream &= 0xfd;
+                memcpy(bigBuf+sizeof(metaData), &mask2Stream, sizeof(unsigned int));
+                bFile2Done = true;
+            }
         }
         doWrite(1, bigBuf, totalLen);
     }    

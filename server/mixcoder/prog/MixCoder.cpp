@@ -168,7 +168,7 @@ SmartPtr<SmartBuffer> MixCoder::getOutput()
             }
 
             if ( totalStreams > 0 ) {
-                //fprintf( stderr, "------totalAudioStreams = %d, totalMobileStreams=%d\n", totalStreams, totalMobileStreams );
+                fprintf( stderr, "------totalAudioStreams = %d, totalMobileStreams=%d\n", totalStreams, totalMobileStreams );
                 //for each individual mobile stream
                 bool bIsOnlyOneMobileStream = (totalMobileStreams == 1 && totalStreams == 1);
                 if ( totalMobileStreams && !bIsOnlyOneMobileStream ) { 

@@ -20,20 +20,25 @@ u8* FLVRealTimeParser::readData(FILE* fd, int* len) {
                 offset += 4;
 
                 if ( curBuf.size() == 4 ) {
-                    std::string tempStr = curBuf.substr(1, 3);
                     union DataSizeUnion{
                         u32 dataSize;
                         u8 dataSizeStr[4];
                     }dsUnion;
-                    dsUnion.dataSizeStr[0] = tempStr[2];
-                    dsUnion.dataSizeStr[1] = tempStr[1];
-                    dsUnion.dataSizeStr[2] = tempStr[0];
+                    dsUnion.dataSizeStr[0] = curBuf[3];
+                    dsUnion.dataSizeStr[1] = curBuf[2];
+                    dsUnion.dataSizeStr[2] = curBuf[1];
                     dsUnion.dataSizeStr[3] = 0;
                     curFlvTagSize = dsUnion.dataSize;
                     curFlvTagSize += 7+4; //add remaining of the header + previousTagLen
                     curBuf.clear();
                     scanState = SCAN_REMAINING_TAG;
-                } else {
+                    
+                    if( ( curFlvTagSize + offset ) > MAX_BUFFER_SIZE ) {
+                        fprintf(stderr, "===flvTagSz=%d===\r\n", curFlvTagSize);
+                        fprintf(stderr, "===corrupt file, oversize===\r\n");
+                        return NULL;
+                    }
+                 } else {
                     //EOF
                     fprintf(stderr, "===EOF===\r\n");
                     return NULL;
@@ -79,4 +84,6 @@ u8* FLVRealTimeParser::readData(FILE* fd, int* len) {
             }
         }
     }
+    fprintf(stderr, "===Exit===\r\n");
+    return NULL;
 }

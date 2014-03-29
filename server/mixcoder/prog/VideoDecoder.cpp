@@ -68,7 +68,7 @@ bool VideoDecoder::newAccessUnit( SmartPtr<AccessUnit> au, SmartPtr<SmartBuffer>
         inWidth_ = 640;
         inHeight_ = 480;
 
-        fprintf( stderr, "Video decoded sps pps, len=%ld\n", spspps_->dataLength());
+        fprintf( stderr, "Video decoded sps pps, len=%ld, ts=%d\n", spspps_->dataLength(), au->pts);
     } else if( au->sp == kRawData ) {
         assert(inWidth_ && inHeight_);
         if ( spspps_ ) {
@@ -107,9 +107,9 @@ bool VideoDecoder::newAccessUnit( SmartPtr<AccessUnit> au, SmartPtr<SmartBuffer>
                     bIsValidFrame = true;
                     bHasFirstFrameStarted = true;
 
-                    fprintf( stderr, "video decoded pkt size=%d stride0=%d, stride1=%d, stride2=%d, width=%d, height=%d, format=%d\n", pkt.size, 
+                    fprintf( stderr, "video decoded pkt size=%d stride0=%d, stride1=%d, stride2=%d, width=%d, height=%d, ts=%d\n", pkt.size, 
                              frame_->linesize[0], frame_->linesize[1], frame_->linesize[2],
-                             frame_->width, frame_->height, frame_->format);
+                             frame_->width, frame_->height, au->pts);
                 } else {
                     fprintf( stderr, "DIDNT get video frame\n");
                 }
