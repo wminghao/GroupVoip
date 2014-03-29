@@ -45,7 +45,8 @@ long runTest(FILE* fd1, FILE* fd2)
         unsigned int mask2Stream = 0x03;
         if( bFile1Done ) {
             mask2Stream &= 0xfe;
-        } else if ( bFile2Done ) {
+        } 
+        if ( bFile2Done ) {
             mask2Stream &= 0xfd;
         }
         memcpy(buffer+sizeof(metaData), &mask2Stream, sizeof(unsigned int));

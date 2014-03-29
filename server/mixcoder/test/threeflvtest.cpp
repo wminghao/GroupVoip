@@ -38,57 +38,81 @@ long runTest(FILE* fd1, FILE* fd2, FILE* fd3)
     FLVRealTimeParser realtimeParser2;
     FLVRealTimeParser realtimeParser3;
     unsigned char* result = NULL;
-    while(!bFile1Done && !bFile2Done && !bFile3Done) {
+    while(!(bFile1Done && bFile2Done && bFile3Done)) {
         unsigned char* buffer = bigBuf;
         totalLen = 0;
 
         //first send the segHeader
         unsigned char metaData []= {'S', 'G', 'I', 0x0}; //even layout
         memcpy(buffer, metaData, sizeof(metaData));
-        unsigned int mask3Stream = 0x92;
+        unsigned int mask3Stream = 0x92; //stream 1, 4, 7
+        if( bFile1Done ) {
+            mask3Stream &= 0xfd;
+        } 
+        if ( bFile2Done ) {
+            mask3Stream &= 0xef;
+        }
+        if( bFile3Done ) {
+            mask3Stream &= 0x7f;
+        }
         memcpy(buffer+sizeof(metaData), &mask3Stream, sizeof(unsigned int));
         buffer += (sizeof(metaData)+sizeof(unsigned int));
         totalLen += (sizeof(metaData)+sizeof(unsigned int));
 
-        //then send the stream heaer of stream 1                                                                                                                                                          
-        result = realtimeParser1.readData(fd1, &bufLen);
-        if ( result ) {
-            //unsigned char streamIdSource[] = {0x09, 0x0}; //desktop stream
-            unsigned char streamIdSource[] = {0x0a, 0x0}; //mobile stream
-            memcpy(buffer, &streamIdSource, sizeof(streamIdSource));
-            memcpy(buffer+sizeof(streamIdSource), &bufLen, sizeof(unsigned int));
-            memcpy((char*)buffer+sizeof(streamIdSource)+sizeof(unsigned int), result, bufLen);
-            buffer += (sizeof(streamIdSource)+sizeof(unsigned int)+bufLen);
-            totalLen += (sizeof(streamIdSource)+sizeof(unsigned int)+bufLen);
-        } else {
-            bFile1Done = true;
+        if ( !bFile1Done ) {
+            //then send the stream heaer of stream 1                                                                                                                                                      
+            result = realtimeParser1.readData(fd1, &bufLen);
+            if ( result ) {
+                //unsigned char streamIdSource[] = {0x09, 0x0}; //desktop stream
+                unsigned char streamIdSource[] = {0x0a, 0x0}; //mobile stream
+                memcpy(buffer, &streamIdSource, sizeof(streamIdSource));
+                memcpy(buffer+sizeof(streamIdSource), &bufLen, sizeof(unsigned int));
+                memcpy((char*)buffer+sizeof(streamIdSource)+sizeof(unsigned int), result, bufLen);
+                buffer += (sizeof(streamIdSource)+sizeof(unsigned int)+bufLen);
+                totalLen += (sizeof(streamIdSource)+sizeof(unsigned int)+bufLen);
+            } else {
+                mask3Stream &= 0xfd;
+                memcpy(bigBuf+sizeof(metaData), &mask3Stream, sizeof(unsigned int));
+                fprintf(stderr,"==file 1 done, mask=0x%x\r\n", mask3Stream);
+                bFile1Done = true;
+            }
         }
 
-        //then send the stream heaer of stream 2                                                                                                                                                         
-        result = realtimeParser2.readData(fd2, &bufLen);
-        if ( result ) {        
-            //then send the stream header of stream 2
-            unsigned char streamIdSource[] = {0x22, 0};//mobile stream
-            memcpy(buffer, &streamIdSource, sizeof(streamIdSource));
-            memcpy(buffer+sizeof(streamIdSource), &bufLen, sizeof(unsigned int));
-            memcpy((char*)buffer+sizeof(streamIdSource)+sizeof(unsigned int), result, bufLen);
-            buffer += (sizeof(streamIdSource)+sizeof(unsigned int)+bufLen);
-            totalLen += (sizeof(streamIdSource)+sizeof(unsigned int)+bufLen);
-        } else {
-            bFile2Done = true;
+        if ( !bFile2Done ) {
+            //then send the stream heaer of stream 2                                                                                                                                                      
+            result = realtimeParser2.readData(fd2, &bufLen);
+            if ( result ) {        
+                //then send the stream header of stream 2
+                unsigned char streamIdSource[] = {0x22, 0};//mobile stream
+                memcpy(buffer, &streamIdSource, sizeof(streamIdSource));
+                memcpy(buffer+sizeof(streamIdSource), &bufLen, sizeof(unsigned int));
+                memcpy((char*)buffer+sizeof(streamIdSource)+sizeof(unsigned int), result, bufLen);
+                buffer += (sizeof(streamIdSource)+sizeof(unsigned int)+bufLen);
+                totalLen += (sizeof(streamIdSource)+sizeof(unsigned int)+bufLen);
+            } else {
+                mask3Stream &= 0xef;
+                memcpy(bigBuf+sizeof(metaData), &mask3Stream, sizeof(unsigned int));
+                fprintf(stderr,"==file 2 done, mask3Stream=0x%x\r\n", mask3Stream);
+                bFile2Done = true;
+            }
         }
 
-        //then send the stream heaer of stream 3                                                                                                                                                         
-        result = realtimeParser3.readData(fd3, &bufLen);
-        if ( result ) {        
-            unsigned char streamIdSource[] = {0x39, 0};//desktop stream
-            memcpy(buffer, &streamIdSource, sizeof(streamIdSource));
-            memcpy(buffer+sizeof(streamIdSource), &bufLen, sizeof(unsigned int));
-            memcpy((char*)buffer+sizeof(streamIdSource)+sizeof(unsigned int), result, bufLen);
-            buffer += (sizeof(streamIdSource)+sizeof(unsigned int)+bufLen);
-            totalLen += (sizeof(streamIdSource)+sizeof(unsigned int)+bufLen);
-        } else {
-            bFile3Done = true;
+        if ( !bFile3Done ) {
+            //then send the stream heaer of stream 3                                                                                                                                                     
+            result = realtimeParser3.readData(fd3, &bufLen);
+            if ( result ) {        
+                unsigned char streamIdSource[] = {0x39, 0};//desktop stream
+                memcpy(buffer, &streamIdSource, sizeof(streamIdSource));
+                memcpy(buffer+sizeof(streamIdSource), &bufLen, sizeof(unsigned int));
+                memcpy((char*)buffer+sizeof(streamIdSource)+sizeof(unsigned int), result, bufLen);
+                buffer += (sizeof(streamIdSource)+sizeof(unsigned int)+bufLen);
+                totalLen += (sizeof(streamIdSource)+sizeof(unsigned int)+bufLen);
+            } else {
+                mask3Stream &= 0x7f;
+                memcpy(bigBuf+sizeof(metaData), &mask3Stream, sizeof(unsigned int));
+                fprintf(stderr,"==file 3 done, mask3Stream=0x%x\r\n",mask3Stream);
+                bFile3Done = true;
+            }
         }
 
         doWrite(1, bigBuf, totalLen);
