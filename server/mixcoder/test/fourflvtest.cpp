@@ -3,10 +3,9 @@
 #include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
-
+#include "flvrealtimeparser.h"
 
 static const unsigned int FLV_START_POS = 13;
-static const unsigned int FIXED_DATA_SIZE = 500;
 
 bool doWrite( int fd, const void *buf, size_t len ) {
   size_t bytesWrote = 0;
@@ -22,20 +21,27 @@ bool doWrite( int fd, const void *buf, size_t len ) {
         
     bytesWrote += t;
   }
-    
+  
   return true;
 }
 
-long runTest(FILE* fd1, int totalFlvChunks1, FILE* fd2, int totalFlvChunks2, FILE* fd3, int totalFlvChunks3, FILE* fd4, int totalFlvChunks4)
+long runTest(FILE* fd1, FILE* fd2, FILE* fd3, FILE* fd4)
 {
-    int totalFlvChunks12 = (totalFlvChunks1<totalFlvChunks2)?totalFlvChunks1:totalFlvChunks2;
-    int totalFlvChunks34 = (totalFlvChunks3<totalFlvChunks4)?totalFlvChunks3:totalFlvChunks4;
-    int totalFlvChunks = (totalFlvChunks12<totalFlvChunks34)?totalFlvChunks12:totalFlvChunks34;
-
-    for(int i = 0; i < totalFlvChunks; i++) {
-        unsigned char bigBuf[FIXED_DATA_SIZE*4+8+6*4];
-        unsigned int bufLen = FIXED_DATA_SIZE;
+    unsigned char bigBuf[MAX_BUFFER_SIZE];
+    int totalLen = 0;
+    int bufLen = 0;
+    bool bFile1Done = false;
+    bool bFile2Done = false;
+    bool bFile3Done = false;
+    bool bFile4Done = false;
+    FLVRealTimeParser realtimeParser1;
+    FLVRealTimeParser realtimeParser2;
+    FLVRealTimeParser realtimeParser3;
+    FLVRealTimeParser realtimeParser4;
+    unsigned char* result = NULL;
+    while(!bFile1Done && !bFile2Done && !bFile3Done && !bFile4Done) {
         unsigned char* buffer = bigBuf;
+        totalLen = 0;
 
         //first send the segHeader
         unsigned char metaData []= {'S', 'G', 'I', 0x0}; //even layout
@@ -43,41 +49,65 @@ long runTest(FILE* fd1, int totalFlvChunks1, FILE* fd2, int totalFlvChunks2, FIL
         unsigned int mask4Stream = 0x0f;
         memcpy(buffer+sizeof(metaData), &mask4Stream, sizeof(unsigned int));
         buffer += (sizeof(metaData)+sizeof(unsigned int));
+        totalLen += (sizeof(metaData)+sizeof(unsigned int));
 
         //then send the stream heaer of stream 1
-        //unsigned char streamIdSource[] = {0x01, 0x0}; //desktop stream
-        unsigned char streamIdSource[] = {0x02, 0x0}; //mobile stream
-        memcpy(buffer, &streamIdSource, sizeof(streamIdSource));
-        memcpy(buffer+sizeof(streamIdSource), &bufLen, sizeof(unsigned int));
-        //then send the buffer
-        fread((char*)buffer+sizeof(streamIdSource)+sizeof(unsigned int), 1, bufLen, fd1);
-        buffer += (sizeof(streamIdSource)+sizeof(unsigned int)+bufLen);
-        
+        result = realtimeParser1.readData(fd1, &bufLen);
+        if ( result ) {
+            //unsigned char streamIdSource[] = {0x01, 0x0}; //desktop stream
+            unsigned char streamIdSource[] = {0x02, 0x0}; //mobile stream
+            memcpy(buffer, &streamIdSource, sizeof(streamIdSource));
+            memcpy(buffer+sizeof(streamIdSource), &bufLen, sizeof(unsigned int));
+            memcpy((char*)buffer+sizeof(streamIdSource)+sizeof(unsigned int), result, bufLen);
+            buffer += (sizeof(streamIdSource)+sizeof(unsigned int)+bufLen);
+            totalLen += (sizeof(streamIdSource)+sizeof(unsigned int)+bufLen);
+        } else {
+            bFile1Done = true;
+        }
+
         //then send the stream heaer of stream 2
-        streamIdSource[0] = 0x0a;//mobile stream
-        memcpy(buffer, &streamIdSource, sizeof(streamIdSource));
-        memcpy(buffer+sizeof(streamIdSource), &bufLen, sizeof(unsigned int));
-        //then send the buffer
-        fread((char*)buffer+sizeof(streamIdSource)+sizeof(unsigned int), 1, bufLen, fd2);
-        buffer += (sizeof(streamIdSource)+sizeof(unsigned int)+bufLen);
+        result = realtimeParser2.readData(fd2, &bufLen);
+        if ( result ) {
+            unsigned char streamIdSource[] = {0x0a, 0x0}; //mobile stream
+            memcpy(buffer, &streamIdSource, sizeof(streamIdSource));
+            memcpy(buffer+sizeof(streamIdSource), &bufLen, sizeof(unsigned int));
+            memcpy((char*)buffer+sizeof(streamIdSource)+sizeof(unsigned int), result, bufLen);
+            buffer += (sizeof(streamIdSource)+sizeof(unsigned int)+bufLen);
+            totalLen += (sizeof(streamIdSource)+sizeof(unsigned int)+bufLen);
+        } else {
+            bFile2Done = true;
+        }
 
         //then send the stream heaer of stream 3
-        streamIdSource[0] = 0x11;//desktop stream
-        memcpy(buffer, &streamIdSource, sizeof(streamIdSource));
-        memcpy(buffer+sizeof(streamIdSource), &bufLen, sizeof(unsigned int));
-        //then send the buffer
-        fread((char*)buffer+sizeof(streamIdSource)+sizeof(unsigned int), 1, bufLen, fd3);
-        buffer += (sizeof(streamIdSource)+sizeof(unsigned int)+bufLen);
+        result = realtimeParser3.readData(fd3, &bufLen);
+        if ( result ) {
+            //then send the stream heaer of stream 3
+            unsigned char streamIdSource[] = {0x11, 0x0};//desktop stream
+            memcpy(buffer, &streamIdSource, sizeof(streamIdSource));
+            memcpy(buffer+sizeof(streamIdSource), &bufLen, sizeof(unsigned int));
+
+            memcpy((char*)buffer+sizeof(streamIdSource)+sizeof(unsigned int), result, bufLen);
+            buffer += (sizeof(streamIdSource)+sizeof(unsigned int)+bufLen);
+            totalLen += (sizeof(streamIdSource)+sizeof(unsigned int)+bufLen);
+        } else {
+            bFile3Done = true;
+        }
 
         //then send the stream heaer of stream 4
-        streamIdSource[0] = 0x1a;//mobile stream
-        memcpy(buffer, &streamIdSource, sizeof(streamIdSource));
-        memcpy(buffer+sizeof(streamIdSource), &bufLen, sizeof(unsigned int));
-        //then send the buffer
-        fread((char*)buffer+sizeof(streamIdSource)+sizeof(unsigned int), 1, bufLen, fd4);
-        buffer += (sizeof(streamIdSource)+sizeof(unsigned int)+bufLen);
+        result = realtimeParser4.readData(fd4, &bufLen);
+        if ( result ) {
+            //then send the stream heaer of stream 4
+            unsigned char streamIdSource[] = {0x1a, 0x0};//mobile stream
+            memcpy(buffer, &streamIdSource, sizeof(streamIdSource));
+            memcpy(buffer+sizeof(streamIdSource), &bufLen, sizeof(unsigned int));
+            memcpy((char*)buffer+sizeof(streamIdSource)+sizeof(unsigned int), result, bufLen);
+            buffer += (sizeof(streamIdSource)+sizeof(unsigned int)+bufLen);
+            totalLen += (sizeof(streamIdSource)+sizeof(unsigned int)+bufLen);
+        } else {
+            bFile4Done = true;
+        }
 
-        doWrite(1, bigBuf, sizeof(bigBuf));
+        doWrite(1, bigBuf, totalLen);
     }    
     return 1;
 }
@@ -97,15 +127,6 @@ int main( int argc, char** argv ) {
     /* Handle Error */
   }
 
-  if (fseek(fp1, 0 , SEEK_END) != 0) {
-    /* Handle Error */
-  }
-
-  fileSize1 = ftell(fp1);
-
-  int totalFlvChunks1 = (fileSize1-FLV_START_POS)/FIXED_DATA_SIZE;
-  fprintf(stderr, "total file size=%ld, totalflvChunks=%d\r\n", fileSize1, totalFlvChunks1);
-
   if (fseek(fp1, FLV_START_POS , SEEK_SET) != 0) {
     /* Handle Error */
   }
@@ -120,15 +141,6 @@ int main( int argc, char** argv ) {
     /* Handle Error */
   }
 
-  if (fseek(fp2, 0 , SEEK_END) != 0) {
-    /* Handle Error */
-  }
-
-  fileSize2 = ftell(fp2);
-
-  int totalFlvChunks2 = (fileSize2-FLV_START_POS)/FIXED_DATA_SIZE;
-  fprintf(stderr, "total file size=%ld, totalflvChunks=%d\r\n", fileSize2, totalFlvChunks2);
-
   if (fseek(fp2, FLV_START_POS , SEEK_SET) != 0) {
     /* Handle Error */
   }
@@ -141,15 +153,6 @@ int main( int argc, char** argv ) {
   if (NULL == fp3) {
     /* Handle Error */
   }
-
-  if (fseek(fp3, 0 , SEEK_END) != 0) {
-    /* Handle Error */
-  }
-
-  fileSize3 = ftell(fp3);
-
-  int totalFlvChunks3 = (fileSize3-FLV_START_POS)/FIXED_DATA_SIZE;
-  fprintf(stderr, "total file size=%ld, totalflvChunks=%d\r\n", fileSize3, totalFlvChunks3);
 
   if (fseek(fp3, FLV_START_POS , SEEK_SET) != 0) {
     /* Handle Error */
@@ -165,20 +168,11 @@ int main( int argc, char** argv ) {
     /* Handle Error */
   }
 
-  if (fseek(fp4, 0 , SEEK_END) != 0) {
-    /* Handle Error */
-  }
-
-  fileSize4 = ftell(fp4);
-
-  int totalFlvChunks4 = (fileSize4-FLV_START_POS)/FIXED_DATA_SIZE;
-  fprintf(stderr, "total file size=%ld, totalflvChunks=%d\r\n", fileSize4, totalFlvChunks4);
-
   if (fseek(fp4, FLV_START_POS , SEEK_SET) != 0) {
     /* Handle Error */
   }
 
   ///////////////
-  runTest( fp1, totalFlvChunks1, fp2, totalFlvChunks2, fp3, totalFlvChunks3, fp4, totalFlvChunks4 );
+  runTest( fp1, fp2, fp3, fp4);
   return 0;
 }
