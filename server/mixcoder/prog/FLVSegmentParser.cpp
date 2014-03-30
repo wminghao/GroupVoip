@@ -19,6 +19,7 @@ bool FLVSegmentParser::isNextStreamAvailable(StreamType streamType, u32& timesta
                     timestamp = MIN(videoQueue_[i].front()->pts, timestamp);
                 } else {
                     isAvailable = false;
+                    //fprintf(stderr, "---streamMask online unavailable index=%d, numStreams=%d\r\n", i, numStreams_);
                     break;
                 }
                 totalStreams++;
@@ -32,6 +33,7 @@ bool FLVSegmentParser::isNextStreamAvailable(StreamType streamType, u32& timesta
                     timestamp = MIN(audioQueue_[i].front()->pts, timestamp);
                 } else {
                     isAvailable = false;
+                    //fprintf(stderr, "---streamMask online unavailable index=%d, numStreams=%d\r\n", i, numStreams_);
                     break;
                 }   
                 totalStreams++;
@@ -118,7 +120,7 @@ bool FLVSegmentParser::readData(SmartPtr<SmartBuffer> input)
                     assert(numStreams_ < (u32)MAX_XCODING_INSTANCES);
                     //fprintf(stderr, "---streamMask=0x%x\r\n", streamMask);
                     int index = 0;
-                    while( streamMask ) {
+                    while( index < (int)MAX_XCODING_INSTANCES ) {
                         u32 value = ((streamMask<<31)>>31); //mask off all other bits
                         if( value ) {
                             if ( videoStreamStatus_[index] == kStreamOffline ) {
@@ -127,10 +129,11 @@ bool FLVSegmentParser::readData(SmartPtr<SmartBuffer> input)
                             if ( audioStreamStatus_[index] == kStreamOffline ) {
                                 audioStreamStatus_[index] = kStreamOnlineNotStarted;
                             }
-                            //fprintf(stderr, "---streamMask index=%d, numStreams=%d\r\n", index, numStreams_);
+                            //fprintf(stderr, "---streamMask online  index=%d, numStreams=%d\r\n", index, numStreams_);
                         } else {
                             videoStreamStatus_[index] = kStreamOffline;
                             audioStreamStatus_[index] = kStreamOffline;
+                            //fprintf(stderr, "---streamMask offline index=%d, numStreams=%d\r\n", index, numStreams_);
                         }
                         streamMask >>= 1; //shift 1 bit
                         index++;
