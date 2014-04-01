@@ -209,7 +209,7 @@ SmartPtr<SmartBuffer> VideoEncoder::encodeAFrame(SmartPtr<SmartBuffer> input, bo
 #endif
                     *bIsKeyFrame = (flags == VPX_EFLAG_FORCE_KF); 
                     result = new SmartBuffer(pkt->data.frame.sz, (const char*)pkt->data.frame.buf);
-                    fprintf(stderr, "video encoded frame size=%ld\r\n", pkt->data.frame.sz);
+                    //fprintf(stderr, "video encoded frame size=%ld\r\n", pkt->data.frame.sz);
                     frameOutputCnt_++;
                     break;
                 }

@@ -35,7 +35,7 @@ using namespace std;
 //        In the beginning, if a queue is never used, ignore that queue. sync with the others.
 //        After the 1st time a queue is used, all k audio data are available, always waitif all k top data is available, pop out immediately.
 //    for video, there could be frame drop, if the TARGET framerate is 30 fps, (timestamp diff is no bigger than 33.33 ms)
-//        Every 33.33ms, video data pops out as well, whether there is data or not in the queue, 
+//        Every 33.33ms, video data pops out as well, whether there is data or not in the queue, (it's possible a stream having more than 1 video data output)
 //        if there is no data, mixer will reuse the previous frame to mix it, if there is no previous frame(in the beginning), it will fill with blank.
 // Timestamp must be adjusted to be the same as the 1st stream's timestamp
 ///////////////////////////////////
@@ -45,9 +45,9 @@ class FLVSegmentParser:public FLVSegmentParserDelegate
  public:
     FLVSegmentParser(u32 targetVideoFrameRate): parsingState_(SEARCHING_SEGHEADER),
         curSegTagSize_(0), curStreamId_(0), curStreamLen_(0), curStreamCnt_(0),
-        numStreams_(0), targetVideoFrameRate_(targetVideoFrameRate) 
+        numStreams_(0), targetVideoFrameRate_(targetVideoFrameRate), 
+        videoStartEpocTime_(0xffffffffffffffff), videoLastTimestamp_(0)
         {
-            videoStartEpocTime_ = getEpocTime();
             memset(audioStreamStatus_, 0, sizeof(StreamStatus)*MAX_XCODING_INSTANCES);
             memset(videoStreamStatus_, 0, sizeof(StreamStatus)*MAX_XCODING_INSTANCES);
             for(u32 i = 0; i < MAX_XCODING_INSTANCES; i++) {
@@ -63,14 +63,19 @@ class FLVSegmentParser:public FLVSegmentParserDelegate
     
     bool readData(SmartPtr<SmartBuffer> input);
 
-    //detect whether the next stream is available or not 
-    bool isNextStreamAvailable(StreamType streamType, u32& timestamp);
+    //detect whether the next stream is ready or not 
+    bool isNextVideoStreamReady(u32& videoTimestamp, u32 audioTimestamp);
+    bool isNextAudioStreamReady(u32& audioTimestamp);
+
     //check the status of a stream to see if it's online
     bool isStreamOnlineStarted(StreamType streamType, int index);
+
     //get next flv frame
-    SmartPtr<AccessUnit> getNextFLVFrame(u32 index, StreamType streamType);
+    SmartPtr<AccessUnit> getNextAudioFrame(u32 index); //return at most 1 frame
+    SmartPtr<AccessUnit> getNextVideoFrame(u32 index, u32 timestamp); // can return more than 1 frames
 
  private:
+    bool isNextVideoFrameSpsPps(u32 index);
     virtual void onFLVFrameParsed( SmartPtr<AccessUnit> au, int index );
     
  private:
@@ -107,8 +112,8 @@ class FLVSegmentParser:public FLVSegmentParserDelegate
 
     StreamSource streamSource[MAX_XCODING_INSTANCES];
 
-    //video timestamp adjustment
-    u64 videoStartEpocTime_;
-    u32 lastVideoTimeStampOffset_;
+    //video timestamp adjustment. output is always 30fps
+    u64 videoStartEpocTime_;       //1st time video stream starts
+    double videoLastTimestamp_;      //1st video frame timestamp
 };
 #endif

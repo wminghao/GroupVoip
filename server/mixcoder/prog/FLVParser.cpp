@@ -237,7 +237,7 @@ void FLVParser::parseNextFLVFrame( string& strFlvTag )
             relTimeStampOffset_ = ( curEpocTime - startEpocTime_ ) - tsUnion.timestamp;
         }
         accessUnit->pts = accessUnit->dts = tsUnion.timestamp + ((relTimeStampOffset_ == MAX_U32)?0:relTimeStampOffset_);
-        fprintf(stderr, "---index=%d, streamType=%d, flvTagSize=%d, oPts=%d,  relTsOffset_=%d, npts=%d\r\n", index_, curStreamType_, curFlvTagSize_, tsUnion.timestamp, relTimeStampOffset_, (u32)accessUnit->pts  );
+        //fprintf(stderr, "---index=%d, streamType=%d, flvTagSize=%d, oPts=%d,  relTsOffset_=%d, npts=%d\r\n", index_, curStreamType_, curFlvTagSize_, tsUnion.timestamp, relTimeStampOffset_, (u32)accessUnit->pts  );
 
         if( frameReady ) {
             delegate_->onFLVFrameParsed( accessUnit, index_ );

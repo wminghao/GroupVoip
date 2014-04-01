@@ -2,45 +2,99 @@
 #include <assert.h>
 #include <stdio.h>
 
-bool FLVSegmentParser::isNextStreamAvailable(StreamType streamType, u32& timestamp)
+#define OUTPUT_VIDEO_FRAME_RATE 30
+
+bool FLVSegmentParser::isNextVideoStreamReady(u32& videoTimestamp, u32 audioTimestamp)
 {
-    bool isAvailable = true;
-    int totalStreams = 0;
+    videoTimestamp = 0xffffffff;
+    bool isReady = false; //different meaning for audio and video
 
-    timestamp = 0xffffffff;
+    u32 frameTimestamp = 0xffffffff;
 
-    //TODO assume all video streams frame rate is the same and no frame drop, which is wrong assumption
-    //For now, Wait until all streams are available at that moment
-    //algorithm here to detect whether it's avaiable
-    if( streamType == kVideoStreamType ) {
-        for(u32 i = 0; i < MAX_XCODING_INSTANCES; i++ ) {
-            if ( videoStreamStatus_[i] == kStreamOnlineStarted ) {
-                if( videoQueue_[i].size() > 0) {
-                    timestamp = MIN(videoQueue_[i].front()->pts, timestamp);
+    //isReady means every 33ms, there is a stream ready
+    bool hasAnyStreamStartedAndReady = false;
+    bool hasSpsPps = false;
+    for(u32 i = 0; i < MAX_XCODING_INSTANCES; i++ ) {
+        if ( videoStreamStatus_[i] == kStreamOnlineStarted ) {
+            if( videoQueue_[i].size() > 0 ) {
+                if (isNextVideoFrameSpsPps(i)) {
+                    hasSpsPps = true;
                 } else {
-                    isAvailable = false;
-                    //fprintf(stderr, "---streamMask online unavailable index=%d, numStreams=%d\r\n", i, numStreams_);
-                    break;
+                    hasAnyStreamStartedAndReady = true;
+                    frameTimestamp = MIN(videoQueue_[i].front()->pts, frameTimestamp);
                 }
-                totalStreams++;
-            } 
-        }
-    } else if( streamType == kAudioStreamType ) {
-        //all audio frame rate is the same
-        for(u32 i = 0; i < MAX_XCODING_INSTANCES; i++ ) {
-            if ( audioStreamStatus_[i] == kStreamOnlineStarted ) { 
-                if( audioQueue_[i].size() > 0) {
-                    timestamp = MIN(audioQueue_[i].front()->pts, timestamp);
-                } else {
-                    isAvailable = false;
-                    //fprintf(stderr, "---streamMask online unavailable index=%d, numStreams=%d\r\n", i, numStreams_);
-                    break;
-                }   
-                totalStreams++;
+            } else {
+                //fprintf(stderr, "---streamMask online unavailable index=%d, numStreams=%d\r\n", i, numStreams_);
             }
+        } 
+    }
+        
+    //after the first frame. every 33ms, considers it's ready, regardless whether there is a frame or not
+    if( videoStartEpocTime_ != 0xffffffffffffffff ) {
+        double nextTimestamp = (videoLastTimestamp_ + (double)1000 /(double)OUTPUT_VIDEO_FRAME_RATE);
+        if ( frameTimestamp != 0xffffffff ) {
+            videoTimestamp = frameTimestamp;
+            if( frameTimestamp <= (u32)nextTimestamp ) {
+                videoLastTimestamp_ = frameTimestamp;
+                isReady = true;
+                fprintf(stderr, "===follow up video timstamp=%d, hasAnyStreamStartedAndReady=%d, nextTimestamp=%d\r\n", 
+                        videoTimestamp, hasAnyStreamStartedAndReady, (u32)nextTimestamp);
+            } else { 
+                if( frameTimestamp < audioTimestamp) {
+                    //if it's ahead of audio, pop that frame out
+                    videoLastTimestamp_ = frameTimestamp;
+                    fprintf(stderr, "===follow up 2 video timstamp=%d, hasAnyStreamStartedAndReady=%d, nextTimestamp=%d\r\n", 
+                            videoTimestamp, hasAnyStreamStartedAndReady, (u32)nextTimestamp);
+                    isReady = true;
+                } else {
+                    //wait for the frameTimestamp
+                    //not ready yet
+                    isReady = false;
+                }
+            }
+        } else {
+            //no data available
+            //wait for the nextTimestamp
+            videoTimestamp = (u32)nextTimestamp;
+            isReady = false;
+        }
+    } else {
+        //videoStartEpocTime_ == 0xffffffffffffffff
+        //first time there is a stream available, always pop out the frame(s)            
+        if( hasAnyStreamStartedAndReady ) {
+            videoStartEpocTime_ = getEpocTime();
+            videoLastTimestamp_ = frameTimestamp;
+            videoTimestamp = frameTimestamp;
+            fprintf(stderr, "===first video timstamp=%d\r\n", (u32)videoLastTimestamp_);
+            isReady = true;
+        } else if( hasSpsPps ) {
+            //if there is no frame ready, only sps/pps pop out it immediately
+            fprintf(stderr, "---found sps pps. but no other frames\r\n");
+            isReady = true;
         }
     }
-    return totalStreams?isAvailable:false;
+    
+    return isReady;
+}
+
+bool FLVSegmentParser::isNextAudioStreamReady(u32& audioTimestamp) {
+    audioTimestamp = 0xffffffff;
+    int totalStreams = 0;
+    bool isReady = true; //all streams ready means ready
+    //all audio frame rate is the same
+    for(u32 i = 0; i < MAX_XCODING_INSTANCES; i++ ) {
+        if ( audioStreamStatus_[i] == kStreamOnlineStarted ) { 
+            if( audioQueue_[i].size() > 0) {
+                audioTimestamp = MIN(audioQueue_[i].front()->pts, audioTimestamp);
+            } else {
+                isReady = false;
+                //fprintf(stderr, "---streamMask online unavailable index=%d, numStreams=%d\r\n", i, numStreams_);
+                break;
+            }   
+            totalStreams++;
+        }
+    }
+    return totalStreams?isReady:false;
 }
 
 bool FLVSegmentParser::isStreamOnlineStarted(StreamType streamType, int index)
@@ -203,22 +257,42 @@ bool FLVSegmentParser::readData(SmartPtr<SmartBuffer> input)
     return true;
 }
 
-SmartPtr<AccessUnit> FLVSegmentParser::getNextFLVFrame(u32 index, StreamType streamType)
+bool FLVSegmentParser::isNextVideoFrameSpsPps(u32 index)
+{
+    bool bIsSpsPps = false;
+    if ( videoQueue_[index].size() > 0 ) {
+        SmartPtr<AccessUnit> au = videoQueue_[index].front();
+        if ( au && au->sp == kSpsPps ) {
+            bIsSpsPps = true;
+        }
+    }
+    return bIsSpsPps;
+}
+
+//canr eturn more than 1 frome
+SmartPtr<AccessUnit> FLVSegmentParser::getNextVideoFrame(u32 index, u32 timestamp)
 {
     SmartPtr<AccessUnit> au;
-    if ( streamType == kVideoStreamType ) {
-        if ( videoQueue_[index].size() > 0 ) {
-            au = videoQueue_[index].front();
-            if ( au ) {
-                videoQueue_[index].pop();
-            }
+    if ( videoQueue_[index].size() > 0 ) {
+        au = videoQueue_[index].front();
+        if ( au && au->pts <= timestamp ) {
+            //fprintf( stderr, "------pop Next video frame, pts=%d", au->pts);
+            videoQueue_[index].pop();
+        } else {
+            //don't pop anything that has a bigger timestamp
+            au = NULL;
         }
-    } else if( streamType == kAudioStreamType ){
-        if ( audioQueue_[index].size() > 0 ) {
-            au = audioQueue_[index].front();
-            if ( au ) {
-                audioQueue_[index].pop();
-            }
+    }
+    return au;
+}
+
+SmartPtr<AccessUnit> FLVSegmentParser::getNextAudioFrame(u32 index)
+{
+    SmartPtr<AccessUnit> au;
+    if ( audioQueue_[index].size() > 0 ) {
+        au = audioQueue_[index].front();
+        if ( au ) {
+            audioQueue_[index].pop();
         }
     }
     return au;

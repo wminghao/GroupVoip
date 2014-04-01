@@ -66,28 +66,28 @@ bool MixCoder::newInput( SmartPtr<SmartBuffer> inputBuf )
 SmartPtr<SmartBuffer> MixCoder::getOutput()
 {
     StreamType curStreamType = kUnknownStreamType;
-    u32 videoPts = 0;
-    bool bIsVideoAvailable = flvSegParser_->isNextStreamAvailable( kVideoStreamType, videoPts );
-
     u32 audioPts = 0;
-    bool bIsAudioAvailable = flvSegParser_->isNextStreamAvailable( kAudioStreamType, audioPts );
+    bool bIsAudioReady = flvSegParser_->isNextAudioStreamReady( audioPts );
 
-    if( bIsVideoAvailable && bIsAudioAvailable) {
+    u32 videoPts = 0;
+    bool bIsVideoReady = flvSegParser_->isNextVideoStreamReady( videoPts, audioPts );
+
+    //fprintf( stderr, "------curStreamType=%d, audioPts=%d, videoPts=%d, bIsVideoReady=%d, bIsAudioReady=%d\n", curStreamType, audioPts, videoPts, bIsVideoReady, bIsAudioReady );
+    if( bIsVideoReady && bIsAudioReady) {
         if ( audioPts < videoPts ) {
             curStreamType = kAudioStreamType;
         } else {
             curStreamType = kVideoStreamType;
         }
-    } else if ( bIsAudioAvailable ) {
+    } else if ( bIsAudioReady ) {
+        //pop out audio
         curStreamType = kAudioStreamType;
-    } else if( bIsVideoAvailable ) {
+    } else if( bIsVideoReady ) {
         curStreamType = kVideoStreamType;
     }
 
     SmartPtr<SmartBuffer> resultFlvPacket = NULL;
     if ( curStreamType != kUnknownStreamType ) {
-        //fprintf( stderr, "------curStreamType=%d, audioPts=%d, videoPts=%d\n", curStreamType, audioPts, videoPts );
-    
         int totalStreams = 0;
         int totalMobileStreams = 0;
         if ( curStreamType == kVideoStreamType ) {
@@ -95,15 +95,18 @@ SmartPtr<SmartBuffer> MixCoder::getOutput()
                 bool bIsStreamStarted = flvSegParser_->isStreamOnlineStarted(curStreamType, i );
                 bool bIsValidFrame = false;
                 if( bIsStreamStarted ) {
-                    SmartPtr<AccessUnit> au = flvSegParser_->getNextFLVFrame(i, curStreamType);
-                    if ( au ) {
-                        bIsValidFrame = videoDecoder_[i]->newAccessUnit(au, rawVideoPlanes_[i], rawVideoStrides_[i], &rawVideoSettings_[i]); 
-                    } else {
-                        //if no frame generated, and never has any frames generated before, do nothing, 
-                        //else use the cached video frame 
-                        if( videoDecoder_[i]->hasFirstFrameDecoded()) {
-                            bIsValidFrame = true; //use the cached frame
-                        }
+                    SmartPtr<AccessUnit> au;
+                    do {
+                        au = flvSegParser_->getNextVideoFrame(i, videoPts);
+                        if ( au ) {
+                            videoDecoder_[i]->newAccessUnit(au, rawVideoPlanes_[i], rawVideoStrides_[i], &rawVideoSettings_[i]); 
+                        } 
+                    } while (au); //pop a few frames with timestamp smaller than videoPts.
+
+                    //if no frame generated, and never has any frames generated before, do nothing, 
+                    //else use the cached video frame 
+                    if( videoDecoder_[i]->hasFirstFrameDecoded()) {
+                        bIsValidFrame = true; //use the cached frame
                     }
                 }
                 rawVideoSettings_[i].ss= flvSegParser_->getStreamSource(i);
@@ -118,7 +121,7 @@ SmartPtr<SmartBuffer> MixCoder::getOutput()
 
             if ( totalStreams > 0 ) {
                 bool bIsKeyFrame = false;
-                fprintf( stderr, "------totalVideoStreams = %d, totalMobileStreams=%d\n", totalStreams, totalMobileStreams );
+                //fprintf( stderr, "------totalVideoStreams = %d, totalMobileStreams=%d\n", totalStreams, totalMobileStreams );
                 VideoRect videoRect[MAX_XCODING_INSTANCES];
                 SmartPtr<SmartBuffer> rawFrameMixed = videoMixer_->mixStreams(rawVideoPlanes_, rawVideoStrides_, rawVideoSettings_, totalStreams, videoRect);
                 SmartPtr<SmartBuffer> encodedFrame = videoEncoder_->encodeAFrame(rawFrameMixed, &bIsKeyFrame);
@@ -144,7 +147,7 @@ SmartPtr<SmartBuffer> MixCoder::getOutput()
                 bool bIsStreamStarted = flvSegParser_->isStreamOnlineStarted(curStreamType, i );
                 bool bIsValidFrame = false;
                 if( bIsStreamStarted ) {
-                    SmartPtr<AccessUnit> au = flvSegParser_->getNextFLVFrame(i, curStreamType);
+                    SmartPtr<AccessUnit> au = flvSegParser_->getNextAudioFrame(i);
                     if ( au ) {
                         rawAudioFrame_[i] = audioDecoder_[i]->newAccessUnit(au, &rawAudioSettings_[i]);
                         bIsValidFrame = true;
@@ -168,7 +171,7 @@ SmartPtr<SmartBuffer> MixCoder::getOutput()
             }
 
             if ( totalStreams > 0 ) {
-                fprintf( stderr, "------totalAudioStreams = %d, totalMobileStreams=%d\n", totalStreams, totalMobileStreams );
+                //fprintf( stderr, "------totalAudioStreams = %d, totalMobileStreams=%d\n", totalStreams, totalMobileStreams );
                 //for each individual mobile stream
                 bool bIsOnlyOneMobileStream = (totalMobileStreams == 1 && totalStreams == 1);
                 if ( totalMobileStreams && !bIsOnlyOneMobileStream ) { 
