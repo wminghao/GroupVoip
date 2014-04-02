@@ -106,10 +106,13 @@ bool VideoDecoder::newAccessUnit( SmartPtr<AccessUnit> au, SmartPtr<SmartBuffer>
                     vInputSetting->height =inHeight_; 
                     bIsValidFrame = true;
                     bHasFirstFrameStarted = true;
-
+                    
+                    fprintf( stderr, "video decoded pkt size=%d size=640*480 ts=%d\n", pkt.size, au->pts);
+                    /*
                     fprintf( stderr, "video decoded pkt size=%d stride0=%d, stride1=%d, stride2=%d, width=%d, height=%d, ts=%d\n", pkt.size, 
                              frame_->linesize[0], frame_->linesize[1], frame_->linesize[2],
                              frame_->width, frame_->height, au->pts);
+                    */
                 } else {
                     fprintf( stderr, "DIDNT get video frame\n");
                 }

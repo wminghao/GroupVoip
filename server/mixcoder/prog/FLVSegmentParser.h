@@ -46,7 +46,7 @@ class FLVSegmentParser:public FLVSegmentParserDelegate
     FLVSegmentParser(u32 targetVideoFrameRate): parsingState_(SEARCHING_SEGHEADER),
         curSegTagSize_(0), curStreamId_(0), curStreamLen_(0), curStreamCnt_(0),
         numStreams_(0), targetVideoFrameRate_(targetVideoFrameRate), 
-        videoStartEpocTime_(0xffffffffffffffff), videoLastTimestamp_(0)
+        hasStarted_(0), lastBucketTimestamp_(0)
         {
             memset(audioStreamStatus_, 0, sizeof(StreamStatus)*MAX_XCODING_INSTANCES);
             memset(videoStreamStatus_, 0, sizeof(StreamStatus)*MAX_XCODING_INSTANCES);
@@ -113,7 +113,7 @@ class FLVSegmentParser:public FLVSegmentParserDelegate
     StreamSource streamSource[MAX_XCODING_INSTANCES];
 
     //video timestamp adjustment. output is always 30fps
-    u64 videoStartEpocTime_;       //1st time video stream starts
-    double videoLastTimestamp_;      //1st video frame timestamp
+    u32 hasStarted_;       //1st time video stream starts
+    double lastBucketTimestamp_;      //1st video frame timestamp
 };
 #endif

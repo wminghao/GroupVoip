@@ -6,12 +6,18 @@
 
 bool FLVSegmentParser::isNextVideoStreamReady(u32& videoTimestamp, u32 audioTimestamp)
 {
-    videoTimestamp = 0;
+    //isReady means every 33ms, there is a stream ready
     bool isReady = false; //different meaning for audio and video
 
+    //nextBucketTimestamp is every 33ms since the beginning of video stream
+    double nextBucketTimestamp = (lastBucketTimestamp_ + (double)1000 /(double)OUTPUT_VIDEO_FRAME_RATE);
+
+    //nextLimitTimestamp is useful if audio is ahead of video bucket.
+    u32 nextLimitTimestamp = MAX( nextBucketTimestamp, audioTimestamp );
+
+    //frame timestamp is the max video timestamp before the limit
     u32 frameTimestamp = 0xffffffff;
 
-    //isReady means every 33ms, there is a stream ready
     bool hasAnyStreamStartedAndReady = false;
     bool hasSpsPps = false;
     for(u32 i = 0; i < MAX_XCODING_INSTANCES; i++ ) {
@@ -21,10 +27,19 @@ bool FLVSegmentParser::isNextVideoStreamReady(u32& videoTimestamp, u32 audioTime
                     hasSpsPps = true;
                 } else {
                     hasAnyStreamStartedAndReady = true;
-                    if( frameTimestamp ==  0xffffffff ) {
-                        frameTimestamp = videoQueue_[i].front()->pts;
-                    } else {
-                        frameTimestamp = MAX(videoQueue_[i].front()->pts, frameTimestamp);
+                    bool recordFrameTimestamp = true;
+                    if( hasStarted_ ) {
+                        //if it's over the limit, don't record
+                        if( videoQueue_[i].front()->pts > nextLimitTimestamp ) {
+                            recordFrameTimestamp = false;
+                        }
+                    }
+                    if( recordFrameTimestamp ) {
+                        if( frameTimestamp ==  0xffffffff ) {
+                            frameTimestamp = videoQueue_[i].front()->pts;
+                        } else {
+                            frameTimestamp = MAX(videoQueue_[i].front()->pts, frameTimestamp);
+                        }
                     }
                 }
             } else {
@@ -34,50 +49,43 @@ bool FLVSegmentParser::isNextVideoStreamReady(u32& videoTimestamp, u32 audioTime
     }
         
     //after the first frame. every 33ms, considers it's ready, regardless whether there is a frame or not
-    if( videoStartEpocTime_ != 0xffffffffffffffff ) {
-        double nextTimestamp = (videoLastTimestamp_ + (double)1000 /(double)OUTPUT_VIDEO_FRAME_RATE);
+    if( hasStarted_ ) {
         if ( frameTimestamp != 0xffffffff ) {
-            if( frameTimestamp <= (u32)nextTimestamp ) { 
-                if( audioTimestamp >= nextTimestamp) {
+            if( frameTimestamp <= (u32)nextBucketTimestamp ) { 
+                if( audioTimestamp >= nextBucketTimestamp) {
                     //video has accumulated some data and audio has already catch up
                     videoTimestamp = frameTimestamp;
-                    videoLastTimestamp_ = nextTimestamp; //strictly follow
+                    lastBucketTimestamp_ = nextBucketTimestamp; //strictly follow
                     isReady = true;
-                    fprintf(stderr, "===follow up video timstamp=%d, hasAnyStreamStartedAndReady=%d, nextTimestamp=%d\r\n", 
-                            videoTimestamp, hasAnyStreamStartedAndReady, (u32)nextTimestamp);
+                    fprintf(stderr, "===follow up video timstamp=%d, hasAnyStreamStartedAndReady=%d, nextBucketTimestamp=%d, lastBucketTimestamp_=%d\r\n", 
+                            videoTimestamp, hasAnyStreamStartedAndReady, (u32)nextBucketTimestamp, (u32)lastBucketTimestamp_);
                 } else {
-                    //wait for the nextTimestamp
+                    //wait for the nextBucketTimestamp, since audio is not ready yet
                     //not ready yet
                     isReady = false;
                 }
             } else { 
-                if( frameTimestamp < audioTimestamp) {
-                    //if audio is already ahead, pop that frame out
-                    videoTimestamp = frameTimestamp;
-                    videoLastTimestamp_ = frameTimestamp;
-                    fprintf(stderr, "===follow up 2 video timstamp=%d, hasAnyStreamStartedAndReady=%d, nextTimestamp=%d\r\n", 
-                            videoTimestamp, hasAnyStreamStartedAndReady, (u32)nextTimestamp);
-                    isReady = true;
-                } else {
-                    //wait for the frameTimestamp
-                    //not ready yet
-                    isReady = false;
-                }
+                assert( audioTimestamp >= frameTimestamp );
+                //if audio is already ahead, pop that frame out
+                videoTimestamp = frameTimestamp;
+                double frameInterval = (double)1000 /(double)OUTPUT_VIDEO_FRAME_RATE;
+                lastBucketTimestamp_ += frameInterval * ((int)(((double)frameTimestamp - lastBucketTimestamp_)/frameInterval)); //strictly follow 33ms rule
+                fprintf(stderr, "===follow up 2 video timstamp=%d, hasAnyStreamStartedAndReady=%d, nextBucketTimestamp=%d, lastBucketTimestamp_=%d\r\n", 
+                        videoTimestamp, hasAnyStreamStartedAndReady, (u32)nextBucketTimestamp, (u32)lastBucketTimestamp_);
+                isReady = true;
             }
         } else {
             //no data available
-            //wait for the nextTimestamp
-            videoTimestamp = (u32)nextTimestamp;
+            //wait for the nextBucketTimestamp
             isReady = false;
         }
     } else {
-        //videoStartEpocTime_ == 0xffffffffffffffff
         //first time there is a stream available, always pop out the frame(s)            
         if( hasAnyStreamStartedAndReady ) {
-            videoStartEpocTime_ = getEpocTime();
-            videoLastTimestamp_ = frameTimestamp;
+            hasStarted_ = true;
+            lastBucketTimestamp_ = frameTimestamp;
             videoTimestamp = frameTimestamp;
-            fprintf(stderr, "===first video timstamp=%d\r\n", (u32)videoLastTimestamp_);
+            fprintf(stderr, "===first video timstamp=%d\r\n", (u32)lastBucketTimestamp_);
             isReady = true;
         } else if( hasSpsPps ) {
             //if there is no frame ready, only sps/pps pop out it immediately

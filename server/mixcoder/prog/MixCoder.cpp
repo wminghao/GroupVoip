@@ -79,7 +79,6 @@ SmartPtr<SmartBuffer> MixCoder::getOutput()
             curStreamType = kVideoStreamType;
         }
     } else if ( bIsAudioReady ) {
-        //pop out audio
         curStreamType = kAudioStreamType;
     } else if( bIsVideoReady ) {
         curStreamType = kVideoStreamType;
