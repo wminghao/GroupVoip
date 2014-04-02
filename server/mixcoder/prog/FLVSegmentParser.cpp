@@ -6,7 +6,7 @@
 
 bool FLVSegmentParser::isNextVideoStreamReady(u32& videoTimestamp, u32 audioTimestamp)
 {
-    videoTimestamp = 0xffffffff;
+    videoTimestamp = 0;
     bool isReady = false; //different meaning for audio and video
 
     u32 frameTimestamp = 0xffffffff;
@@ -21,7 +21,11 @@ bool FLVSegmentParser::isNextVideoStreamReady(u32& videoTimestamp, u32 audioTime
                     hasSpsPps = true;
                 } else {
                     hasAnyStreamStartedAndReady = true;
-                    frameTimestamp = MIN(videoQueue_[i].front()->pts, frameTimestamp);
+                    if( frameTimestamp ==  0xffffffff ) {
+                        frameTimestamp = videoQueue_[i].front()->pts;
+                    } else {
+                        frameTimestamp = MAX(videoQueue_[i].front()->pts, frameTimestamp);
+                    }
                 }
             } else {
                 //fprintf(stderr, "---streamMask online unavailable index=%d, numStreams=%d\r\n", i, numStreams_);
@@ -33,15 +37,23 @@ bool FLVSegmentParser::isNextVideoStreamReady(u32& videoTimestamp, u32 audioTime
     if( videoStartEpocTime_ != 0xffffffffffffffff ) {
         double nextTimestamp = (videoLastTimestamp_ + (double)1000 /(double)OUTPUT_VIDEO_FRAME_RATE);
         if ( frameTimestamp != 0xffffffff ) {
-            videoTimestamp = frameTimestamp;
-            if( frameTimestamp <= (u32)nextTimestamp ) {
-                videoLastTimestamp_ = frameTimestamp;
-                isReady = true;
-                fprintf(stderr, "===follow up video timstamp=%d, hasAnyStreamStartedAndReady=%d, nextTimestamp=%d\r\n", 
-                        videoTimestamp, hasAnyStreamStartedAndReady, (u32)nextTimestamp);
+            if( frameTimestamp <= (u32)nextTimestamp ) { 
+                if( audioTimestamp >= nextTimestamp) {
+                    //video has accumulated some data and audio has already catch up
+                    videoTimestamp = frameTimestamp;
+                    videoLastTimestamp_ = nextTimestamp; //strictly follow
+                    isReady = true;
+                    fprintf(stderr, "===follow up video timstamp=%d, hasAnyStreamStartedAndReady=%d, nextTimestamp=%d\r\n", 
+                            videoTimestamp, hasAnyStreamStartedAndReady, (u32)nextTimestamp);
+                } else {
+                    //wait for the nextTimestamp
+                    //not ready yet
+                    isReady = false;
+                }
             } else { 
                 if( frameTimestamp < audioTimestamp) {
-                    //if it's ahead of audio, pop that frame out
+                    //if audio is already ahead, pop that frame out
+                    videoTimestamp = frameTimestamp;
                     videoLastTimestamp_ = frameTimestamp;
                     fprintf(stderr, "===follow up 2 video timstamp=%d, hasAnyStreamStartedAndReady=%d, nextTimestamp=%d\r\n", 
                             videoTimestamp, hasAnyStreamStartedAndReady, (u32)nextTimestamp);
@@ -276,9 +288,10 @@ SmartPtr<AccessUnit> FLVSegmentParser::getNextVideoFrame(u32 index, u32 timestam
     if ( videoQueue_[index].size() > 0 ) {
         au = videoQueue_[index].front();
         if ( au && au->pts <= timestamp ) {
-            //fprintf( stderr, "------pop Next video frame, pts=%d", au->pts);
+            fprintf( stderr, "------pop Next video frame, index=%d pts=%d\r\n", index, au->pts);
             videoQueue_[index].pop();
         } else {
+            fprintf( stderr, "------nopop Next video frame, index=%d pts=%d\r\n", index, au->pts);
             //don't pop anything that has a bigger timestamp
             au = NULL;
         }

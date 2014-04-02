@@ -72,7 +72,6 @@ SmartPtr<SmartBuffer> MixCoder::getOutput()
     u32 videoPts = 0;
     bool bIsVideoReady = flvSegParser_->isNextVideoStreamReady( videoPts, audioPts );
 
-    //fprintf( stderr, "------curStreamType=%d, audioPts=%d, videoPts=%d, bIsVideoReady=%d, bIsAudioReady=%d\n", curStreamType, audioPts, videoPts, bIsVideoReady, bIsAudioReady );
     if( bIsVideoReady && bIsAudioReady) {
         if ( audioPts < videoPts ) {
             curStreamType = kAudioStreamType;
@@ -88,6 +87,7 @@ SmartPtr<SmartBuffer> MixCoder::getOutput()
 
     SmartPtr<SmartBuffer> resultFlvPacket = NULL;
     if ( curStreamType != kUnknownStreamType ) {
+        //fprintf( stderr, "------curStreamType=%d, audioPts=%d, videoPts=%d, bIsVideoReady=%d, bIsAudioReady=%d\n", curStreamType, audioPts, videoPts, bIsVideoReady, bIsAudioReady );
         int totalStreams = 0;
         int totalMobileStreams = 0;
         if ( curStreamType == kVideoStreamType ) {
