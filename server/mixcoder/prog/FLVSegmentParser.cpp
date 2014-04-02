@@ -241,18 +241,27 @@ bool FLVSegmentParser::readData(SmartPtr<SmartBuffer> input)
             }
         case SEARCHING_STREAM_DATA:
             {
-                if ( curBuf_.size() < curStreamLen_ ) {
-                    size_t cpLen = MIN(len, curStreamLen_-curBuf_.size());
-                    curBuf_ += string((const char*)data, cpLen); //concatenate the string     
-                                  
-                    len -= cpLen;
-                    data += cpLen;
+                bool bIsFinished = false;
+                if ( curStreamLen_ ) {
+                    if ( curBuf_.size() < curStreamLen_ ) {
+                        size_t cpLen = MIN(len, curStreamLen_-curBuf_.size());
+                        curBuf_ += string((const char*)data, cpLen); //concatenate the string     
+                        
+                        len -= cpLen;
+                        data += cpLen;
+                    }
+                    if ( curBuf_.size() >= curStreamLen_ ) {
+                        //fprintf(stderr, "---curStreamId_=%d curStreamLen_=%d\r\n", curStreamId_, curStreamLen_);
+                        //read the actual buffer
+                        SmartPtr<SmartBuffer> curStream = new SmartBuffer( curStreamLen_, curBuf_.data());
+                        parser_[curStreamId_]->readData(curStream); 
+                        bIsFinished = true;
+                    }
+                } else {
+                    //0 bytes means no data received for this channel even though it's active
+                    bIsFinished = true;
                 }
-                if ( curBuf_.size() >= curStreamLen_ ) {
-                    //fprintf(stderr, "---curStreamId_=%d curStreamLen_=%d\r\n", curStreamId_, curStreamLen_);
-                    //read the actual buffer
-                    SmartPtr<SmartBuffer> curStream = new SmartBuffer( curStreamLen_, curBuf_.data());
-                    parser_[curStreamId_]->readData(curStream); 
+                if( bIsFinished ) {
                     curBuf_.clear();
                     curSegTagSize_ = 0;
                     curStreamCnt_--;
@@ -262,6 +271,7 @@ bool FLVSegmentParser::readData(SmartPtr<SmartBuffer> input)
                         parsingState_ = SEARCHING_SEGHEADER;
                     }
                 }
+
                 break;
             }
         }
