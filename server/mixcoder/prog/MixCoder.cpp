@@ -70,18 +70,22 @@ SmartPtr<SmartBuffer> MixCoder::getOutput()
     bool bIsAudioReady = flvSegParser_->isNextAudioStreamReady( audioPts );
 
     u32 videoPts = 0;
-    bool bIsVideoReady = flvSegParser_->isNextVideoStreamReady( videoPts, audioPts );
+    bool bIsVideoReady = bIsAudioReady?flvSegParser_->isNextVideoStreamReady( videoPts, audioPts ):false;
 
     if( bIsVideoReady && bIsAudioReady) {
+        //audio and video are both ready.
         if ( audioPts < videoPts ) {
             curStreamType = kAudioStreamType;
         } else {
             curStreamType = kVideoStreamType;
         }
     } else if ( bIsAudioReady ) {
+        //audio ready, video not ready, continue
         curStreamType = kAudioStreamType;
     } else if( bIsVideoReady ) {
-        curStreamType = kVideoStreamType;
+        //for video ready, audio not ready case, do not pursue, since audio is always continuous.
+        //curStreamType = kVideoStreamType;
+        assert(0);
     }
 
     SmartPtr<SmartBuffer> resultFlvPacket = NULL;

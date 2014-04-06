@@ -4,16 +4,31 @@
 
 #define OUTPUT_VIDEO_FRAME_RATE 30
 
+////////////////////////////////////////////////////////////////
+// Audio is always continuous. Video can not be faster than audio.
+// There are 3 timestamps to look at.
+// 1) frameTimestamp, max timestamp of the current frames, no bigger than limitTimestamp(MAX of nextBucketTimestamp and audioBucketTimestamp)
+//                         for any frameTimestamp bigger, treat it the next bucket.
+// 2) nextBucketTimestamp, in normal case, everytime, bucket advance by 33ms, 
+//                         in cases where there is video within the nextBucket, it's used.
+// 3) audioBucketTimestamp, in abnormal case, bucket can advance by multiple of 33ms
+//                         in cases where there is no video within the nextBucket, it's used.
+////////////////////////////////////////////////////////////////
 bool FLVSegmentParser::isNextVideoStreamReady(u32& videoTimestamp, u32 audioTimestamp)
 {
     //isReady means every 33ms, there is a stream ready
     bool isReady = false; //different meaning for audio and video
 
+    double frameInterval = (double)1000 /(double)OUTPUT_VIDEO_FRAME_RATE;
+
     //nextBucketTimestamp is every 33ms since the beginning of video stream
-    double nextBucketTimestamp = (lastBucketTimestamp_ + (double)1000 /(double)OUTPUT_VIDEO_FRAME_RATE);
+    double nextBucketTimestamp = lastBucketTimestamp_ + frameInterval;
+
+    //audioBuckeTimestamp is the bucket under which the audio packet falls into. (strictly folow 33ms rule)
+    double audioBucketTimestamp = lastBucketTimestamp_ + frameInterval * ((int)(((double)audioTimestamp - lastBucketTimestamp_)/frameInterval)); //strictly follow 33ms rule
 
     //nextLimitTimestamp is useful if audio is ahead of video bucket.
-    u32 nextLimitTimestamp = MAX( nextBucketTimestamp, audioTimestamp );
+    u32 nextLimitTimestamp = MAX( nextBucketTimestamp, audioBucketTimestamp );
 
     //frame timestamp is the max video timestamp before the limit
     u32 frameTimestamp = 0xffffffff;
@@ -52,26 +67,24 @@ bool FLVSegmentParser::isNextVideoStreamReady(u32& videoTimestamp, u32 audioTime
     if( hasStarted_ ) {
         if ( frameTimestamp != 0xffffffff ) {
             if( frameTimestamp <= (u32)nextBucketTimestamp ) { 
-                if( audioTimestamp >= nextBucketTimestamp) {
+                if( audioBucketTimestamp >= nextBucketTimestamp) {
                     //video has accumulated some data and audio has already catch up
-                    videoTimestamp = frameTimestamp;
-                    lastBucketTimestamp_ = nextBucketTimestamp; //strictly follow
+                    videoTimestamp = lastBucketTimestamp_ = nextBucketTimestamp; //strictly follow
                     isReady = true;
-                    fprintf(stderr, "===follow up video timstamp=%d, hasAnyStreamStartedAndReady=%d, nextBucketTimestamp=%d, lastBucketTimestamp_=%d\r\n", 
-                            videoTimestamp, hasAnyStreamStartedAndReady, (u32)nextBucketTimestamp, (u32)lastBucketTimestamp_);
+                    fprintf(stderr, "===follow up video timstamp=%d, hasAnyStreamStartedAndReady=%d, audioBucketTimestamp=%d nextBucketTimestamp=%d, lastBucketTimestamp_=%d\r\n", 
+                            videoTimestamp, hasAnyStreamStartedAndReady, (u32)audioBucketTimestamp, (u32)nextBucketTimestamp, (u32)lastBucketTimestamp_);
                 } else {
                     //wait for the nextBucketTimestamp, since audio is not ready yet
                     //not ready yet
                     isReady = false;
                 }
             } else { 
-                assert( audioTimestamp >= frameTimestamp );
+                assert( audioBucketTimestamp >= frameTimestamp );
+                assert( audioBucketTimestamp > nextBucketTimestamp );
                 //if audio is already ahead, pop that frame out
-                videoTimestamp = frameTimestamp;
-                double frameInterval = (double)1000 /(double)OUTPUT_VIDEO_FRAME_RATE;
-                lastBucketTimestamp_ += frameInterval * ((int)(((double)frameTimestamp - lastBucketTimestamp_)/frameInterval)); //strictly follow 33ms rule
-                fprintf(stderr, "===follow up 2 video timstamp=%d, hasAnyStreamStartedAndReady=%d, nextBucketTimestamp=%d, lastBucketTimestamp_=%d\r\n", 
-                        videoTimestamp, hasAnyStreamStartedAndReady, (u32)nextBucketTimestamp, (u32)lastBucketTimestamp_);
+                videoTimestamp = lastBucketTimestamp_ = audioBucketTimestamp;
+                fprintf(stderr, "===follow up 2 video timstamp=%d, hasAnyStreamStartedAndReady=%d, audioBucketTimestamp=%d nextBucketTimestamp=%d, lastBucketTimestamp_=%d\r\n", 
+                        videoTimestamp, hasAnyStreamStartedAndReady, (u32)audioBucketTimestamp, (u32)nextBucketTimestamp, (u32)lastBucketTimestamp_);
                 isReady = true;
             }
         } else {
