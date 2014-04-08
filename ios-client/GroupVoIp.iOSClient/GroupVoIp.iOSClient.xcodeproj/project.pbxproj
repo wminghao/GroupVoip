@@ -441,6 +441,7 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 				);
 				INFOPLIST_FILE = "GroupVoIp.iOSClient/GroupVoIp.iOSClient-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"/Users/wminghao/Develop/vlc-iOS/VLCKit/build/Debug-iphonesimulator",
@@ -465,6 +466,7 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 				);
 				INFOPLIST_FILE = "GroupVoIp.iOSClient/GroupVoIp.iOSClient-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"/Users/wminghao/Develop/vlc-iOS/VLCKit/build/Debug-iphonesimulator",
