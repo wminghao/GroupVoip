@@ -24,7 +24,6 @@
 		2FAA822718F46D880052EA1A /* GroupVoIp_iOSClientTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2FAA822618F46D880052EA1A /* GroupVoIp_iOSClientTests.m */; };
 		2FAA823118F479BE0052EA1A /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2FAA823018F479BE0052EA1A /* OpenGLES.framework */; };
 		2FAA823318F479CB0052EA1A /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2FAA823218F479CB0052EA1A /* QuartzCore.framework */; };
-		2FAA823518F47A500052EA1A /* libMobileVLCKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2FAA823418F47A500052EA1A /* libMobileVLCKit.a */; };
 		2FAA823718F47F270052EA1A /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2FAA823618F47F270052EA1A /* AudioToolbox.framework */; };
 		2FAA823B18F47F4F0052EA1A /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2FAA823A18F47F4F0052EA1A /* CFNetwork.framework */; };
 		2FAA823D18F47FB80052EA1A /* libbz2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2FAA823C18F47FB80052EA1A /* libbz2.dylib */; };
@@ -32,6 +31,11 @@
 		2FAA824118F47FD70052EA1A /* libstdc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2FAA824018F47FD70052EA1A /* libstdc++.dylib */; };
 		2FAA824318F482020052EA1A /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2FAA824218F482020052EA1A /* CoreText.framework */; };
 		2FAA824518F482280052EA1A /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2FAA824418F482280052EA1A /* Security.framework */; };
+		2FAA824D18F4D1890052EA1A /* libMobileVLCKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2FAA824C18F4D13F0052EA1A /* libMobileVLCKit.a */; };
+		2FAA825418F4D2DA0052EA1A /* include in Resources */ = {isa = PBXBuildFile; fileRef = 2FAA825018F4D2DA0052EA1A /* include */; };
+		2FAA825518F4D2DA0052EA1A /* lib in Resources */ = {isa = PBXBuildFile; fileRef = 2FAA825118F4D2DA0052EA1A /* lib */; };
+		2FAA825618F4D2DA0052EA1A /* modules in Resources */ = {isa = PBXBuildFile; fileRef = 2FAA825218F4D2DA0052EA1A /* modules */; };
+		2FAA825718F4D2DA0052EA1A /* src in Resources */ = {isa = PBXBuildFile; fileRef = 2FAA825318F4D2DA0052EA1A /* src */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -41,6 +45,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 2FAA81F418F46D880052EA1A;
 			remoteInfo = GroupVoIp.iOSClient;
+		};
+		2FAA824B18F4D13F0052EA1A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2FAA824618F4D13F0052EA1A /* MobileVLCKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D2AAC07E0554694100DB518D;
+			remoteInfo = MobileVLCKit;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -76,6 +87,11 @@
 		2FAA824018F47FD70052EA1A /* libstdc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.dylib"; path = "usr/lib/libstdc++.dylib"; sourceTree = SDKROOT; };
 		2FAA824218F482020052EA1A /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
 		2FAA824418F482280052EA1A /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		2FAA824618F4D13F0052EA1A /* MobileVLCKit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MobileVLCKit.xcodeproj; path = "../../../../vlc-iOS/VLCKit/MobileVLCKit.xcodeproj"; sourceTree = "<group>"; };
+		2FAA825018F4D2DA0052EA1A /* include */ = {isa = PBXFileReference; lastKnownFileType = folder; name = include; path = "../../../../vlc-iOS/VLCKit/MobileVLCKit/ImportedSources/vlc/include"; sourceTree = "<group>"; };
+		2FAA825118F4D2DA0052EA1A /* lib */ = {isa = PBXFileReference; lastKnownFileType = folder; name = lib; path = "../../../../vlc-iOS/VLCKit/MobileVLCKit/ImportedSources/vlc/lib"; sourceTree = "<group>"; };
+		2FAA825218F4D2DA0052EA1A /* modules */ = {isa = PBXFileReference; lastKnownFileType = folder; name = modules; path = "../../../../vlc-iOS/VLCKit/MobileVLCKit/ImportedSources/vlc/modules"; sourceTree = "<group>"; };
+		2FAA825318F4D2DA0052EA1A /* src */ = {isa = PBXFileReference; lastKnownFileType = folder; name = src; path = "../../../../vlc-iOS/VLCKit/MobileVLCKit/ImportedSources/vlc/src"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -95,7 +111,7 @@
 				2FAA823718F47F270052EA1A /* AudioToolbox.framework in Frameworks */,
 				2FAA81FD18F46D880052EA1A /* UIKit.framework in Frameworks */,
 				2FAA81F918F46D880052EA1A /* Foundation.framework in Frameworks */,
-				2FAA823518F47A500052EA1A /* libMobileVLCKit.a in Frameworks */,
+				2FAA824D18F4D1890052EA1A /* libMobileVLCKit.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -115,6 +131,8 @@
 		2FAA81EC18F46D880052EA1A = {
 			isa = PBXGroup;
 			children = (
+				2FAA824E18F4D1A80052EA1A /* vlc-source */,
+				2FAA824618F4D13F0052EA1A /* MobileVLCKit.xcodeproj */,
 				2FAA81FE18F46D880052EA1A /* GroupVoIp.iOSClient */,
 				2FAA822018F46D880052EA1A /* GroupVoIp.iOSClientTests */,
 				2FAA81F718F46D880052EA1A /* Frameworks */,
@@ -197,6 +215,33 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		2FAA824718F4D13F0052EA1A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				2FAA824C18F4D13F0052EA1A /* libMobileVLCKit.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		2FAA824E18F4D1A80052EA1A /* vlc-source */ = {
+			isa = PBXGroup;
+			children = (
+				2FAA824F18F4D1CA0052EA1A /* vlc */,
+			);
+			name = "vlc-source";
+			sourceTree = "<group>";
+		};
+		2FAA824F18F4D1CA0052EA1A /* vlc */ = {
+			isa = PBXGroup;
+			children = (
+				2FAA825018F4D2DA0052EA1A /* include */,
+				2FAA825118F4D2DA0052EA1A /* lib */,
+				2FAA825218F4D2DA0052EA1A /* modules */,
+				2FAA825318F4D2DA0052EA1A /* src */,
+			);
+			name = vlc;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -260,6 +305,12 @@
 			mainGroup = 2FAA81EC18F46D880052EA1A;
 			productRefGroup = 2FAA81F618F46D880052EA1A /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 2FAA824718F4D13F0052EA1A /* Products */;
+					ProjectRef = 2FAA824618F4D13F0052EA1A /* MobileVLCKit.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				2FAA81F418F46D880052EA1A /* GroupVoIp.iOSClient */,
@@ -268,15 +319,29 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXReferenceProxy section */
+		2FAA824C18F4D13F0052EA1A /* libMobileVLCKit.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libMobileVLCKit.a;
+			remoteRef = 2FAA824B18F4D13F0052EA1A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
 /* Begin PBXResourcesBuildPhase section */
 		2FAA81F318F46D880052EA1A /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2FAA825518F4D2DA0052EA1A /* lib in Resources */,
 				2FAA820F18F46D880052EA1A /* Main_iPad.storyboard in Resources */,
 				2FAA821418F46D880052EA1A /* Images.xcassets in Resources */,
+				2FAA825718F4D2DA0052EA1A /* src in Resources */,
 				2FAA820C18F46D880052EA1A /* Main_iPhone.storyboard in Resources */,
+				2FAA825418F4D2DA0052EA1A /* include in Resources */,
 				2FAA820318F46D880052EA1A /* InfoPlist.strings in Resources */,
+				2FAA825618F4D2DA0052EA1A /* modules in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
