@@ -27,7 +27,7 @@
     _mediaplayer.drawable = self.movieView;
     
     /* create a media object and give it to the player */
-    _mediaplayer.media = [VLCMedia mediaWithURL:[NSURL URLWithString:@"http://vcr01.veetle.com/flv/51c7ddf31f55b.e89d671944baa4e585aa2f780af5aa41/0/accessToken"]];
+    _mediaplayer.media = [VLCMedia mediaWithURL:[NSURL URLWithString:@"http://localhost/~wminghao/groupvoip/abc_32.flv"]];
 }
 - (IBAction)onPlay:(id)sender {
     
