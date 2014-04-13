@@ -1,0 +1,31 @@
+
+################################################################################
+# Set up info
+################################################################################
+
+IP address of AWS instance as of April 12, 2014: 
+            54.186.122.59 
+red5.root:  
+            /usr/share/red5
+starting the server:
+            sudo /etc/init.d/red5-server start
+
+log files:
+            /usr/share/red5/log
+
+################################################################################
+# Current Issues 
+################################################################################
+
+o Not able to show the demo
+
+  http://54.186.122.59:5080/oflaDemo/index.html
+  Server not found:rtmpt://localhost:80/oflaDemo
+
+################################################################################
+# References: 
+################################################################################
+
+http://mrbinitie.blogspot.com/2008/05/stopping-starting-and-restarting-red5.html
+
+
