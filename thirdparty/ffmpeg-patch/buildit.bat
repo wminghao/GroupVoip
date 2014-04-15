@@ -16,4 +16,7 @@ cp libav-HEAD-254c95c/libavformat/flvdec.c ~/Develop/vlc-iOS/VLCKit/MobileVLCKit
 cp libav-HEAD-254c95c/libavformat/flvdec.c ~/Develop/vlc-iOS/VLCKit/MobileVLCKit/ImportedSources/vlc/contrib/iPhoneOS-arm64/ffmpeg/libavformat/
 cp libav-HEAD-254c95c/libavformat/flvdec.c ~/Develop/vlc-iOS/VLCKit/MobileVLCKit/ImportedSources/vlc/contrib/iPhoneOS-armv7/ffmpeg/libavformat/
 cp libav-HEAD-254c95c/libavformat/flvdec.c ~/Develop/vlc-iOS/VLCKit/MobileVLCKit/ImportedSources/vlc/contrib/iPhoneOS-armv7s/ffmpeg/libavformat/
+echo "===tar ball ffmpeg==="
+tar -czvf ffmpeg-HEAD.tar.gz libav-HEAD-254c95c
+cp ffmpeg-HEAD.tar.gz ~/Develop/vlc-iOS/VLCKit/MobileVLCKit/ImportedSources/vlc/contrib/tarballs/
 echo "===finished rebuilding ffmpeg==="
