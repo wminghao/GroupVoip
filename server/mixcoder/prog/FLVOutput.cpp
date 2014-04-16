@@ -19,7 +19,7 @@ const u8 flvHeader[210] = {
     ,0x00,0xc1
 };
 
-const u8 audioTagByte = 0xbf; //speex
+const u8 audioTagByte = 0xbe; //speex
 
 SmartPtr<SmartBuffer> FLVOutput::newHeader()
 {
