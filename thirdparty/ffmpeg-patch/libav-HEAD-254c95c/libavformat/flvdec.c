@@ -258,6 +258,7 @@ static int flv_set_video_codec(AVFormatContext *s, AVStream *vstream,
         return 3;     // not 4, reading packet type will consume one byte
     case FLV_CODECID_VP8:
         vcodec->codec_id = AV_CODEC_ID_VP8;
+	avio_skip(s->pb, 8); // TODO skip 8 bytes of information
         return 9;     // 1 + 8 bytes of info, reading packet type will consume one byte
     default:
         av_log(s, AV_LOG_INFO, "Unsupported video codec (%x)\n", flv_codecid);
