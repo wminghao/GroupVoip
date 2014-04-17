@@ -209,7 +209,13 @@ SmartPtr<SmartBuffer> VideoEncoder::encodeAFrame(SmartPtr<SmartBuffer> input, bo
 #endif
                     *bIsKeyFrame = (flags == VPX_EFLAG_FORCE_KF); 
                     result = new SmartBuffer(pkt->data.frame.sz, (const char*)pkt->data.frame.buf);
-                    //fprintf(stderr, "video encoded frame size=%ld\r\n", pkt->data.frame.sz);
+                    /*
+                    char* buf = (char*)pkt->data.frame.buf;
+                    int keyframe  = !(buf[0] & 1);
+                    int profile   =  (buf[0]>>1) & 7;
+                    int invisible = !(buf[0] & 0x10);
+                    fprintf(stderr, "-----------------video encoded frame size=%ld, keyframe=%d, profile=%d, invisible=%d\r\n", pkt->data.frame.sz, keyframe, profile, invisible);
+                    */
                     frameOutputCnt_++;
                     break;
                 }
