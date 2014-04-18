@@ -9,6 +9,7 @@ mixCoderObj = env.Object('prog/MixCoder.cpp', CCFLAGS=mixCoderCflags )
 audioDecoderObj = env.Object('prog/AudioDecoder.cpp', CCFLAGS=mixCoderCflags )
 videoDecoderObj = env.Object('prog/VideoDecoder.cpp', CCFLAGS=mixCoderCflags )
 audioSpeexEncoderObj = env.Object('prog/AudioSpeexEncoder.cpp', CCFLAGS=mixCoderCflags )
+audioMp3EncoderObj = env.Object('prog/AudioMp3Encoder.cpp', CCFLAGS=mixCoderCflags )
 videoEncoderObj = env.Object('prog/VideoEncoder.cpp', CCFLAGS=mixCoderCflags )
 audioMixerObj = env.Object('prog/AudioMixer.cpp', CCFLAGS=mixCoderCflags )
 videoMixerObj = env.Object('prog/VideoMixer.cpp', CCFLAGS=mixCoderCflags )
@@ -29,6 +30,7 @@ env.Program( mixCoderProg,
 	       audioDecoderObj,
 	       videoDecoderObj,
 	       audioSpeexEncoderObj,
+               audioMp3EncoderObj,
 	       videoEncoderObj,
 	       audioMixerObj,
 	       videoMixerObj,
