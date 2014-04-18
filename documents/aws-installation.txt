@@ -8,23 +8,72 @@ IP address of AWS instance as of April 12, 2014:
 red5.root:  
             /usr/share/red5
 starting the server:
+            /usr/share/red5/red5.sh
+            /usr/share/red5/red5-shutdown.sh
             sudo /etc/init.d/red5-server start
 
 log files:
             /usr/share/red5/log
 
+web root for :5080:
+            /usr/share/red5/webapps/
+
+documents:
+            /usr/share/doc/red5-server/README.Debian
+
+configuration: 
+            /usr/share/red5/conf
+
 ################################################################################
 # Current Issues 
 ################################################################################
 
-o Not able to show the demo
+o Not able to show the oflaDemo:
 
   http://54.186.122.59:5080/oflaDemo/index.html
   Server not found:rtmpt://localhost:80/oflaDemo
 
+Logger name for context: oflaDemo
+Context logger config file: logback-oflaDemo.xml
+Adding logger context: oflaDemo to map for context: oflaDemo
+[INFO] [Launcher:/oflaDemo] org.springframework.beans.factory.config.PropertyPlaceholderConfigurer - Loading properties file from ServletContext resource [/WEB-INF/red5-web.properties]
+[INFO] [Launcher:/oflaDemo] org.springframework.beans.factory.support.DefaultListableBeanFactory - Destroying singletons in org.springframework.beans.factory.support.DefaultListableBeanFactory@1f99825b: defining beans [placeholderConfig,web.context,web.scope,web.handler,demoService.service,org.springframework.scripting.support.ScriptFactoryPostProcessor#0]; parent: org.springframework.beans.factory.support.DefaultListableBeanFactory@55a7e5ae
+Exception in thread "Launcher:/oflaDemo" org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'org.springframework.scripting.support.ScriptFactoryPostProcessor#0' defined in ServletContext resource [/WEB-INF/red5-web.xml]: Instantiation of bean failed; nested exception is java.lang.NoClassDefFoundError: org/springframework/aop/TargetSource
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.instantiateBean(AbstractAutowireCapableBeanFactory.java:965)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:911)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:485)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:456)
+	at org.springframework.beans.factory.support.AbstractBeanFactory$1.getObject(AbstractBeanFactory.java:291)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:222)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:288)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:194)
+	at org.springframework.context.support.AbstractApplicationContext.registerBeanPostProcessors(AbstractApplicationContext.java:710)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:410)
+	at org.red5.server.tomcat.TomcatLoader$2.run(TomcatLoader.java:774)
+Caused by: java.lang.NoClassDefFoundError: org/springframework/aop/TargetSource
+	at java.lang.Class.getDeclaredConstructors0(Native Method)
+	at java.lang.Class.privateGetDeclaredConstructors(Class.java:2496)
+	at java.lang.Class.getConstructor0(Class.java:2806)
+	at java.lang.Class.getDeclaredConstructor(Class.java:2053)
+	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:65)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.instantiateBean(AbstractAutowireCapableBeanFactory.java:958)
+	... 10 more
+Caused by: java.lang.ClassNotFoundException: org.springframework.aop.TargetSource
+	at java.net.URLClassLoader$1.run(URLClassLoader.java:217)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at java.net.URLClassLoader.findClass(URLClassLoader.java:205)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:323)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:268)
+	... 16 more
+
+  Commenting out the line for springframework.scripting.support.ScriptFactoryPostProcessor inside red5-web.xml
+  will address the above, howeve IBandwidthConfigure related exception comes out.
+
 ################################################################################
 # References: 
 ################################################################################
+
+http://www.videosoftware.pro/forum/THREAD-Problems-using-red5-as-the-server
 
 http://mrbinitie.blogspot.com/2008/05/stopping-starting-and-restarting-red5.html
 
