@@ -129,8 +129,8 @@ bool readData(u8* data, u32 len)
                 }
                 if ( curBuf_.size() >= 5 ) {
                     curStreamId_ = curBuf_[0];
-                    assert(curStreamId_ <= (u32)MAX_XCODING_INSTANCES);
                     //fprintf(stderr, "---curBuf_[0]=%d, curStreamId_=%d\r\n", curBuf_[0], curStreamId_);
+                    assert(curStreamId_ <= (u32)MAX_XCODING_INSTANCES);                    
 
                     memcpy(&curStreamLen_, curBuf_.data()+1, 4); //read the len
                     curBuf_.clear();
@@ -151,7 +151,9 @@ bool readData(u8* data, u32 len)
                 if ( curBuf_.size() >= curStreamLen_ ) {
                     //fprintf(stderr, "---curStreamId_=%d curStreamLen_=%d\r\n", curStreamId_, curStreamLen_);
                     //read the actual buffer
-                    writer_[curStreamId_].writeData(curBuf_.data(), curStreamLen_); 
+                    if( curStreamLen_ ) {
+                        writer_[curStreamId_].writeData(curBuf_.data(), curStreamLen_); 
+                    }
                     curBuf_.clear();
                     curSegTagSize_ = 0;
                     curStreamCnt_--;

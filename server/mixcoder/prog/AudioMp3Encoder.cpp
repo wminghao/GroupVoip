@@ -41,7 +41,7 @@ AudioMp3Encoder::~AudioMp3Encoder()
 
 SmartPtr<SmartBuffer> AudioMp3Encoder::encodeAFrame(SmartPtr<SmartBuffer> input)
 {
-    SmartPtr<SmartBuffer> result;
+    SmartPtr<SmartBuffer> result = NULL;
     if ( input && input->dataLength() ) {
 
         int sampleSize = input->dataLength()/2;
@@ -58,6 +58,8 @@ SmartPtr<SmartBuffer> AudioMp3Encoder::encodeAFrame(SmartPtr<SmartBuffer> input)
         
             fprintf( stderr, "AudioMp3Encoder lame encoded pkt size=%d sample size=%d\n", encodedSize, sampleSize); 
             result = new SmartBuffer( encodedSize, encodedBits_);
+        } else {
+            fprintf( stderr, "*** nothing encoded AudioMp3Encoder lame encoded pkt size=%d sample size=%d\n", encodedSize, sampleSize); 
         }
     }
     return result;
