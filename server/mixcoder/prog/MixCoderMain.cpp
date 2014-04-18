@@ -13,8 +13,8 @@ int main( int argc, char** argv ) {
     int videoWidth = 640;
     int videoHeight = 480;
 
-    int audioBitrate = 32;
-    int audioFrequency = 44100;
+    int audioBitrate = 16; //16kbps
+    int audioFrequency = 16000;
     
     MixCoder* mixCoder = new MixCoder(videoBitrate, videoWidth, videoHeight, audioBitrate, audioFrequency);
 

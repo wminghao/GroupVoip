@@ -8,15 +8,18 @@
 #include "MixCoder.h"
 #include "FLVSegmentParser.h"
 #include "FLVSegmentOutput.h"
-#include "AudioEncoder.h"
+#include "AudioSpeexEncoder.h"
+#include "AudioMp3Encoder.h"
 #include "AudioDecoder.h"
 #include "VideoEncoder.h"
 #include "VideoDecoder.h"
 #include "AudioMixer.h"
 #include "VideoMixer.h"
+#include <assert.h>
 
 MixCoder::MixCoder(int vBitrate, int width, int height, 
-                   int aBitrate, int frequency) : vBitrate_(vBitrate),
+                   int aBitrate, int frequency) : bUseSpeex_(false),
+                                                  vBitrate_(vBitrate),
                                                   vWidth_(width),
                                                   vHeight_(height),
                                                   aBitrate_(aBitrate),
@@ -25,13 +28,21 @@ MixCoder::MixCoder(int vBitrate, int width, int height,
     flvSegParser_ = new FLVSegmentParser( 30 ); //end result 30 fps
     
     VideoStreamSetting vOutputSetting = { kVP8VideoPacket, vWidth_, vHeight_ }; 
-    AudioStreamSetting aOutputSetting = { kMP3, kSndMono, getAudioRate(aBitrate_), kSnd16Bit, 0 };
+    AudioStreamSetting aOutputSetting = { kMP316kHz, kSndMono, getAudioRate(16000), kSnd16Bit, 0 };
     AudioStreamSetting aInputSetting = { kSpeex, kSndMono, getAudioRate(16000), kSnd16Bit, 0 };
     videoEncoder_ = new VideoEncoder( &vOutputSetting, vBitrate_ );
     videoMixer_ = new VideoMixer(&vOutputSetting);
 
+    if( bUseSpeex_ ) {
+        aOutputSetting.acid = kSpeex;
+    } //otherwise, it's 16kHz mp3 audio(customized format)
+
     for( u32 i = 0; i < MAX_XCODING_INSTANCES+1; i++ ) {
-        audioEncoder_[i] = new AudioEncoder( &aInputSetting, &aOutputSetting, aBitrate_ );
+        if( bUseSpeex_ ) {
+            audioEncoder_[i] = new AudioSpeexEncoder( &aInputSetting, &aOutputSetting, aBitrate_ );
+        } else {
+            audioEncoder_[i] = new AudioMp3Encoder( &aInputSetting, &aOutputSetting, aBitrate_ );
+        }
         audioMixer_[i] = new AudioMixer();
     }
     for( u32 i = 0; i < MAX_XCODING_INSTANCES; i++ ) {

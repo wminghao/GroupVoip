@@ -1,11 +1,9 @@
-#include "AudioEncoder.h"
+#include "AudioSpeexEncoder.h"
+#include <speex/speex.h>
 
-AudioEncoder::AudioEncoder(AudioStreamSetting* inputSetting, AudioStreamSetting* outputSetting, int aBitrate):aBitrate_(aBitrate)
+AudioSpeexEncoder::AudioSpeexEncoder(AudioStreamSetting* inputSetting, AudioStreamSetting* outputSetting, int aBitrate):AudioEncoder(inputSetting, outputSetting, aBitrate)
 {
     //speex encoder
-    memcpy(&inputSetting_, inputSetting, sizeof(AudioStreamSetting));
-    memcpy(&outputSetting_, outputSetting, sizeof(AudioStreamSetting));
-    
     /*Create a new encoder state in wideband mode*/
     encoder_ = speex_encoder_init(&speex_wb_mode);
     speex_encoder_ctl(encoder_,SPEEX_GET_FRAME_SIZE,&frameSize_);
@@ -15,7 +13,7 @@ AudioEncoder::AudioEncoder(AudioStreamSetting* inputSetting, AudioStreamSetting*
     int qLevel=8;
     speex_encoder_ctl(encoder_, SPEEX_SET_QUALITY, &qLevel);
 }
-AudioEncoder::~AudioEncoder()
+AudioSpeexEncoder::~AudioSpeexEncoder()
 {
     /*Destroy the encoder state*/
     speex_encoder_destroy(encoder_);
@@ -23,7 +21,7 @@ AudioEncoder::~AudioEncoder()
     speex_bits_destroy(&bits_);
 }
 
-SmartPtr<SmartBuffer> AudioEncoder::encodeAFrame(SmartPtr<SmartBuffer> input)
+SmartPtr<SmartBuffer> AudioSpeexEncoder::encodeAFrame(SmartPtr<SmartBuffer> input)
 {
     SmartPtr<SmartBuffer> result;
     if ( input && input->dataLength() ) {

@@ -1,0 +1,39 @@
+==============Installation============
+(On Ubuntu) 
+//SERVER ENVIRONMENT
+sudo apt-get install libspeex-dev
+sudo apt-get install libvpx-dev
+
+sudo apt-get install libx264-dev
+
+sudo apt-get install libmp3lame-dev
+sudo apt-get install libavcodec-dev
+sudo apt-get install libavcodec-extra-53
+sudo apt-get install libavformat-dev
+sudo apt-get install libsamplerate0-dev
+sudo apt-get install subversion scons make fakeroot lintian g++ ffmpeg x264 libx264-dev libswscale-dev
+
+(Patch code)
+
+/usr/include/libavutil/common.h
+
+#ifdef __cplusplus
+#define __STDC_CONSTANT_MACROS
+#ifdef _STDINT_H
+#undef _STDINT_H
+#endif
+#include <stdint.h>
+#endif
+#ifndef   UINT64_C
+#define   UINT64_C(value)__CONCAT(value,ULL)
+#endif
+#if defined(__cplusplus) && !defined(__STDC_CONSTANT_MACROS) && !defined(UINT64_C)
+#error missing -D__STDC_CONSTANT_MACROS / #define __STDC_CONSTANT_MACROS
+#endif
+
+fix other issues, avcodec.h 
+1) #if !defined(CodecID) 
+#define CodecID AVCodecID
+#endif
+2) //attribute_deprecated                                                                                                                                                                                      
+AVFrame *avcodec_alloc_frame(void);

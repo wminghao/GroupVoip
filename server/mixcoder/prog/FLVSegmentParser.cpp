@@ -71,8 +71,10 @@ bool FLVSegmentParser::isNextVideoStreamReady(u32& videoTimestamp, u32 audioTime
                     //video has accumulated some data and audio has already catch up
                     videoTimestamp = lastBucketTimestamp_ = nextBucketTimestamp; //strictly follow
                     isReady = true;
+                    /*
                     fprintf(stderr, "===follow up video timstamp=%d, hasAnyStreamStartedAndReady=%d, audioBucketTimestamp=%d nextBucketTimestamp=%d, lastBucketTimestamp_=%d\r\n", 
                             videoTimestamp, hasAnyStreamStartedAndReady, (u32)audioBucketTimestamp, (u32)nextBucketTimestamp, (u32)lastBucketTimestamp_);
+                    */
                 } else {
                     //wait for the nextBucketTimestamp, since audio is not ready yet
                     //not ready yet
@@ -83,8 +85,10 @@ bool FLVSegmentParser::isNextVideoStreamReady(u32& videoTimestamp, u32 audioTime
                 assert( audioBucketTimestamp > nextBucketTimestamp );
                 //if audio is already ahead, pop that frame out
                 videoTimestamp = lastBucketTimestamp_ = audioBucketTimestamp;
-                fprintf(stderr, "===follow up 2 video timstamp=%d, hasAnyStreamStartedAndReady=%d, audioBucketTimestamp=%d nextBucketTimestamp=%d, lastBucketTimestamp_=%d\r\n", 
+                /*
+                  fprintf(stderr, "===follow up 2 video timstamp=%d, hasAnyStreamStartedAndReady=%d, audioBucketTimestamp=%d nextBucketTimestamp=%d, lastBucketTimestamp_=%d\r\n", 
                         videoTimestamp, hasAnyStreamStartedAndReady, (u32)audioBucketTimestamp, (u32)nextBucketTimestamp, (u32)lastBucketTimestamp_);
+                */
                 isReady = true;
             }
         } else {
@@ -319,10 +323,10 @@ SmartPtr<AccessUnit> FLVSegmentParser::getNextVideoFrame(u32 index, u32 timestam
     if ( videoQueue_[index].size() > 0 ) {
         au = videoQueue_[index].front();
         if ( au && au->pts <= timestamp ) {
-            fprintf( stderr, "------pop Next video frame, index=%d pts=%d\r\n", index, au->pts);
+            //fprintf( stderr, "------pop Next video frame, index=%d pts=%d\r\n", index, au->pts);
             videoQueue_[index].pop();
         } else {
-            fprintf( stderr, "------nopop Next video frame, index=%d pts=%d\r\n", index, au->pts);
+            //fprintf( stderr, "------nopop Next video frame, index=%d pts=%d\r\n", index, au->pts);
             //don't pop anything that has a bigger timestamp
             au = NULL;
         }

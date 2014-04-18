@@ -7,7 +7,7 @@
 class FLVOutput
 {
  public:
-    //vp8 video + mp3 audio
+    //vp8 video + mp3 audio(16kHz)/speex(16khz)
  FLVOutput(VideoStreamSetting* videoSetting, AudioStreamSetting* audioSetting):flvHeaderSent_(false)
         {
             memcpy(&videoSetting_, videoSetting, sizeof(VideoStreamSetting));

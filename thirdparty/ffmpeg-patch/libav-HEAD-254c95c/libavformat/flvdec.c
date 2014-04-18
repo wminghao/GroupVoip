@@ -130,6 +130,9 @@ static int flv_same_audio_codec(AVCodecContext *acodec, int flags)
     case FLV_CODECID_PCM_ALAW:
         return acodec->sample_rate == 8000 &&
                acodec->codec_id    == AV_CODEC_ID_PCM_ALAW;
+    case FLV_CODECID_MP3_16KHZ:
+        return acodec->sample_rate == 16000 &&
+	       acodec->codec_id == AV_CODEC_ID_MP3;
     default:
         return acodec->codec_tag == (flv_codecid >> FLV_AUDIO_CODECID_OFFSET);
     }
@@ -187,6 +190,11 @@ static void flv_set_audio_codec(AVFormatContext *s, AVStream *astream,
     case FLV_CODECID_PCM_ALAW:
         acodec->sample_rate = 8000;
         acodec->codec_id    = AV_CODEC_ID_PCM_ALAW;
+        break;
+    case FLV_CODECID_MP3_16KHZ:
+        acodec->codec_id    = AV_CODEC_ID_MP3;
+        acodec->sample_rate = 16000;
+        astream->need_parsing = AVSTREAM_PARSE_FULL;
         break;
     default:
         av_log(s, AV_LOG_INFO, "Unsupported audio codec (%x)\n",
@@ -258,7 +266,12 @@ static int flv_set_video_codec(AVFormatContext *s, AVStream *vstream,
         return 3;     // not 4, reading packet type will consume one byte
     case FLV_CODECID_VP8:
         vcodec->codec_id = AV_CODEC_ID_VP8;
-        return 9;     // 1 + 8 bytes of info, reading packet type will consume one byte
+        vcodec->codec_tag = 0x30385056; //fourcc vp8
+	//TODO test only
+	vcodec->width = 640;
+	vcodec->height = 480;
+	avio_skip(s->pb, 8); // TODO skip 8 bytes of information
+        return 8;     // 8 bytes of extra info
     default:
         av_log(s, AV_LOG_INFO, "Unsupported video codec (%x)\n", flv_codecid);
         vcodec->codec_tag = flv_codecid;
@@ -888,6 +901,8 @@ skip:
             ctx.sample_rate = sample_rate;
             flv_set_audio_codec(s, st, &ctx, flags & FLV_AUDIO_CODECID_MASK);
             sample_rate = ctx.sample_rate;
+	    //for speex or mp3 16khz, reset the sampling rate
+	    st->codec->sample_rate = sample_rate;
         }
     } else {
         size -= flv_set_video_codec(s, st, flags & FLV_VIDEO_CODECID_MASK, 1);
