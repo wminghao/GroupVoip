@@ -86,6 +86,7 @@ enum {
     FLV_CODECID_PCM_MULAW            = 8 << FLV_AUDIO_CODECID_OFFSET,
     FLV_CODECID_AAC                  = 10<< FLV_AUDIO_CODECID_OFFSET,
     FLV_CODECID_SPEEX                = 11<< FLV_AUDIO_CODECID_OFFSET,
+    FLV_CODECID_MP3_16KHZ            = 15<< FLV_AUDIO_CODECID_OFFSET, //customized for groupvoip
 };
 
 enum {
@@ -95,7 +96,7 @@ enum {
     FLV_CODECID_VP6A    = 5,
     FLV_CODECID_SCREEN2 = 6,
     FLV_CODECID_H264    = 7,
-    FLV_CODECID_VP8    = 8,
+    FLV_CODECID_VP8    = 8, //customized for groupvoip
 };
 
 enum {
