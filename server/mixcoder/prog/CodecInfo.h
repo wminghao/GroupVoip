@@ -75,7 +75,8 @@ typedef enum
     kAAC = 10,
     kSpeex = 11,
     kMP38kHz = 14,
-    kDeviceSpecific = 15 //Device-specific sound
+    kMP316kHz = 15,
+    kDeviceSpecific = 15 //Device-specific sound, now it's 16khz mp3
 }AudioCodecId;
 
 typedef enum

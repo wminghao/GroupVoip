@@ -46,6 +46,9 @@ class MixCoder
     void flush();
 
  private:
+    //audio uses speex or mp3
+    bool bUseSpeex_;
+
     //output settings
     int vBitrate_;
     int vWidth_;
