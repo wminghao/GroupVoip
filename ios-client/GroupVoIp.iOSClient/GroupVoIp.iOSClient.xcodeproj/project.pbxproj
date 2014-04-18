@@ -32,7 +32,6 @@
 		2FAA824118F47FD70052EA1A /* libstdc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2FAA824018F47FD70052EA1A /* libstdc++.dylib */; };
 		2FAA824318F482020052EA1A /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2FAA824218F482020052EA1A /* CoreText.framework */; };
 		2FAA824518F482280052EA1A /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2FAA824418F482280052EA1A /* Security.framework */; };
-		2FAA824D18F4D1890052EA1A /* libMobileVLCKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2FAA824C18F4D13F0052EA1A /* libMobileVLCKit.a */; };
 		2FAA825418F4D2DA0052EA1A /* include in Resources */ = {isa = PBXBuildFile; fileRef = 2FAA825018F4D2DA0052EA1A /* include */; };
 		2FAA825518F4D2DA0052EA1A /* lib in Resources */ = {isa = PBXBuildFile; fileRef = 2FAA825118F4D2DA0052EA1A /* lib */; };
 		2FAA825618F4D2DA0052EA1A /* modules in Resources */ = {isa = PBXBuildFile; fileRef = 2FAA825218F4D2DA0052EA1A /* modules */; };
@@ -114,7 +113,6 @@
 				2FAA823718F47F270052EA1A /* AudioToolbox.framework in Frameworks */,
 				2FAA81FD18F46D880052EA1A /* UIKit.framework in Frameworks */,
 				2FAA81F918F46D880052EA1A /* Foundation.framework in Frameworks */,
-				2FAA824D18F4D1890052EA1A /* libMobileVLCKit.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -525,6 +523,8 @@
 					"$(inherited)",
 					"/Users/wminghao/Develop/vlc-iOS/VLCKit/build/Debug-iphonesimulator",
 				);
+				"OTHER_LDFLAGS[sdk=iphoneos*]" = "/Users/wminghao/Develop/vlc-iOS/VLCKit/build/Debug-iphoneos/libMobileVLCKit.a";
+				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = "/Users/wminghao/Develop/vlc-iOS/VLCKit/build/Debug-iphonesimulator/libMobileVLCKit.a";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 				test = "";
@@ -550,6 +550,7 @@
 					"$(inherited)",
 					"/Users/wminghao/Develop/vlc-iOS/VLCKit/build/Debug-iphonesimulator",
 				);
+				"OTHER_LDFLAGS[arch=*]" = "/Users/wminghao/Develop/vlc-iOS/VLCKit/build/Release-iphoneos/libMobileVLCKit.a";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 				test = "";
