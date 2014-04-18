@@ -8,12 +8,13 @@
 #include "MixCoder.h"
 #include "FLVSegmentParser.h"
 #include "FLVSegmentOutput.h"
-#include "AudioEncoder.h"
+#include "AudioSpeexEncoder.h"
 #include "AudioDecoder.h"
 #include "VideoEncoder.h"
 #include "VideoDecoder.h"
 #include "AudioMixer.h"
 #include "VideoMixer.h"
+#include <assert.h>
 
 MixCoder::MixCoder(int vBitrate, int width, int height, 
                    int aBitrate, int frequency) : vBitrate_(vBitrate),
@@ -31,7 +32,7 @@ MixCoder::MixCoder(int vBitrate, int width, int height,
     videoMixer_ = new VideoMixer(&vOutputSetting);
 
     for( u32 i = 0; i < MAX_XCODING_INSTANCES+1; i++ ) {
-        audioEncoder_[i] = new AudioEncoder( &aInputSetting, &aOutputSetting, aBitrate_ );
+        audioEncoder_[i] = new AudioSpeexEncoder( &aInputSetting, &aOutputSetting, aBitrate_ );
         audioMixer_[i] = new AudioMixer();
     }
     for( u32 i = 0; i < MAX_XCODING_INSTANCES; i++ ) {
