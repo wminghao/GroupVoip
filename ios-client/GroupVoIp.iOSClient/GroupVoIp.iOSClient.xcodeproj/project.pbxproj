@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2F8B7C0318F5D31C00AA289C /* contrib in Resources */ = {isa = PBXBuildFile; fileRef = 2F8B7C0218F5D31C00AA289C /* contrib */; };
+		2F9CA95418F70BF300800A5F /* ffmpeg in Resources */ = {isa = PBXBuildFile; fileRef = 2F9CA95318F70BF300800A5F /* ffmpeg */; };
 		2FAA81F918F46D880052EA1A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2FAA81F818F46D880052EA1A /* Foundation.framework */; };
 		2FAA81FB18F46D880052EA1A /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2FAA81FA18F46D880052EA1A /* CoreGraphics.framework */; };
 		2FAA81FD18F46D880052EA1A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2FAA81FC18F46D880052EA1A /* UIKit.framework */; };
@@ -57,7 +57,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		2F8B7C0218F5D31C00AA289C /* contrib */ = {isa = PBXFileReference; lastKnownFileType = folder; name = contrib; path = "../../../../vlc-iOS/VLCKit/MobileVLCKit/ImportedSources/vlc/contrib"; sourceTree = "<group>"; };
+		2F9CA95318F70BF300800A5F /* ffmpeg */ = {isa = PBXFileReference; lastKnownFileType = folder; name = ffmpeg; path = "../../../../vlc-iOS/VLCKit/MobileVLCKit/ImportedSources/vlc/contrib/iPhoneSimulator-x86_64/ffmpeg"; sourceTree = "<group>"; };
 		2FAA81F518F46D880052EA1A /* GroupVoIp.iOSClient.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GroupVoIp.iOSClient.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2FAA81F818F46D880052EA1A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		2FAA81FA18F46D880052EA1A /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -94,6 +94,7 @@
 		2FAA825118F4D2DA0052EA1A /* lib */ = {isa = PBXFileReference; lastKnownFileType = folder; name = lib; path = "../../../../vlc-iOS/VLCKit/MobileVLCKit/ImportedSources/vlc/lib"; sourceTree = "<group>"; };
 		2FAA825218F4D2DA0052EA1A /* modules */ = {isa = PBXFileReference; lastKnownFileType = folder; name = modules; path = "../../../../vlc-iOS/VLCKit/MobileVLCKit/ImportedSources/vlc/modules"; sourceTree = "<group>"; };
 		2FAA825318F4D2DA0052EA1A /* src */ = {isa = PBXFileReference; lastKnownFileType = folder; name = src; path = "../../../../vlc-iOS/VLCKit/MobileVLCKit/ImportedSources/vlc/src"; sourceTree = "<group>"; };
+		2FCFFCF9190092D50061066D /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -130,6 +131,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2F9CA95218F70B8F00800A5F /* ffmpeg */ = {
+			isa = PBXGroup;
+			children = (
+				2F9CA95318F70BF300800A5F /* ffmpeg */,
+			);
+			name = ffmpeg;
+			sourceTree = "<group>";
+		};
 		2FAA81EC18F46D880052EA1A = {
 			isa = PBXGroup;
 			children = (
@@ -169,6 +178,7 @@
 				2FAA81FA18F46D880052EA1A /* CoreGraphics.framework */,
 				2FAA81FC18F46D880052EA1A /* UIKit.framework */,
 				2FAA821A18F46D880052EA1A /* XCTest.framework */,
+				2FCFFCF9190092D50061066D /* CoreFoundation.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -228,6 +238,7 @@
 		2FAA824E18F4D1A80052EA1A /* vlc-source */ = {
 			isa = PBXGroup;
 			children = (
+				2F9CA95218F70B8F00800A5F /* ffmpeg */,
 				2FAA824F18F4D1CA0052EA1A /* vlc */,
 			);
 			name = "vlc-source";
@@ -236,7 +247,6 @@
 		2FAA824F18F4D1CA0052EA1A /* vlc */ = {
 			isa = PBXGroup;
 			children = (
-				2F8B7C0218F5D31C00AA289C /* contrib */,
 				2FAA825018F4D2DA0052EA1A /* include */,
 				2FAA825118F4D2DA0052EA1A /* lib */,
 				2FAA825218F4D2DA0052EA1A /* modules */,
@@ -338,12 +348,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				2FAA825518F4D2DA0052EA1A /* lib in Resources */,
+				2F9CA95418F70BF300800A5F /* ffmpeg in Resources */,
 				2FAA820F18F46D880052EA1A /* Main_iPad.storyboard in Resources */,
 				2FAA821418F46D880052EA1A /* Images.xcassets in Resources */,
 				2FAA825718F4D2DA0052EA1A /* src in Resources */,
 				2FAA820C18F46D880052EA1A /* Main_iPhone.storyboard in Resources */,
 				2FAA825418F4D2DA0052EA1A /* include in Resources */,
-				2F8B7C0318F5D31C00AA289C /* contrib in Resources */,
 				2FAA820318F46D880052EA1A /* InfoPlist.strings in Resources */,
 				2FAA825618F4D2DA0052EA1A /* modules in Resources */,
 			);
