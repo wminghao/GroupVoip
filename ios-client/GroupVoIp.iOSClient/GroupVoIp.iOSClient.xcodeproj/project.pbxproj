@@ -18,11 +18,6 @@
 		2FAA820F18F46D880052EA1A /* Main_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2FAA820D18F46D880052EA1A /* Main_iPad.storyboard */; };
 		2FAA821218F46D880052EA1A /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2FAA821118F46D880052EA1A /* ViewController.m */; };
 		2FAA821418F46D880052EA1A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2FAA821318F46D880052EA1A /* Images.xcassets */; };
-		2FAA821B18F46D880052EA1A /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2FAA821A18F46D880052EA1A /* XCTest.framework */; };
-		2FAA821C18F46D880052EA1A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2FAA81F818F46D880052EA1A /* Foundation.framework */; };
-		2FAA821D18F46D880052EA1A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2FAA81FC18F46D880052EA1A /* UIKit.framework */; };
-		2FAA822518F46D880052EA1A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2FAA822318F46D880052EA1A /* InfoPlist.strings */; };
-		2FAA822718F46D880052EA1A /* GroupVoIp_iOSClientTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2FAA822618F46D880052EA1A /* GroupVoIp_iOSClientTests.m */; };
 		2FAA823118F479BE0052EA1A /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2FAA823018F479BE0052EA1A /* OpenGLES.framework */; };
 		2FAA823318F479CB0052EA1A /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2FAA823218F479CB0052EA1A /* QuartzCore.framework */; };
 		2FAA823718F47F270052EA1A /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2FAA823618F47F270052EA1A /* AudioToolbox.framework */; };
@@ -39,13 +34,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		2FAA821E18F46D880052EA1A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 2FAA81ED18F46D880052EA1A /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 2FAA81F418F46D880052EA1A;
-			remoteInfo = GroupVoIp.iOSClient;
-		};
 		2FAA824B18F4D13F0052EA1A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 2FAA824618F4D13F0052EA1A /* MobileVLCKit.xcodeproj */;
@@ -72,11 +60,7 @@
 		2FAA821018F46D880052EA1A /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
 		2FAA821118F46D880052EA1A /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		2FAA821318F46D880052EA1A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
-		2FAA821918F46D880052EA1A /* GroupVoIp.iOSClientTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GroupVoIp.iOSClientTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2FAA821A18F46D880052EA1A /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
-		2FAA822218F46D880052EA1A /* GroupVoIp.iOSClientTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GroupVoIp.iOSClientTests-Info.plist"; sourceTree = "<group>"; };
-		2FAA822418F46D880052EA1A /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		2FAA822618F46D880052EA1A /* GroupVoIp_iOSClientTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GroupVoIp_iOSClientTests.m; sourceTree = "<group>"; };
 		2FAA823018F479BE0052EA1A /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		2FAA823218F479CB0052EA1A /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		2FAA823418F47A500052EA1A /* libMobileVLCKit.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libMobileVLCKit.a; path = "../../../../vlc-iOS/VLCKit/build/Debug-iphonesimulator/libMobileVLCKit.a"; sourceTree = "<group>"; };
@@ -116,16 +100,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		2FAA821618F46D880052EA1A /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				2FAA821B18F46D880052EA1A /* XCTest.framework in Frameworks */,
-				2FAA821D18F46D880052EA1A /* UIKit.framework in Frameworks */,
-				2FAA821C18F46D880052EA1A /* Foundation.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -143,7 +117,6 @@
 				2FAA824E18F4D1A80052EA1A /* vlc-source */,
 				2FAA824618F4D13F0052EA1A /* MobileVLCKit.xcodeproj */,
 				2FAA81FE18F46D880052EA1A /* GroupVoIp.iOSClient */,
-				2FAA822018F46D880052EA1A /* GroupVoIp.iOSClientTests */,
 				2FAA81F718F46D880052EA1A /* Frameworks */,
 				2FAA81F618F46D880052EA1A /* Products */,
 			);
@@ -153,7 +126,6 @@
 			isa = PBXGroup;
 			children = (
 				2FAA81F518F46D880052EA1A /* GroupVoIp.iOSClient.app */,
-				2FAA821918F46D880052EA1A /* GroupVoIp.iOSClientTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -207,24 +179,6 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		2FAA822018F46D880052EA1A /* GroupVoIp.iOSClientTests */ = {
-			isa = PBXGroup;
-			children = (
-				2FAA822618F46D880052EA1A /* GroupVoIp_iOSClientTests.m */,
-				2FAA822118F46D880052EA1A /* Supporting Files */,
-			);
-			path = GroupVoIp.iOSClientTests;
-			sourceTree = "<group>";
-		};
-		2FAA822118F46D880052EA1A /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				2FAA822218F46D880052EA1A /* GroupVoIp.iOSClientTests-Info.plist */,
-				2FAA822318F46D880052EA1A /* InfoPlist.strings */,
-			);
-			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
 		2FAA824718F4D13F0052EA1A /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -273,24 +227,6 @@
 			productReference = 2FAA81F518F46D880052EA1A /* GroupVoIp.iOSClient.app */;
 			productType = "com.apple.product-type.application";
 		};
-		2FAA821818F46D880052EA1A /* GroupVoIp.iOSClientTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 2FAA822D18F46D880052EA1A /* Build configuration list for PBXNativeTarget "GroupVoIp.iOSClientTests" */;
-			buildPhases = (
-				2FAA821518F46D880052EA1A /* Sources */,
-				2FAA821618F46D880052EA1A /* Frameworks */,
-				2FAA821718F46D880052EA1A /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				2FAA821F18F46D880052EA1A /* PBXTargetDependency */,
-			);
-			name = GroupVoIp.iOSClientTests;
-			productName = GroupVoIp.iOSClientTests;
-			productReference = 2FAA821918F46D880052EA1A /* GroupVoIp.iOSClientTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -299,11 +235,6 @@
 			attributes = {
 				LastUpgradeCheck = 0510;
 				ORGANIZATIONNAME = "Howard Wang";
-				TargetAttributes = {
-					2FAA821818F46D880052EA1A = {
-						TestTargetID = 2FAA81F418F46D880052EA1A;
-					};
-				};
 			};
 			buildConfigurationList = 2FAA81F018F46D880052EA1A /* Build configuration list for PBXProject "GroupVoIp.iOSClient" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -325,7 +256,6 @@
 			projectRoot = "";
 			targets = (
 				2FAA81F418F46D880052EA1A /* GroupVoIp.iOSClient */,
-				2FAA821818F46D880052EA1A /* GroupVoIp.iOSClientTests */,
 			);
 		};
 /* End PBXProject section */
@@ -357,14 +287,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		2FAA821718F46D880052EA1A /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				2FAA822518F46D880052EA1A /* InfoPlist.strings in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -378,23 +300,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		2FAA821518F46D880052EA1A /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				2FAA822718F46D880052EA1A /* GroupVoIp_iOSClientTests.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		2FAA821F18F46D880052EA1A /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 2FAA81F418F46D880052EA1A /* GroupVoIp.iOSClient */;
-			targetProxy = 2FAA821E18F46D880052EA1A /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		2FAA820118F46D880052EA1A /* InfoPlist.strings */ = {
@@ -419,14 +325,6 @@
 				2FAA820E18F46D880052EA1A /* Base */,
 			);
 			name = Main_iPad.storyboard;
-			sourceTree = "<group>";
-		};
-		2FAA822318F46D880052EA1A /* InfoPlist.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				2FAA822418F46D880052EA1A /* en */,
-			);
-			name = InfoPlist.strings;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -550,50 +448,11 @@
 					"$(inherited)",
 					"/Users/wminghao/Develop/vlc-iOS/VLCKit/build/Debug-iphonesimulator",
 				);
-				"OTHER_LDFLAGS[arch=*]" = "/Users/wminghao/Develop/vlc-iOS/VLCKit/build/Release-iphoneos/libMobileVLCKit.a";
+				"OTHER_LDFLAGS[sdk=iphoneos*]" = "/Users/wminghao/Develop/vlc-iOS/VLCKit/build/Release-iphoneos/libMobileVLCKit.a";
+				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = "/Users/wminghao/Develop/vlc-iOS/VLCKit/build/Release-iphonesimulator/libMobileVLCKit.a";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 				test = "";
-			};
-			name = Release;
-		};
-		2FAA822E18F46D880052EA1A /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/GroupVoIp.iOSClient.app/GroupVoIp.iOSClient";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(inherited)",
-					"$(DEVELOPER_FRAMEWORKS_DIR)",
-				);
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "GroupVoIp.iOSClient/GroupVoIp.iOSClient-Prefix.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				INFOPLIST_FILE = "GroupVoIp.iOSClientTests/GroupVoIp.iOSClientTests-Info.plist";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUNDLE_LOADER)";
-				WRAPPER_EXTENSION = xctest;
-			};
-			name = Debug;
-		};
-		2FAA822F18F46D880052EA1A /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/GroupVoIp.iOSClient.app/GroupVoIp.iOSClient";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(inherited)",
-					"$(DEVELOPER_FRAMEWORKS_DIR)",
-				);
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "GroupVoIp.iOSClient/GroupVoIp.iOSClient-Prefix.pch";
-				INFOPLIST_FILE = "GroupVoIp.iOSClientTests/GroupVoIp.iOSClientTests-Info.plist";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUNDLE_LOADER)";
-				WRAPPER_EXTENSION = xctest;
 			};
 			name = Release;
 		};
@@ -614,15 +473,6 @@
 			buildConfigurations = (
 				2FAA822B18F46D880052EA1A /* Debug */,
 				2FAA822C18F46D880052EA1A /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		2FAA822D18F46D880052EA1A /* Build configuration list for PBXNativeTarget "GroupVoIp.iOSClientTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				2FAA822E18F46D880052EA1A /* Debug */,
-				2FAA822F18F46D880052EA1A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
