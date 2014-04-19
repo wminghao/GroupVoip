@@ -14,6 +14,7 @@
     VLCMediaPlayer *_mediaplayer;
 }
 @property (weak, nonatomic) IBOutlet UITextField *ipAddrTextField;
+@property (nonatomic) NSString* ipAddr;
 @end
 
 @implementation ViewController
@@ -29,14 +30,18 @@
     
     _mediaplayer.media = nil;
     
-    self.ipAddrTextField.text = @"192.168.0.92";
+    self.ipAddr = @"192.168.0.92";
+    self.ipAddrTextField.text = self.ipAddr;
+    [self.ipAddrTextField addTarget:self
+                  action:@selector(editingChanged:)
+        forControlEvents:UIControlEventEditingChanged];
     
 }
 - (IBAction)onPlay:(id)sender {
     
     if( _mediaplayer.media == nil ) {
         /* create a media object and give it to the player */
-        _mediaplayer.media = [VLCMedia mediaWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://%@/~wminghao/groupvoip/abc_32.flv", self.ipAddrTextField.text]]];
+        _mediaplayer.media = [VLCMedia mediaWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://%@/~wminghao/groupvoip/abc_32.flv", self.ipAddr]]];
     }
     
     if (_mediaplayer.isPlaying) {
@@ -49,6 +54,10 @@
     if( _mediaplayer.media != nil ) {
         [_mediaplayer stop];
     }
+}
+-(void) editingChanged:(id)sender {
+    // your code
+    self.ipAddr = self.ipAddrTextField.text;
 }
 
 - (void)didReceiveMemoryWarning
