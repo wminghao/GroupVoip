@@ -40,8 +40,10 @@ None.
 # References: 
 ################################################################################
 
-http://www.videosoftware.pro/forum/THREAD-Problems-using-red5-as-the-server
+* Setting up the streaming recorder environment.pdf
 
-http://mrbinitie.blogspot.com/2008/05/stopping-starting-and-restarting-red5.html
+* http://www.videosoftware.pro/forum/THREAD-Problems-using-red5-as-the-server
+
+* http://mrbinitie.blogspot.com/2008/05/stopping-starting-and-restarting-red5.html
 
 
