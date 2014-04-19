@@ -60,8 +60,8 @@
     // your code
     self.ipAddr = self.ipAddrTextField.text;
 }
--(BOOL) textFieldShouldReturn:(UITextField *)textField{
-    
+-(BOOL) textFieldShouldReturn:(UITextField *)textField {
+    self.ipAddr = self.ipAddrTextField.text;
     [textField resignFirstResponder];
     return YES;
 }
