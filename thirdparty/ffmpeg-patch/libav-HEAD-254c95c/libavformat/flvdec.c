@@ -267,9 +267,6 @@ static int flv_set_video_codec(AVFormatContext *s, AVStream *vstream,
     case FLV_CODECID_VP8:
         vcodec->codec_id = AV_CODEC_ID_VP8;
         vcodec->codec_tag = 0x30385056; //fourcc vp8
-	//TODO test only
-	vcodec->width = 640;
-	vcodec->height = 480;
 	avio_skip(s->pb, 8); // TODO skip 8 bytes of information
         return 8;     // 8 bytes of extra info
     default:

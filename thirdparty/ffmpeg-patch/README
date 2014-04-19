@@ -1,11 +1,9 @@
 Here is a way to force rebuild after we modified ffmpeg/libavformat code
 
-0. make sure the vlc code is built from scratch.
+0. make sure the vlc code is built from scratch. (run sh ./buildMobileVLCKit.sh -d -s -v)
 1. change ffmpeg, modify source code from libav-xxx/libavformat/flv.h, flvdec.c, etc
 2. remove the .ffmpeg file to force rebuild
-3. modify vlc/extras/package/ios/build.sh to remove the line "make fetch" which will NOT download anything from vlc github root
-4. modify buildMobileVLCKit.sh to remove the line: git reset --hard ${TESTEDHASH} git am ../../patches/*.patch to force update the code(build.sh).
-5. package the source code and save it as ~/Develop/vlc-iOS/VLCKit/MobileVLCKit/ImportedSources/vlc/contrib/tarballs/ffmpeg-HEAD.tar.gz
-6. run the build sh ./buildMobileVLCKit.sh -d -s -v from VLCKit
+3. package the source code and save it as ~/Develop/vlc-iOS/VLCKit/MobileVLCKit/ImportedSources/vlc/contrib/tarballs/ffmpeg-HEAD.tar.gz
+4. run the build sh ./buildMobileVLCKit.sh -d -s -v -n from VLCKit (-n means no network)
 
 It's awkward.
