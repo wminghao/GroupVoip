@@ -32,6 +32,7 @@
     
     self.ipAddr = @"192.168.0.92";
     self.ipAddrTextField.text = self.ipAddr;
+    self.ipAddrTextField.delegate = self;
     [self.ipAddrTextField addTarget:self
                   action:@selector(editingChanged:)
         forControlEvents:UIControlEventEditingChanged];
@@ -59,7 +60,11 @@
     // your code
     self.ipAddr = self.ipAddrTextField.text;
 }
-
+-(BOOL) textFieldShouldReturn:(UITextField *)textField{
+    
+    [textField resignFirstResponder];
+    return YES;
+}
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
