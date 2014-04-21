@@ -18,6 +18,8 @@ extern "C" {
 #include "vpx/vp8cx.h"
 
 #define VPX_TS_MAX_PERIODICITY 16
+//we choose to use 5 layers of temporal scalability
+#define NUM_LAYERS 5
 
 #define DEBUG_SAVE_IVF
 
@@ -47,7 +49,7 @@ class VideoEncoder
     u32                  timestampTick_;
         
 #ifdef DEBUG_SAVE_IVF
-    FILE* outFile_;
+    FILE* outFile_[NUM_LAYERS];
 #endif
 };
 #endif
