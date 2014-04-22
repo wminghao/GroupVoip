@@ -1,9 +1,11 @@
 Here is a way to force rebuild after we modified ffmpeg/libavformat code
 
-0. make sure the vlc code is built from scratch. (run sh ./buildMobileVLCKit.sh -d -s -v)
+0. run the build sh ./buildMobileVLCKit.sh -d -s -v to make sure the vlc code is built from scratch.
 1. change ffmpeg, modify source code from libav-xxx/libavformat/flv.h, flvdec.c, etc
 2. remove the .ffmpeg file to force rebuild
 3. package the source code and save it as ~/Develop/vlc-iOS/VLCKit/MobileVLCKit/ImportedSources/vlc/contrib/tarballs/ffmpeg-HEAD.tar.gz
 4. run the build sh ./buildMobileVLCKit.sh -d -s -v -n from VLCKit (-n means no network)
+5. Goto /Users/wminghao/Develop/GroupVoip.git/trunk/ios-client, run ./cplibfiles.bat, to copy the release files to the iosClient project
+6. commit the library files to the iosClient project.
 
 It's awkward.

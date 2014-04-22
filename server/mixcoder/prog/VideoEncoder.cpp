@@ -61,9 +61,6 @@ static void write_ivf_frame_header(FILE *outfile,
 }
 #endif //DEBUG_SAVE_IVF
 
-//we choose to use 5 layers of temporal scalability
-#define NUM_LAYERS 5
-
 VideoEncoder::VideoEncoder( VideoStreamSetting* setting, int vBaseLayerBitrate ) : vBaseLayerBitrate_(vBaseLayerBitrate), frameInputCnt_(0), frameOutputCnt_(0), timestampTick_(0)
 {
     vpx_codec_err_t      res;
@@ -168,8 +165,13 @@ VideoEncoder::VideoEncoder( VideoStreamSetting* setting, int vBaseLayerBitrate )
                       max_intra_size_pct);
 
 #ifdef DEBUG_SAVE_IVF
-    outFile_ = fopen("test_result.ivf", "wb");
-    write_ivf_file_header(outFile_, &cfg_, 0);
+    for (int i=0; i<NUM_LAYERS; i++) {
+        char file_name[512];
+        sprintf(file_name, "result_%d.ivf", i);
+        outFile_[i] = fopen(file_name, "wb");
+ 
+        write_ivf_file_header(outFile_[i], &cfg_, 0);
+    }
 #endif
 }
 
@@ -179,10 +181,14 @@ VideoEncoder::~VideoEncoder()
         fprintf(stderr, "Failed to destroy codec");
     }
 #ifdef DEBUG_SAVE_IVF
-    if (!fseek(outFile_, 0, SEEK_SET)) {
-        write_ivf_file_header (outFile_, &cfg_, frameOutputCnt_);
+    for (int i=0; i<NUM_LAYERS; i++) {
+        /*
+          if (!fseek(outFile_[i], 0, SEEK_SET)) {
+             write_ivf_file_header (outFile_[i], &cfg_, frameOutputCnt_);
+          }
+        */
+        fclose (outFile_[i]);
     }
-    fclose (outFile_);
 #endif
 }
 
@@ -204,8 +210,10 @@ SmartPtr<SmartBuffer> VideoEncoder::encodeAFrame(SmartPtr<SmartBuffer> input, bo
             case VPX_CODEC_CX_FRAME_PKT:
                 {
 #ifdef DEBUG_SAVE_IVF
-                    write_ivf_frame_header(outFile_, pkt);
-                    (void) fwrite(pkt->data.frame.buf, 1, pkt->data.frame.sz, outFile_);
+                    for ( int i = cfg_.ts_layer_id[frameInputCnt_ % cfg_.ts_periodicity]; i<NUM_LAYERS; i++) {
+                        write_ivf_frame_header(outFile_[i], pkt);
+                        (void) fwrite(pkt->data.frame.buf, 1, pkt->data.frame.sz, outFile_[i]);
+                    }
 #endif
                     *bIsKeyFrame = (flags == VPX_EFLAG_FORCE_KF); 
                     result = new SmartBuffer(pkt->data.frame.sz, (const char*)pkt->data.frame.buf);

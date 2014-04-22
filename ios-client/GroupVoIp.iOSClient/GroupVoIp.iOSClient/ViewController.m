@@ -7,6 +7,7 @@
 //
 
 #import "ViewController.h"
+#include <MobileVLCKit/MobileVLCKit.h>
 
 
 @interface ViewController ()
@@ -30,7 +31,7 @@
     
     _mediaplayer.media = nil;
     
-    self.ipAddr = @"192.168.0.92";
+    self.ipAddr = @"54.186.122.59";
     self.ipAddrTextField.text = self.ipAddr;
     self.ipAddrTextField.delegate = self;
     [self.ipAddrTextField addTarget:self
