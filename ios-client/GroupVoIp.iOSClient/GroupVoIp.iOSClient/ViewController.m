@@ -41,9 +41,14 @@
 }
 - (IBAction)onPlay:(id)sender {
     
+    //http test
+    //[NSString stringWithFormat:@"http://%@/~wminghao/groupvoip/abc_32.flv", self.ipAddr]
+    //rtmp test
+    //[NSString stringWithFormat:@"rtmp://%@/oflaDemo/abc_32", self.ipAddr]]
+    
     if( _mediaplayer.media == nil ) {
         /* create a media object and give it to the player */
-        _mediaplayer.media = [VLCMedia mediaWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://%@/~wminghao/groupvoip/abc_32.flv", self.ipAddr]]];
+        _mediaplayer.media = [VLCMedia mediaWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"rtmp://%@/oflaDemo/abc_32", self.ipAddr]]];
     }
     
     if (_mediaplayer.isPlaying) {
