@@ -1,9 +1,10 @@
 Tips over how to set up red5 servers.
 
+################################################################################
 1.0 Setting up red5 servers in eclipse.
+################################################################################
 
-1.1
-    Follow document r4756.
+1.1 Follow document r4756.
     "Red5 Media Server Workspace Setup Guide"
 
     * click the Run menu dropdown.
@@ -13,8 +14,11 @@ Tips over how to set up red5 servers.
 
 1.2 Some common errors:
 
-1.1.1 
-    To stop and start the server, one thing to note is to avoid using the start button on the GUI.
+1.2.1 To stop and start the server, one thing to note is to avoid using the start button on the GUI.
 
+################################################################################
 2.0 Setting up red5 servers on ubuntu on Linux
- 
+################################################################################
+
+    See aws-installation.txt
+
