@@ -26,7 +26,21 @@
 		2FAA824118F47FD70052EA1A /* libstdc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2FAA824018F47FD70052EA1A /* libstdc++.dylib */; };
 		2FAA824318F482020052EA1A /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2FAA824218F482020052EA1A /* CoreText.framework */; };
 		2FAA824518F482280052EA1A /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2FAA824418F482280052EA1A /* Security.framework */; };
+		2FAA825418F4D2DA0052EA1A /* include in Resources */ = {isa = PBXBuildFile; fileRef = 2FAA825018F4D2DA0052EA1A /* include */; };
+		2FAA825518F4D2DA0052EA1A /* lib in Resources */ = {isa = PBXBuildFile; fileRef = 2FAA825118F4D2DA0052EA1A /* lib */; };
+		2FAA825618F4D2DA0052EA1A /* modules in Resources */ = {isa = PBXBuildFile; fileRef = 2FAA825218F4D2DA0052EA1A /* modules */; };
+		2FAA825718F4D2DA0052EA1A /* src in Resources */ = {isa = PBXBuildFile; fileRef = 2FAA825318F4D2DA0052EA1A /* src */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		2F02CDA119081371001DC660 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2FAA824618F4D13F0052EA1A /* MobileVLCKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D2AAC07E0554694100DB518D;
+			remoteInfo = MobileVLCKit;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		2FAA81F518F46D880052EA1A /* GroupVoIp.iOSClient.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GroupVoIp.iOSClient.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -56,6 +70,11 @@
 		2FAA824018F47FD70052EA1A /* libstdc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.dylib"; path = "usr/lib/libstdc++.dylib"; sourceTree = SDKROOT; };
 		2FAA824218F482020052EA1A /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
 		2FAA824418F482280052EA1A /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		2FAA824618F4D13F0052EA1A /* MobileVLCKit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MobileVLCKit.xcodeproj; path = "../../../vlc-iOS/VLCKit/MobileVLCKit.xcodeproj"; sourceTree = "<group>"; };
+		2FAA825018F4D2DA0052EA1A /* include */ = {isa = PBXFileReference; lastKnownFileType = folder; path = include; sourceTree = "<group>"; };
+		2FAA825118F4D2DA0052EA1A /* lib */ = {isa = PBXFileReference; lastKnownFileType = folder; path = lib; sourceTree = "<group>"; };
+		2FAA825218F4D2DA0052EA1A /* modules */ = {isa = PBXFileReference; lastKnownFileType = folder; path = modules; sourceTree = "<group>"; };
+		2FAA825318F4D2DA0052EA1A /* src */ = {isa = PBXFileReference; lastKnownFileType = folder; path = src; sourceTree = "<group>"; };
 		2FCFFCF9190092D50061066D /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -82,9 +101,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2F02CD9D19081371001DC660 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				2F02CDA219081371001DC660 /* libMobileVLCKit.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		2FAA81EC18F46D880052EA1A = {
 			isa = PBXGroup;
 			children = (
+				2FAA824E18F4D1A80052EA1A /* vlc-source */,
+				2FAA824618F4D13F0052EA1A /* MobileVLCKit.xcodeproj */,
 				2FAA81FE18F46D880052EA1A /* GroupVoIp.iOSClient */,
 				2FAA81F718F46D880052EA1A /* Frameworks */,
 				2FAA81F618F46D880052EA1A /* Products */,
@@ -148,6 +177,26 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		2FAA824E18F4D1A80052EA1A /* vlc-source */ = {
+			isa = PBXGroup;
+			children = (
+				2FAA824F18F4D1CA0052EA1A /* vlc */,
+			);
+			name = "vlc-source";
+			sourceTree = "<group>";
+		};
+		2FAA824F18F4D1CA0052EA1A /* vlc */ = {
+			isa = PBXGroup;
+			children = (
+				2FAA825018F4D2DA0052EA1A /* include */,
+				2FAA825118F4D2DA0052EA1A /* lib */,
+				2FAA825218F4D2DA0052EA1A /* modules */,
+				2FAA825318F4D2DA0052EA1A /* src */,
+			);
+			name = vlc;
+			path = "../../../vlc-iOS/VLCKit/MobileVLCKit/ImportedSources/vlc";
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -188,6 +237,12 @@
 			mainGroup = 2FAA81EC18F46D880052EA1A;
 			productRefGroup = 2FAA81F618F46D880052EA1A /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 2F02CD9D19081371001DC660 /* Products */;
+					ProjectRef = 2FAA824618F4D13F0052EA1A /* MobileVLCKit.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				2FAA81F418F46D880052EA1A /* GroupVoIp.iOSClient */,
@@ -195,15 +250,29 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXReferenceProxy section */
+		2F02CDA219081371001DC660 /* libMobileVLCKit.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libMobileVLCKit.a;
+			remoteRef = 2F02CDA119081371001DC660 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
 /* Begin PBXResourcesBuildPhase section */
 		2FAA81F318F46D880052EA1A /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2FAA825518F4D2DA0052EA1A /* lib in Resources */,
 				2FAA820F18F46D880052EA1A /* Main_iPad.storyboard in Resources */,
 				2FAA821418F46D880052EA1A /* Images.xcassets in Resources */,
+				2FAA825718F4D2DA0052EA1A /* src in Resources */,
 				2FAA820C18F46D880052EA1A /* Main_iPhone.storyboard in Resources */,
+				2FAA825418F4D2DA0052EA1A /* include in Resources */,
 				2FAA820318F46D880052EA1A /* InfoPlist.strings in Resources */,
+				2FAA825618F4D2DA0052EA1A /* modules in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

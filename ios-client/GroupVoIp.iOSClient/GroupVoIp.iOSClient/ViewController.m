@@ -43,8 +43,10 @@
     
     //http test
     //[NSString stringWithFormat:@"http://%@/~wminghao/groupvoip/abc_32.flv", self.ipAddr]
-    //rtmp test
+    //rtmp vod test
     //[NSString stringWithFormat:@"rtmp://%@/oflaDemo/abc_32", self.ipAddr]]
+    //rtmp voip test
+    //rtmp://%@/myRed5App/testliveA
     
     if( _mediaplayer.media == nil ) {
         /* create a media object and give it to the player */
