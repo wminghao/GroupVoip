@@ -338,8 +338,8 @@
 				INFOPLIST_FILE = "GroupVoIp.iOSClient/GroupVoIp.iOSClient-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
-				"OTHER_LDFLAGS[sdk=iphoneos*]" = "../vlclibs/Debug-iphoneos/libMobileVLCKit.a";
-				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = "../vlclibs/Debug-iphonesimulator/libMobileVLCKit.a";
+				"OTHER_LDFLAGS[sdk=iphoneos*]" = "../vlclibs/Release-iphoneos/libMobileVLCKit.a";
+				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = "../vlclibs/Release-iphonesimulator/libMobileVLCKit.a";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 				test = "";
