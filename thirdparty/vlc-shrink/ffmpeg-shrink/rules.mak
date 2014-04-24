@@ -27,11 +27,7 @@ FFMPEGCONF = \
 	--disable-bzlib \
 	--disable-programs \
 	--disable-avresample \
-	--disable-random \
-	--disable-armv5te \
-	--disable-armv6 \
-	--disable-armv6t2 \
-	--disable-thumb
+	--disable-random
 
 ifdef USE_FFMPEG
 FFMPEGCONF += \
@@ -54,16 +50,19 @@ endif
 
 #Howard modify disable most decoders, demux, parsers. disable all encoders
 GROUPVOIP_UNWANTED = \
-		   --disable-network \
 		   --disable-encoders \
 		   --disable-decoders \
-		   --enable-decoder='h264,mp3,vp8' \
+		   --enable-decoder='h264,mp3,mp3float,mp3adu,mp3adufloat,mp3on4,mp3on4float,vp8,libvpx_vp8' \
 		   --disable-demuxers \
-		   --enable-demuxer='h264,vp8,flv' \
+		   --enable-demuxer='h264,flv,ivf,mp3' \
 		   --disable-parsers \
-		   --enable-parser='mpegaudio,vp8,flv'
+		   --enable-parser='mpegaudio,vp8' \
+		   --disable-armv5te \
+		   --disable-armv6 \
+		   --disable-armv6t2 \
+		   --disable-thumb
 
-FFMPEGCONF += $(GROUPVOIP_UNWANTED)
+#FFMPEGCONF += $(GROUPVOIP_UNWANTED)
 
 # Small size
 ifdef ENABLE_SMALL
