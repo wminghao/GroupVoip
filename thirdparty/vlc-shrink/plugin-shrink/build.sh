@@ -519,6 +519,7 @@ libspeex_plugin
 libtheora_plugin
 libvorbis_plugin
 libhttplive_plugin
+liblive555_plugin
 "
 
 for i in ${blacklist}
