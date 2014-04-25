@@ -1,22 +1,15 @@
 # FFmpeg
 
-#Uncomment the one you want
-USE_LIBAV ?= 1
-#USE_FFMPEG ?= 1
+#HASH=16c3ed5837884e2b60cf40e762be6c58b13d7ba6
+#FFMPEG_SNAPURL := http://git.videolan.org/?p=ffmpeg.git;a=snapshot;h=$(HASH);sf=tgz
 
-ifdef USE_FFMPEG
-HASH=HEAD
-FFMPEG_SNAPURL := http://git.videolan.org/?p=ffmpeg.git;a=snapshot;h=$(HASH);sf=tgz
-else
-HASH=HEAD
+HASH=b1f9cdc37ff5d5b391d2cd9af737ab4e5a0fc1c0
 FFMPEG_SNAPURL := http://git.libav.org/?p=libav.git;a=snapshot;h=$(HASH);sf=tgz
-endif
 
 FFMPEGCONF = \
 	--cc="$(CC)" \
 	--disable-doc \
-	--disable-libgsm \
-	--disable-libopenjpeg \
+    --disable-random \
 	--disable-debug \
 	--disable-avdevice \
 	--disable-devices \
@@ -24,22 +17,18 @@ FFMPEGCONF = \
 	--disable-filters \
 	--disable-bsfs \
 	--disable-bzlib \
-	--disable-programs \
-	--disable-avresample \
-	--disable-random
+    --disable-armv5te \
+    --disable-armv6 \
+    --disable-armv6t2 \
+    --disable-thumb 
 
-ifdef USE_FFMPEG
-FFMPEGCONF += \
-	--disable-swresample \
-	--disable-iconv
-endif
-
+# Those tools are named differently in FFmpeg and Libav
+#	--disable-ffserver \
+#	--disable-ffplay \
+#	--disable-ffprobe
 DEPS_ffmpeg = zlib gsm openjpeg
 
 # Optional dependencies
-ifndef BUILD_NETWORK
-FFMPEGCONF += --disable-network
-endif
 ifdef BUILD_ENCODERS
 FFMPEGCONF += --enable-libmp3lame --enable-libvpx --disable-decoder=libvpx --disable-decoder=libvpx_vp8 --disable-decoder=libvpx_vp9
 DEPS_ffmpeg += lame $(DEPS_lame) vpx $(DEPS_vpx)
@@ -47,23 +36,24 @@ else
 FFMPEGCONF += --disable-encoders --disable-muxers
 endif
 
-#Howard modify disable most decoders, demux, parsers. disable all encoders
-GROUPVOIP_UNWANTED = \
-		   --disable-encoders \
-		   --disable-decoders \
-		   --enable-decoder='aac,h264,mp3,mp3float,mp3adu,mp3adufloat,mp3on4,mp3on4float,vp8,libvpx_vp8' \
-		   --disable-demuxers \
-		   --enable-demuxer='flv' \
-		   --disable-parsers \
-		   --enable-parser='aac,mpegaudio,vp8' \
-		   --disable-protocols \
-		   --enable-protocol='http,rtmp,librtmp,ffrtmphttp' \
-		   --disable-armv5te \
-		   --disable-armv6 \
-		   --disable-armv6t2 \
-		   --disable-thumb
+#
+# Optional params by Veetle to prune off uneeded libs
+# in ffmpeg to shrink libavcode,libavutil,libavformat down
+#
+# FIXME: Xun to add
+#
+VEETLE_FFMPEG_CONF_PRUNE_UNWANTED = \
+    --disable-network \
+    --disable-encoders \
+    --disable-decoders \
+    --enable-decoder='aac,h264,mp3' \
+    --disable-demuxers \
+    --enable-demuxer='h264,mpegts' \
+    --disable-protocols \
+    --disable-parsers \
+    --enable-parser='aac,mpegaudio'
 
-FFMPEGCONF += $(GROUPVOIP_UNWANTED)
+FFMPEGCONF += $(VEETLE_FFMPEG_CONF_PRUNE_UNWANTED)
 
 # Small size
 ifdef ENABLE_SMALL
@@ -84,9 +74,7 @@ endif
 
 # ARM stuff
 ifeq ($(ARCH),arm)
-ifndef HAVE_DARWIN_OS
 FFMPEGCONF += --arch=arm
-endif
 ifdef HAVE_NEON
 FFMPEGCONF += --enable-neon
 endif
@@ -118,9 +106,8 @@ FFMPEGCONF += --cpu=core2
 endif
 endif
 ifdef HAVE_IOS
-FFMPEGCONF += --enable-pic
-ifdef HAVE_NEON
-FFMPEGCONF += --as="$(AS)"
+ifeq ($(ARCH),arm)
+FFMPEGCONF += --enable-pic --as="$(AS)"
 endif
 endif
 ifdef HAVE_MACOSX
@@ -169,6 +156,10 @@ ffmpeg: ffmpeg-$(HASH).tar.gz .sum-ffmpeg
 	rm -Rf $@ $@-$(HASH)
 	mkdir -p $@-$(HASH)
 	$(ZCAT) "$<" | (cd $@-$(HASH) && tar xv --strip-components=1)
+
+	# this patch is only needed for libav version b1f9cdc37ff5d5b391d2cd9af737ab4e5a0fc1c0
+	$(APPLY) $(SRC)/ffmpeg/fix-vda-memleak.patch
+
 	$(MOVE)
 
 .ffmpeg: ffmpeg
