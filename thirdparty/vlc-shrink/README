@@ -1,0 +1,20 @@
+This is a way to reduce binary size for VLC
+
+2 parts.
+
+1. VLCKit: plugins, disable linkage with external libraries. (***libavio???)
+
+Modify 2 files:
+    VLCKit/MobileVLCKit/MobileVLCKit.xcconfig
+    VLCKit/MobileVLCKit/ImportedSources/vlc/extras/package/ios/build.sh
+Details:
+    https://wiki.videolan.org/Contrib_Status
+
+2. ffmpeg disable most decoders, demux, parsers. disable all encoders
+
+Modify 1 file:
+    rules.mak in VLCKit/MobileVLCKit/ImportedSources/vlc/contrib/src/ffmpeg
+Details:
+    http://www.ffmpeg.org/ffmpeg-protocols.html
+    http://www.ffmpeg.org/documentation.html
+    http://blog.sina.com.cn/s/blog_62a8419a01016exv.html
