@@ -16,7 +16,8 @@ VLC_INSTALL_DIR=$(VLC_SRC_DIR)/install-ios-$(VLC_PLATFORM)/$(CURRENT_ARCH)
 #include "vlc-plugins.xcconfig"
 
 VLC_CONTRIB_DIR=$VLC_INSTALL_DIR/contribs
-AVCODEC=$(VLC_CONTRIB_DIR)/lib/libavutil.a ${VLC_CONTRIB_DIR}/lib/libavcodec.a $(VLC_CONTRIB_DIR)/lib/libavformat.a $(VLC_CONTRIB_DIR)/lib/libswscale.a $(VLC_CONTRIB_DIR)/lib/libgsm.a
+AVCODEC=$(VLC_CONTRIB_DIR)/lib/libavutil.a ${VLC_CONTRIB_DIR}/lib/libavcodec.a $(VLC_CONTRIB_DIR)/lib/libavformat.a $(VLC_CONTRIB_DIR)/lib/libswscale.a
+DVBPSI=$(VLC_CONTRIB_DIR)/lib/libdvbpsi.a
 ZLIB=$(VLC_CONTRIB_DIR)/lib/libz.a
 
-OTHER_LIBTOOLFLAGS=$(AVCODEC) $(ZLIB) $(VLC_INSTALL_DIR)/lib/vlc/libcompat.a  $(VLC_INSTALL_DIR)/lib/libvlc.a $(VLC_INSTALL_DIR)/lib/libvlccore.a $(VLC_PLUGINS_LDFLAGS) $(OTHER_CFLAGS)
+OTHER_LIBTOOLFLAGS=$(DVBPSI) $(AVCODEC) $(ZLIB) $(VLC_INSTALL_DIR)/lib/vlc/libcompat.a  $(VLC_INSTALL_DIR)/lib/libvlc.a $(VLC_INSTALL_DIR)/lib/libvlccore.a $(VLC_PLUGINS_LDFLAGS) $(OTHER_CFLAGS)

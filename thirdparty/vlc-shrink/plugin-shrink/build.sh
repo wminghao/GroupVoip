@@ -190,10 +190,11 @@ fi
 
 ../bootstrap --build=x86_64-apple-darwin11 --host=${TARGET} --prefix=${VLCROOT}/contrib/${TARGET}-${ARCH} --arch=${ARCH} --disable-gpl \
     --disable-disc --disable-sout \
+    --disable-debug \
     --disable-sdl \
     --disable-SDL_image \
     --disable-iconv \
-    --disable-zvbi \
+    --enable-zvbi \
     --disable-kate \
     --disable-caca \
     --disable-gettext \
@@ -205,7 +206,9 @@ fi
     --disable-sidplay2 \
     --disable-samplerate \
     --disable-goom \
+    --disable-gcrypt \
     --disable-vncserver \
+    --disable-gnutls \
     --disable-orc \
     --disable-schroedinger \
     --disable-libmpeg2 \
@@ -258,12 +261,16 @@ ${VLCROOT}/configure \
     --disable-debug \
     --enable-static \
     --disable-macosx \
+    --disable-macosx-vout \
     --disable-macosx-dialog-provider \
     --disable-macosx-qtkit \
     --disable-macosx-eyetv \
     --disable-macosx-vlc-app \
     --disable-macosx-avfoundation \
-    --disable-audioqueue \
+    --enable-audioqueue \
+    --enable-ios-audio \
+    --enable-ios-vout \
+    --enable-ios-vout2 \
     --disable-shared \
     --enable-macosx-quartztext \
     --enable-avcodec \
@@ -274,7 +281,9 @@ ${VLCROOT}/configure \
     --disable-lua \
     --disable-a52 \
     --enable-fribidi \
+    --disable-macosx-audio \
     --disable-qt --disable-skins2 \
+    --disable-libgcrypt \
     --disable-vcd \
     --disable-vlc \
     --disable-vlm \
@@ -286,7 +295,7 @@ ${VLCROOT}/configure \
     --disable-notify \
     --disable-live555 \
     --disable-realrtsp \
-    --disable-dvbpsi \
+    --enable-dvbpsi \
     --enable-swscale \
     --disable-projectm \
     --disable-libass \
@@ -339,6 +348,7 @@ oldrc
 real
 hotkeys
 gestures
+sap
 dynamicoverlay
 rss
 ball
@@ -444,7 +454,6 @@ libdvbsub_plugin
 libequalizer_plugin
 libfilesystem_plugin
 libflacsys_plugin
-libflac_plugin
 libfolder_plugin
 libfreetype_plugin
 libg711_plugin
@@ -476,6 +485,7 @@ librawvideo_plugin
 librecord_plugin
 librtp_plugin
 librv32_plugin
+libsap_plugin
 libscte27_plugin
 libsdp_plugin
 libspudec_plugin
@@ -489,7 +499,6 @@ libsvcdsub_plugin
 libtelx_plugin
 libtta_plugin
 libty_plugin
-libugly_resampler_plugin
 libuleaddvaudio_plugin
 libvc1_plugin
 libvmem_plugin
@@ -500,17 +509,16 @@ libxa_plugin
 libxml
 libzip_plugin
 libzvbi
-liblive555_plugin
+libflac_plugin
 libmkv_plugin
 libtaglib_plugin
 liblibass_plugin
-libhttplive_plugin
 libogg_plugin
 libopus_plugin
 libspeex_plugin
 libtheora_plugin
 libvorbis_plugin
-libts_plugin
+libhttplive_plugin
 "
 
 for i in ${blacklist}
