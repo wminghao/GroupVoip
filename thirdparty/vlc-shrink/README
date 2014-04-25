@@ -1,5 +1,5 @@
 This is a way to reduce binary size for VLC
-
+==============
 2 parts.
 
 1. VLCKit: plugins, disable linkage with external libraries. (***libavio???)
@@ -18,3 +18,16 @@ Details:
     http://www.ffmpeg.org/ffmpeg-protocols.html
     http://www.ffmpeg.org/documentation.html
     http://blog.sina.com.cn/s/blog_62a8419a01016exv.html
+
+==============
+4. Steps (ONLY do it ONCE)
+
+****Make sure everytime some new VLCKit and vlc code are updated, you compare the original build.sh, rules.mak and MobileVLCKit.xcconfig with the changed files
+
+1. In the current dir, run cpit.bat to copy the files to VLCKit
+
+2. Goto ffmpeg-patch dir, run buildit.bat to force rebuild ffmpeg
+
+3. Goto VLCKit dir, run sh ./b﻿﻿uildMobileVLCKit.sh -d -s -v -to rebuild VLCKit
+
+4. Goto iosclient dir, run copy the target .a files to the ios project. (Those files stay there as binary for everyone else to use)
