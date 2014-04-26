@@ -39,15 +39,21 @@
 
   We will start with ubuntu-to-ubuntu tests betweeb 
   cubie at my house and the AWS.
- 
+
 ............................................................
 . References:
 ............................................................
+
+0. Initial Work by Robert Carter, Boston University
+   1996-006-measuring-bottleneck-link.pdf
 
 1. Stanford, http://www.hpl.hp.com/personal/Mary_Baker/publications/lai99measuring.pdf, 1999
    lai99measuring.pdf
 2. CMU, http://www.cs.cmu.edu/~hnn/papers/igi-tr.pdf, 2002
 3. Berkeley, A PhD Thesis, 1998
    CSD-97-945.pdf
+
+4. bprobe and tcpanaly
+   - http://www.cs.bu.edu/~crovella/src/bprobe/Tools.html
 
 
