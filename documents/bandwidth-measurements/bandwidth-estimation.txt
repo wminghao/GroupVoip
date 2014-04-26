@@ -48,5 +48,6 @@
    lai99measuring.pdf
 2. CMU, http://www.cs.cmu.edu/~hnn/papers/igi-tr.pdf, 2002
 3. Berkeley, A PhD Thesis, 1998
+   CSD-97-945.pdf
 
 
