@@ -200,7 +200,7 @@ fi
 
 ../bootstrap --build=x86_64-apple-darwin11 --host=${TARGET} --prefix=${VLCROOT}/contrib/${TARGET}-${ARCH} --arch=${ARCH} --disable-gpl \
     --disable-disc --disable-sout \
-    ${ENABLE_DEBUG_OPTION} \
+    --disable-debug \
     --disable-sdl \
     --disable-SDL_image \
     --disable-iconv \
