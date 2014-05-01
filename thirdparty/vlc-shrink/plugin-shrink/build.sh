@@ -87,10 +87,10 @@ fi
 
 if [ "$CONFIGURATION" = "Debug" ]; then
     OPTIM="-g"
-    ENABLE_DEBUG_OPTION = "--enable-debug"
+    ENABLE_DEBUG_OPTION="--enable-debug"
 else
     OPTIM="-O3 -g"
-    ENABLE_DEBUG_OPTION = "--disable-debug"
+    ENABLE_DEBUG_OPTION="--disable-debug"
 fi
 
 info "Using ${ARCH} with SDK version ${SDK_VERSION}"
