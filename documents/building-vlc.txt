@@ -49,6 +49,12 @@ Step 4, then keep vlckithub untact, only touch my own github project
   $git push vlcsrc localBranch
 
 ========
+Binary size reduction
+
+    Binary size reduction (ONLY DO IT ONCE)
+    see more details in ../thirdparty/vlc-shrink/README 
+
+========
 VLCKit Build instruction,
 How to Modify VLCSrc, VLCKit and VLCSrc/Contrib
 Step 1.
@@ -59,18 +65,19 @@ Step 1.
 
 Step 2.
 
-    build the code successfully once
-    $git clone git://git.videolan.org/vlc-bindings/VLCKit.git
-    $cd VLCKit
-    $sh ./buildMobileVLCKit.sh -d -s -v
+   Download the code from github and build the code successfully once
+   $git clone https://github.com/wminghao/GroupVoIP.VLCKitIOS.git
+   $cd GroupVoIP.VLCKitIOS/MobileVLCKit
+   $mkdir ImportedSources
+   $cd ImportedSources/
+   $git clone -b localBranch https://github.com/wminghao/GroupVoIP.VLCSrcIOS.git
+   $mv GroupVoIP.VLCSrcIOS.git vlc
+   $cd ../../
+   $sh ./buildMobileVLCKit.sh -d -s -v -n
        i.e. make sure the source code compiles successfully, which means it's a valid trunk snapshot
        i.e. change buildMobileVLCKit.sh "git branch --set-upstream-to origin/master"
-Step 3.
-     
-    Binary size reduction
-    see more details in ../thirdparty/vlc-shrink/README 
 
-Step 4.
+Step 3.
 
     modify vlckit or vlc source code, 
     sh ./b﻿﻿uildMobileVLCKit.sh -d -s -v -n
@@ -78,8 +85,9 @@ Step 4.
     git push vlckit master (vlckit source)
     git push vlcsrc localBranch (vlc source)
 
-Step 5.
-
+Step 4.
+     
+    modify ffmpeg source code
     Here is a way to force rebuild after we modified ffmpeg/libavformat code
     see more details in ../thirdparty/ffmpeg-patch/README
     
