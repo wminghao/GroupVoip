@@ -12,45 +12,62 @@ https://wiki.videolan.org/Documentation:IOS/
 https://wiki.videolan.org/IOSCompile
 
 ========
-Branch instruction, (DO IT ONLY ONCE)
-Create a branch from vlchub to github:
-Step 1, create a new branch on github
+Repositary/Branch instruction, (DO IT ONLY ONCE)
+
+Create a repo from vlchub to github:
+
+Step 0. download vlckit from videolan.org, run the following
+   $cd VLCKit
+   $sh ./buildMobileVLCKit.sh -d -s -v
+       i.e. make sure the source code compiles successfully, which means it's a valid trunk snapshot
+       i.e. change buildMobileVLCKit.sh "git branch --set-upstream-to origin/master"
+
+Step 1, create 2 new repos on github
+   1) one called GroupVoIP.VLCKitIOS, 
+   2) the otherone called GroupVoIP.VLCSrcIOS
+
 Step 2, push vlckithub to github
-$git clone git://git.videolan.org/vlc-bindings/VLCKit.git
-$cd VLCKit
-$sh ./buildMobileVLCKit.sh -d -s -v
-     i.e. make sure the source code compiles successfully, which means it's a valid trunk snapshot
-     i.e. change buildMobileVLCKit.sh "git branch --set-upstream-to origin/master"
-$git remote add groupvoip.vlckit https://github.com/wminghao/GroupVoIP.VLCKit.git
-$git pull groupvoip.vlckit master
-$git push groupvoip.vlckit master
+  $cd VLCKit
+  $git remote add vlckit https://github.com/wminghao/GroupVoIP.VLCKitIOS.git
+  $git remote -v
+    origin	     git://git.videolan.org/vlc-bindings/VLCKit.git (fetch)
+    origin	     git://git.videolan.org/vlc-bindings/VLCKit.git (push)
+    vlckit	     https://github.com/wminghao/GroupVoIP.VLCKitIOS.git (fetch)
+    vlckit	     https://github.com/wminghao/GroupVoIP.VLCKitIOS.git (push)
+  $git push vlckit master
+
 Step 3, push vlc source to github
 
-$cd MobileVLCKit/ImportedSources/vlc
-$git remote add groupvoip.vlcsource https://github.com/wminghao/GroupVoIP.VLCSource.git
-$git pull groupvoip.vlcsource master
-$git push groupvoip.vlcsource master
-$git remote -v
-groupvoip.vlcsrc    https://github.com/wminghao/GroupVoIP.VLCSrc.git (fetch)
-groupvoip.vlcsrc    https://github.com/wminghao/GroupVoIP.VLCSrc.git (push)
-origin    git://git.videolan.org/vlc.git (fetch)
-origin    git://git.videolan.org/vlc.git (push)
-**************
-Make sure we select the right branch(don't use localBranch, which is mapped to git://git.videolan.org/vlc.git
-$git branch
-  localBranch
-* master
-$git checkout master
-**************
-Then make any changes, will be commited and pushed to the github server.
+  $cd VLCKit/MobileVLCKit/ImportedSources/vlc
+  $git remote add vlcsrc https://github.com/wminghao/GroupVoIP.VLCSrcIOS.git
+  $git remote -v
+     vlcsrc    https://github.com/wminghao/GroupVoIP.VLCSrcIOS.git (fetch)
+     vlcsrc    https://github.com/wminghao/GroupVoIP.VLCSrcIOS.git (push)
+     origin    git://git.videolan.org/vlc.git (fetch)
+     origin    git://git.videolan.org/vlc.git (push)
+  *******There are 2 branches, we are modifying localBranch, while VLC team is modifying master branch*******
+  $git branch
+     * localBranch
+     master
+  $git push vlcsrc localBranch (Push localBranch to vlcsrc/localBranch)
+
 Step 4, then keep vlckithub untact, only touch my own github project
-$git commit -m
-$git push groupvoip.vlckit master
-$git push groupvoip.vlcsource master
+  $git commit -a
+  $git push vlckit master
+  $git push vlcsrc localBranch
+
+Step 5. modify a few places in the build scripts to make sure other people can use it. (See changelists for more details)
+  including: build.sh, buildMobileVLCKit.sh, configure.ac, contrib/tar/*.tar.* etc.
+
+========
+Binary size reduction
+
+    Binary size reduction (ONLY DO IT ONCE)
+    see more details in ../thirdparty/vlc-shrink/README 
 
 ========
 VLCKit Build instruction,
-How to Modify VLCSource, VLCKit and VLCSource/Contrib
+How to Modify VLCSrc, VLCKit and VLCSrc/Contrib
 Step 1.
 
     Must use iTerm2
@@ -59,24 +76,21 @@ Step 1.
 
 Step 2.
 
-    build the code successfully once
-    sh ./buildMobileVLCKit.sh -d -s -v
+   Download the code from github and build the code successfully once
+   $git clone https://github.com/wminghao/GroupVoIP.VLCKitIOS.git
+   $sh ./buildMobileVLCKit.sh -d -s -v
 
 Step 3.
-     
-    Binary size reduction
-    see more details in ../thirdparty/vlc-shrink/README 
-
-Step 4.
 
     modify vlckit or vlc source code, 
-    sh ./b﻿﻿uildMobileVLCKit.sh -d -s -v -n
+    sh ./b﻿﻿uildMobileVLCKit.sh -d --v
     git commit filname.cpp
-    git push groupvoip.vlckit master
-    git push groupvoip.vlcsrc master
+    git push vlckit master (vlckit source)
+    git push vlcsrc localBranch (vlcsrc source)
 
-Step 5.
-
+Step 4.
+     
+    modify ffmpeg source code
     Here is a way to force rebuild after we modified ffmpeg/libavformat code
     see more details in ../thirdparty/ffmpeg-patch/README
     
