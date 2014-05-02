@@ -8,9 +8,18 @@
 
 - We follow the packet pair approach.
 - Different flavor of the packet pair approaches
-  1) receiver only packet pair
-  2) sender-based packet pair
-  3) receiver-based packet pair
+  1) sender-based packet pair (SBPP)
+  2) receiver-based packet pair (RBPP)
+  3) receiver only packet pair (ROPP)
+
+  SBPP: sends out packets back-to-back, measure time the echos to these packets
+        get received at the sender, get time difference
+
+  ROPP: sends out packets back-to-back, measure time they get received on the 
+        receiver, caculate time gap
+
+  RBPP: senders sends gap between packets, receiver calcuates changes in the gap
+        between packets
 
 ............................................................
 . Design Considerations:
@@ -39,6 +48,13 @@
 
   We will start with ubuntu-to-ubuntu tests betweeb 
   cubie at my house and the AWS.
+
+............................................................
+. Issues 
+............................................................
+
+* timing compression due to buffering
+* timing extension
 
 ............................................................
 . References:
