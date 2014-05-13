@@ -1,0 +1,74 @@
+
+Import("*")
+
+import glob, os, SCons
+import platform as p
+
+CCFLAGS=['-Wall','-fPIC']
+LINKFLAGS=[]
+CPPDEFINES=[]
+
+OPTIMIZE=['-O3', '-fno-strict-aliasing']
+
+buildtype = ARGUMENTS.get('type', 'default')
+
+if buildtype == "debug":
+    CCFLAGS.append('-g')
+    LINKFLAGS.append('-g')
+    CCFLAGS.append('-DDEBUG=1')
+    
+elif buildtype == 'release':
+    CPPDEFINES.append('NDEBUG')
+    CCFLAGS.append(OPTIMIZE)
+    
+elif buildtype == 'gprof':
+    CCFLAGS.append('-g')
+    CCFLAGS.append('-pg')
+    LINKFLAGS.append('-pg')
+
+elif buildtype == 'efence':
+    CCFLAGS.append('-g')
+    LINKFLAGS.append('-lefence')
+
+elif buildtype == 'default':
+    CCFLAGS.append('-g')
+    CCFLAGS.append(OPTIMIZE)
+    LINKFLAGS.append('-g')
+    CCFLAGS.append('-DLOGGING_ENABLED=1')
+else:
+    print "ERROR:"
+    print "ERROR: Unrecognized build type : '"+buildtype+"'";
+    failed=1
+
+#linux only
+#
+# By default, we are building on linux
+#
+LINKFLAGS.append('-rdynamic')
+LINKFLAGS.append('-Wall')
+LINKFLAGS.append('-Lbuild/' + platform + '/c-ares/lib/')
+LINKFLAGS.append('-Lbuild/' + platform + '/libav-0.7.3/lib/')
+#LINKFLAGS.append('-lrt')    # Does not work on ubuntu 11.10 - needs to be after -lcares
+# We've only so far enforced this on Linux based compiles, not Mac OS X yet.
+CCFLAGS.append('-Werror')
+CCFLAGS.append('-Wno-unused-result')
+CCFLAGS.append('-DVEETLE_LITTLE_ENDIAN')
+CCFLAGS.append('-Ibuild/' + platform + '/libav-0.7.3/include/')
+CC='gcc'
+CXX='g++'
+AR='ar'
+RANLIB='ranlib'
+
+#LIBPATH missing
+env = Environment(CPPPATH=['#'],
+                      CCFLAGS=CCFLAGS,
+                      LINKFLAGS=LINKFLAGS,
+		      CPPDEFINES=CPPDEFINES,
+                      CC=CC,
+                      CXX=CXX,
+                      AR=AR,
+                      RANLIB=RANLIB)
+
+progs = []
+Export( ["env", "progs", "CCFLAGS"] )	
+SConscript( "mixcoder/SConscript" )

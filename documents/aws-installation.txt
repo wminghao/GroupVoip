@@ -1,0 +1,58 @@
+
+################################################################################
+# Set up info
+################################################################################
+
+current version: 1.0.2 (As of May 13, 2014)
+
+IP address of AWS instance as of April 12, 2014: 
+            54.186.122.59 
+red5.root:  
+            /usr/share/red5
+starting the server:
+            /usr/share/red5/red5.sh
+            /usr/share/red5/red5-shutdown.sh
+            sudo /etc/init.d/red5-server start
+
+log files:
+            /usr/share/red5/log
+
+web root for :5080:
+            /usr/share/red5/webapps/
+
+documents:
+            /usr/share/doc/red5-server/README.Debian
+
+configuration: 
+            /usr/share/red5/conf
+
+################################################################################
+# Current Issues 
+################################################################################
+
+None.
+
+################################################################################
+# Resolved Issues
+################################################################################
+
+* issue-running-ofla-demo.txt
+
+################################################################################
+# Tips   
+################################################################################
+
+* How to check red5 version?
+  A. Look start up messages spitted out by the server. 
+
+################################################################################
+# References: 
+################################################################################
+
+* Setting up the streaming recorder environment.pdf
+
+* http://www.videosoftware.pro/forum/THREAD-Problems-using-red5-as-the-server
+
+* http://mrbinitie.blogspot.com/2008/05/stopping-starting-and-restarting-red5.html
+
+

@@ -1,0 +1,3 @@
+This is a multiple stream mixing program.
+
+Input m mobile streams + n desktop streams, output m mixed for mobile streams + 1 total mixed stream.
