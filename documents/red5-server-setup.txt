@@ -17,8 +17,26 @@ Tips over how to set up red5 servers.
 1.2.1 To stop and start the server, one thing to note is to avoid using the start button on the GUI.
 
 ################################################################################
-2.0 Setting up red5 servers on ubuntu on Linux
+2.0 Compiling code for ubuntu on Linux
 ################################################################################
 
-    See aws-installation.txt
+First time:
+
+1. Modify code on Mac for Eclipse for red5
+2. Copy $(ProjectPath)/target/red5-server-1.0.2-RC4-server.tar.gz to unbuntu
+3. Unzip the folder to /usr/share/red5
+4. Copy myRed5App under /user/share/red5/webapps
+
+Later on:
+
+1. Modify code on Mac for Eclipse for red5
+2. Copy $(ProjectPath)/target/red5-server-1.0.2-RC4.jar to unbuntu 
+3. On Unbuntu, $cp red5-server-1.0.2-RC4.jar /home/share/red5/red5-server.jar
+4. restart the server
+
+################################################################################
+3.0 Setting up red5 servers on ubuntu on Linux
+################################################################################
+
+See aws-installation.txt
 

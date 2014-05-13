@@ -3,7 +3,7 @@
 # Set up info
 ################################################################################
 
-current version: 1.0.1 (As of May 2, 2014)
+current version: 1.0.2 (As of May 13, 2014)
 
 IP address of AWS instance as of April 12, 2014: 
             54.186.122.59 

@@ -1,5 +1,4 @@
-
-svn co http://red5.googlecode.com/svn/java/server/tags/1_0/red5
+TODO
 
 http://anupdubbewar.blogspot.com/2013/04/install-red5-server-on-centos-57.html
 
