@@ -136,7 +136,7 @@ void FLVParser::parseNextFLVFrame( string& strFlvTag )
                             u16 ppsLen = ((u16)ppsLenStr[0]<<8)|ppsLenStr[1];
                             string pps = bsParser.readBytes(ppsLen);                            
                             inputData = naluStarterCode + sps + naluStarterCode + pps;
-                            //fprintf(stderr, "---spsLen = %d, ppsLen = %d, inputDataLen=%ld\r\n", spsLen, ppsLen, inputData.size());
+                            //LOG( "---spsLen = %d, ppsLen = %d, inputDataLen=%ld\r\n", spsLen, ppsLen, inputData.size());
                             break;
                         }
                     case kAVCNalu:
@@ -160,7 +160,7 @@ void FLVParser::parseNextFLVFrame( string& strFlvTag )
                                 dataSize -= (4+dsUnion.dataSize);
                             }
                             inputData += stBytesPadding;
-                            //fprintf(stderr, "---inputData %x_%x_%x_%x_0x%x__0x%x\r\n", inputData[0], inputData[1], inputData[2], inputData[3], inputData[4], inputData[inputData.size()-1-16]);
+                            //LOG( "---inputData %x_%x_%x_%x_0x%x__0x%x\r\n", inputData[0], inputData[1], inputData[2], inputData[3], inputData[4], inputData[inputData.size()-1-16]);
                             break;
                         }
                     case kAVCEndOfSeq:
@@ -178,7 +178,7 @@ void FLVParser::parseNextFLVFrame( string& strFlvTag )
                     accessUnit->payload = new SmartBuffer( inputData.size(), inputData.data());
                     frameReady = true;
                 }
-                //fprintf(stderr, "---video accessUnit, isKey=%d, codecType=%d, specialProperty=%d, naluSize=%ld\r\n", accessUnit->isKey, accessUnit->ct, accessUnit->sp, inputData.size());
+                //LOG( "---video accessUnit, isKey=%d, codecType=%d, specialProperty=%d, naluSize=%ld\r\n", accessUnit->isKey, accessUnit->ct, accessUnit->sp, inputData.size());
                             
                 break;
             }
@@ -215,13 +215,13 @@ void FLVParser::parseNextFLVFrame( string& strFlvTag )
                     accessUnit->payload = new SmartBuffer( dataSize, bsParser.readBytes(dataSize).data());
                     frameReady = true;
                 }
-                //fprintf(stderr, "---audio accessUnit, isKey=%d, codecType=%d, specialProperty=%d\r\n", accessUnit->isKey, accessUnit->ct, accessUnit->sp);
+                //LOG( "---audio accessUnit, isKey=%d, codecType=%d, specialProperty=%d\r\n", accessUnit->isKey, accessUnit->ct, accessUnit->sp);
                 break;
             }
         case kDataStreamType:
             {
                 //TODO
-                //fprintf(stderr, "---data accessUnit.\r\n");
+                //LOG( "---data accessUnit.\r\n");
             }
         default:
             {
@@ -237,7 +237,7 @@ void FLVParser::parseNextFLVFrame( string& strFlvTag )
             relTimeStampOffset_ = ( curEpocTime - startEpocTime_ ) - tsUnion.timestamp;
         }
         accessUnit->pts = accessUnit->dts = tsUnion.timestamp + ((relTimeStampOffset_ == MAX_U32)?0:relTimeStampOffset_);
-        //fprintf(stderr, "---index=%d, streamType=%d, flvTagSize=%d, oPts=%d,  relTsOffset_=%d, npts=%d\r\n", index_, curStreamType_, curFlvTagSize_, tsUnion.timestamp, relTimeStampOffset_, (u32)accessUnit->pts  );
+        //LOG( "---index=%d, streamType=%d, flvTagSize=%d, oPts=%d,  relTsOffset_=%d, npts=%d\r\n", index_, curStreamType_, curFlvTagSize_, tsUnion.timestamp, relTimeStampOffset_, (u32)accessUnit->pts  );
 
         if( frameReady ) {
             delegate_->onFLVFrameParsed( accessUnit, index_ );

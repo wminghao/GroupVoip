@@ -49,5 +49,6 @@ segOutputParserProg = File("prog/seg_output_parser")
 
 progs.append( segOutputParserProg )
 env.Program( segOutputParserProg,
-	     [ segOutputParserObj ], 
+	     [ segOutputParserObj,
+	       loggerObj ], 
 	     CCFLAGS=mixCoderCflags)

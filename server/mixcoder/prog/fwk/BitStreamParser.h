@@ -5,7 +5,7 @@
 #include <string>
 #include <stdio.h>
 #include "Units.h"
-
+#include "log.h"
 
 class BitStreamParser {
  public:
@@ -28,22 +28,22 @@ class BitStreamParser {
         u32 ret = 0;
         
         if ( offset_ + nBits > byteStream_.length() * 8 ) {
-            fprintf(stderr, "ERROR: Insufficient bits remaining in stream");
+            LOG( "ERROR: Insufficient bits remaining in stream");
             return 0;
         }
         
         for ( int i = 0 ; i < nBits ; ++i ) {
             int offset = offset_ + nBitsToSkip + i;
             
-            //if ( offset % 8 == 0 ) fprintf( stderr, "Byte %02x\n", byteStream_[offset/8] & 0xff );
+            //if ( offset % 8 == 0 ) LOG("Byte %02x\n", byteStream_[offset/8] & 0xff );
             
             u8 t = ( byteStream_[offset/8] >> (7-(offset%8)) ) & 0x1;
-            //fprintf( stderr, "Bit %d\n", t );
+            //LOG("Bit %d\n", t );
             ret = (ret << 1) & 0xfffffffe;
             ret = ret | t; //( (t >> (7-(offset%8))) & 0x1 );
         }
         
-        //fprintf( stderr, "Return %04x\n", ret );
+        //LOG("Return %04x\n", ret );
         
         return ret;
     }
@@ -77,18 +77,18 @@ class BitStreamParser {
     }
     
     size_t byteOffset() {
-        if ( offset_ % 8 != 0 ) { fprintf(stderr, "byteOffset() called when not on a byte boundary"); return 0; }
+        if ( offset_ % 8 != 0 ) { LOG( "byteOffset() called when not on a byte boundary"); return 0; }
         return offset_ / 8;
     }
     
     void byteOffset( size_t t ) {
-        if ( offset_ % 8 != 0 ) { fprintf(stderr, "byteOffset() called when not on a byte boundary"); return; }
+        if ( offset_ % 8 != 0 ) { LOG( "byteOffset() called when not on a byte boundary"); return; }
         offset_ = t * 8;
     }
     
     std::string readBytes( size_t t ) {
-        if ( offset_ % 8 != 0 ) { fprintf(stderr, "BitStream::readBytes() called when not on a byte boundary"); ASSERT(0); }
-        if ( offset_ / 8 + t > byteStream_.length() ) { fprintf(stderr,"not enough bytes in BitStream::readBytes()"); ASSERT(0); }
+        if ( offset_ % 8 != 0 ) { LOG( "BitStream::readBytes() called when not on a byte boundary"); ASSERT(0); }
+        if ( offset_ / 8 + t > byteStream_.length() ) { LOG("not enough bytes in BitStream::readBytes()"); ASSERT(0); }
         std::string ret = byteStream_.substr( offset_ / 8, t );
         offset_ += t * 8;
         return ret;
@@ -97,7 +97,7 @@ class BitStreamParser {
     inline void writeBytes( const std::string &s ) { return writeBytes( s.c_str(), s.length() ); }
     
     void writeBytes( const char *buf, size_t t ) {
-        if ( offset_ % 8 != 0 ) { fprintf(stderr, "BitStream::writeBytes() called when not on a byte boundary"); return; }
+        if ( offset_ % 8 != 0 ) { LOG( "BitStream::writeBytes() called when not on a byte boundary"); return; }
         
         if ( offset_ / 8 + t > byteStream_.length() ) {
             byteStream_.resize( offset_ / 8 + t, 0 );

@@ -46,7 +46,7 @@ SmartPtr<SmartBuffer> FLVSegmentOutput::getOneFrameForAllStreams()
     }
     SmartPtr<SmartBuffer> result;
     if( totalLen > 0 ) {
-        //fprintf(stderr, "------getOneFrameForAllStreams totalStreams=%d, streamMask=0x%x\r\n", totalStreams, streamMask);
+        //LOG( "------getOneFrameForAllStreams totalStreams=%d, streamMask=0x%x\r\n", totalStreams, streamMask);
     
         //Headers
         //  Meta data = 3 bytes //starting with SGO //segment output
@@ -64,7 +64,7 @@ SmartPtr<SmartBuffer> FLVSegmentOutput::getOneFrameForAllStreams()
         int offset = 7;
         for( u32 i = 0; i < MAX_XCODING_INSTANCES+1; i++ ) {
             if( outputBuffer_[i] && outputBuffer_[i]->dataLength() ) {
-                //fprintf(stderr, "------streamId=%d, dataLen=%ld\r\n", i, outputBuffer_[i]->dataLength());
+                //LOG( "------streamId=%d, dataLen=%ld\r\n", i, outputBuffer_[i]->dataLength());
                 u8 streamIdByte = i;
                 memcpy(data+offset, &streamIdByte, sizeof(u8));
                 offset += sizeof(u8);
@@ -75,7 +75,7 @@ SmartPtr<SmartBuffer> FLVSegmentOutput::getOneFrameForAllStreams()
                 offset += outputBuffer_[i]->dataLength();
                 outputBuffer_[i] = NULL; //reset outputbuffer
             } else if( i == MAX_XCODING_INSTANCES ){
-                //fprintf(stderr, "------All-in stream streamId=%d\r\n", i);
+                //LOG( "------All-in stream streamId=%d\r\n", i);
                 //Must set empty buffer for all-in stream, since the receiver side always assumes 1 more stream if there is any
                 u8 streamIdByte = i;
                 memcpy(data+offset, &streamIdByte, sizeof(u8));
