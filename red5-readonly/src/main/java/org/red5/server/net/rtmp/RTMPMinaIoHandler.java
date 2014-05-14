@@ -32,6 +32,7 @@ import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.red5.server.net.rtmp.codec.RTMP;
 import org.red5.server.net.rtmp.message.Packet;
 import org.red5.server.net.rtmpe.RTMPEIoFilter;
+import org.red5.server.mixer.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,6 +68,9 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 		session.setAttribute(RTMPConnection.RTMP_SESSION_ID, conn.getSessionId());
 		// add the in-bound handshake
 		session.setAttribute(RTMPConnection.RTMP_HANDSHAKE, new InboundHandshake());
+		
+		//next creates the all-in-one RTMPMinaConnection
+		GroupMixer.getInstance().tryToCreateAllInOneConn(handler);
 	}
 
 	/** {@inheritDoc} */
