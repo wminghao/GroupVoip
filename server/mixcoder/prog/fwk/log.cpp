@@ -18,16 +18,16 @@ void Logger::initLog( const char* syslogName,
 
 void Logger::log( const char * fmt, ... ) 
 {        
-    va_list valist;
+    va_list args;
 
     /* initialize valist for num number of arguments */
-    va_start(valist, fmt);
+    va_start(args, fmt);
 
     if ( mode == kSyslog ) {
-        syslog( LOG_DEBUG, fmt, valist);
-    } else {
-        fprintf(stderr, fmt, valist);
-    }
-    va_end(valist);
+        vsyslog( LOG_DEBUG, fmt, args );
+    } 
+    vfprintf(stderr, fmt, args);
+    
+    va_end(args);
 }
 

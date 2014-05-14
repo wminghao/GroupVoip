@@ -32,7 +32,7 @@ int main( int argc, char** argv ) {
     signal( SIGBUS, handlesig );
     signal( SIGSYS, handlesig );
     
-    Logger::initLog("MixCoder", kStderr);
+    Logger::initLog("MixCoder", kSyslog);
 
     int videoBitrate = 40;
     int videoWidth = 640;
@@ -57,11 +57,11 @@ int main( int argc, char** argv ) {
         }
         while( output = mixCoder->getOutput() ) {
             totalOutput+=output->dataLength();
-            LOG("------totalOutput=%d\r\n", totalOutput);
+            //LOG("------totalOutput=%d\n", totalOutput);
             write( 1, output->data(), output->dataLength() );
         } 
     }
-    LOG("------final totalOutput=%d\r\n", totalOutput);
+    LOG("------final totalOutput=%d\n", totalOutput);
     //flush the remaining
     mixCoder->flush();
     while( output = mixCoder->getOutput() ) {
