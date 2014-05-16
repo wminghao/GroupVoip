@@ -1,4 +1,5 @@
 #include "VideoEncoder.h"
+#include "fwk/log.h"
 #include <assert.h>
 
 #define interface (vpx_codec_vp8_cx())
@@ -69,14 +70,14 @@ VideoEncoder::VideoEncoder( VideoStreamSetting* setting, int vBaseLayerBitrate )
     memcpy(&vSetting_, setting, sizeof(VideoStreamSetting));
 
     if ( !vpx_img_alloc (&raw_, VPX_IMG_FMT_I420, setting->width, setting->height, 32)) {
-        fprintf(stderr, "Failed to allocate frame\n");
+        LOG( "Failed to allocate frame\n");
         assert(0);
         return;
     }
     /* Populate encoder configuration */
     res = vpx_codec_enc_config_default(interface, &cfg_, 0);
     if(res) {
-        fprintf(stderr, "Failed to get config: %s\n", vpx_codec_err_to_string(res));
+        LOG( "Failed to get config: %s\n", vpx_codec_err_to_string(res));
         return;
     }
 
@@ -146,7 +147,7 @@ VideoEncoder::VideoEncoder( VideoStreamSetting* setting, int vBaseLayerBitrate )
 
     /* Initialize codec */
     if (vpx_codec_enc_init (&codec_, interface, &cfg_, 0)) {
-        fprintf(stderr, "Failed to initialize encoder");
+        LOG( "Failed to initialize encoder");
         assert(0);
     }
 
@@ -159,7 +160,7 @@ VideoEncoder::VideoEncoder( VideoStreamSetting* setting, int vBaseLayerBitrate )
     int max_intra_size_pct = (int) (((double)cfg_.rc_buf_optimal_sz * 0.5)
                                 * ((double) cfg_.g_timebase.den / cfg_.g_timebase.num)
                                 / 10.0);
-    /* fprintf (stderr, "max_intra_size_pct=%d\n", max_intra_size_pct); */
+    /* LOG("max_intra_size_pct=%d\n", max_intra_size_pct); */
 
     vpx_codec_control(&codec_, VP8E_SET_MAX_INTRA_BITRATE_PCT,
                       max_intra_size_pct);
@@ -178,7 +179,7 @@ VideoEncoder::VideoEncoder( VideoStreamSetting* setting, int vBaseLayerBitrate )
 VideoEncoder::~VideoEncoder()
 {
     if (vpx_codec_destroy(&codec_)) {
-        fprintf(stderr, "Failed to destroy codec");
+        LOG( "Failed to destroy codec");
     }
 #ifdef DEBUG_SAVE_IVF
     for (int i=0; i<NUM_LAYERS; i++) {
@@ -202,7 +203,7 @@ SmartPtr<SmartBuffer> VideoEncoder::encodeAFrame(SmartPtr<SmartBuffer> input, bo
         memcpy( raw_.planes[0], input->data(), input->dataLength() );
 
         if(vpx_codec_encode(&codec_, &raw_, timestampTick_, 1, flags, VPX_DL_REALTIME)) {
-            fprintf(stderr, "!!!Failed to encode frame");
+            LOG( "!!!Failed to encode frame");
             return NULL;
         }
         while ( (pkt = vpx_codec_get_cx_data(&codec_, &iter)) ) {
@@ -222,7 +223,7 @@ SmartPtr<SmartBuffer> VideoEncoder::encodeAFrame(SmartPtr<SmartBuffer> input, bo
                     int keyframe  = !(buf[0] & 1);
                     int profile   =  (buf[0]>>1) & 7;
                     int invisible = !(buf[0] & 0x10);
-                    fprintf(stderr, "-----------------video encoded frame size=%ld, keyframe=%d, profile=%d, invisible=%d\r\n", pkt->data.frame.sz, keyframe, profile, invisible);
+                    LOG( "-----------------video encoded frame size=%ld, keyframe=%d, profile=%d, invisible=%d\r\n", pkt->data.frame.sz, keyframe, profile, invisible);
                     */
                     frameOutputCnt_++;
                     break;

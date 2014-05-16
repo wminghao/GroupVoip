@@ -3,12 +3,37 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <sys/param.h>
+#include <sys/fcntl.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <sys/stat.h>
+#include <sys/signal.h>
+#include <execinfo.h>
+#include <sys/types.h>
+#include "fwk/log.h"
+
+void handlesig( int signum )
+{    
+    LOG( "Exiting on signal: %d", signum  );
+    LOG( "GroupVoip just crashed, see stack dump below." );
+    //TODO print stack trace
+    exit( 0 );
+}
 
 //big enough buffer
 const int MAX_BUF_SIZE = 100;
 
 int main( int argc, char** argv ) {
+
+    signal( SIGPIPE, SIG_IGN );
+    signal( SIGSEGV, handlesig );
+    signal( SIGFPE, handlesig );
+    signal( SIGBUS, handlesig );
+    signal( SIGSYS, handlesig );
     
+    Logger::initLog("MixCoder", kSyslog);
+
     int videoBitrate = 40;
     int videoWidth = 640;
     int videoHeight = 480;
@@ -27,16 +52,16 @@ int main( int argc, char** argv ) {
     while ( (totalBytesRead = read( 0, data, MAX_BUF_SIZE)) > 0 ) {
         SmartPtr<SmartBuffer> input = new SmartBuffer( totalBytesRead, data );
         if( !mixCoder->newInput( input ) ) {
-            fprintf(stderr, "input error");
+            LOG("input error");
             return -1;
         }
         while( output = mixCoder->getOutput() ) {
             totalOutput+=output->dataLength();
-            //fprintf(stderr, "------totalOutput=%d\r\n", totalOutput);
+            //LOG("------totalOutput=%d\n", totalOutput);
             write( 1, output->data(), output->dataLength() );
         } 
     }
-    fprintf(stderr, "------final totalOutput=%d\r\n", totalOutput);
+    LOG("------final totalOutput=%d\n", totalOutput);
     //flush the remaining
     mixCoder->flush();
     while( output = mixCoder->getOutput() ) {

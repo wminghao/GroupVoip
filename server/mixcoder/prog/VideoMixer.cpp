@@ -1,4 +1,5 @@
 #include "VideoMixer.h"
+#include "fwk/log.h"
 #include <assert.h>
 
 int mappingToScalingWidth(int totalStream) {
@@ -76,7 +77,7 @@ SmartPtr<SmartBuffer> VideoMixer::mixStreams(SmartPtr<SmartBuffer> planes[][3],
                     videoRect[curStreamId].y = 0;
                     videoRect[curStreamId].width = outputWidth;
                     videoRect[curStreamId].height = outputHeight;
-                    //fprintf( stderr, "----i=%d, x=%d, y=%d, w=%d,h=%d\r\n", curStreamId, videoRect[curStreamId].x, videoRect[curStreamId].y, videoRect[curStreamId].width, videoRect[curStreamId].height);
+                    //LOG("----i=%d, x=%d, y=%d, w=%d,h=%d\r\n", curStreamId, videoRect[curStreamId].x, videoRect[curStreamId].y, videoRect[curStreamId].width, videoRect[curStreamId].height);
                 }
                     
                 //convert from AV_PIX_FMT_YUV420P
@@ -123,7 +124,7 @@ SmartPtr<SmartBuffer> VideoMixer::mixStreams(SmartPtr<SmartBuffer> planes[][3],
                         videoRect[curStreamId].y = outputHeight/4;
                         videoRect[curStreamId].width = scaledWidth;
                         videoRect[curStreamId].height = scaledHeight;
-                        //fprintf( stderr, "----i=%d, x=%d, y=%d, w=%d,h=%d\r\n", curStreamId, videoRect[curStreamId].x, videoRect[curStreamId].y, videoRect[curStreamId].width, videoRect[curStreamId].height);
+                        //LOG("----i=%d, x=%d, y=%d, w=%d,h=%d\r\n", curStreamId, videoRect[curStreamId].x, videoRect[curStreamId].y, videoRect[curStreamId].width, videoRect[curStreamId].height);
                     }
 
                     //convert from AV_PIX_FMT_YUV420P
@@ -176,7 +177,7 @@ SmartPtr<SmartBuffer> VideoMixer::mixStreams(SmartPtr<SmartBuffer> planes[][3],
                         videoRect[curStreamId].y = outputHeight/4;
                         videoRect[curStreamId].width = scaledWidth;
                         videoRect[curStreamId].height = scaledHeight;
-                        //fprintf( stderr, "----i=%d, x=%d, y=%d, w=%d,h=%d\r\n", curStreamId, videoRect[curStreamId].x, videoRect[curStreamId].y, videoRect[curStreamId].width, videoRect[curStreamId].height);
+                        //LOG("----i=%d, x=%d, y=%d, w=%d,h=%d\r\n", curStreamId, videoRect[curStreamId].x, videoRect[curStreamId].y, videoRect[curStreamId].width, videoRect[curStreamId].height);
                     }
 
                     //convert from AV_PIX_FMT_YUV420P
@@ -237,7 +238,7 @@ SmartPtr<SmartBuffer> VideoMixer::mixStreams(SmartPtr<SmartBuffer> planes[][3],
                         videoRect[curStreamId].y = outputHeight/4;
                         videoRect[curStreamId].width = scaledWidth;
                         videoRect[curStreamId].height = scaledHeight;
-                        //fprintf( stderr, "----i=%d, x=%d, y=%d, w=%d,h=%d\r\n", 
+                        //LOG("----i=%d, x=%d, y=%d, w=%d,h=%d\r\n", 
                         //curStreamId, videoRect[curStreamId].x, videoRect[curStreamId].y, videoRect[curStreamId].width, videoRect[curStreamId].height);
                     }
                     //convert from AV_PIX_FMT_YUV420P
@@ -315,7 +316,7 @@ bool VideoMixer::tryToInitSws(VideoStreamSetting* settings, int totalStreams)
                                                outputWidth, outputHeight, PIX_FMT_YUV420P,
                                                SWS_BICUBIC, 0, 0, 0 );
             if( !swsCtx_[i] ) {
-                fprintf( stderr, "FAILED to create swscale context, inWidth=%d, inHeight=%d, outWith=%d, outHeight=%d\n", settings[i].width, settings[i].height, outputWidth, outputHeight);
+                LOG("FAILED to create swscale context, inWidth=%d, inHeight=%d, outWith=%d, outHeight=%d\n", settings[i].width, settings[i].height, outputWidth, outputHeight);
                 assert(0);
                 ret = false;
             }

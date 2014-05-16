@@ -13,7 +13,7 @@ inline u64 getEpocTime() {
         (unsigned long long)(tv.tv_sec) * 1000 +
         (unsigned long long)(tv.tv_usec) / 1000;
     
-    //fprintf(stderr, "%llu\n", millisecondsSinceEpoch);
+    //LOG( "%llu\n", millisecondsSinceEpoch);
     return (u64)millisecondsSinceEpoch;
 }
 

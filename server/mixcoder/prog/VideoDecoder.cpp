@@ -5,6 +5,7 @@ extern "C" {
 
 #include "VideoDecoder.h"
 #include <assert.h>
+#include "fwk/log.h"
             
 VideoDecoder::~VideoDecoder() {
     reset();
@@ -33,13 +34,13 @@ void VideoDecoder::initDecoder( SmartPtr<SmartBuffer> spspps ) {
     /* AVCodec/Decode init */
     codec_ = avcodec_find_decoder( CODEC_ID_H264 );
     if( ! codec_ ) {
-        fprintf( stderr, "FAILED to find h264 decoder, FAILING\n");
+        LOG("FAILED to find h264 decoder, FAILING\n");
         exit(-1);
     }
 
     codecCtx_ = avcodec_alloc_context3( codec_ );
     if( ! codecCtx_ ) {
-        fprintf( stderr, "FAILED to init h264 decoder, FAILING2\n" );
+        LOG("FAILED to init h264 decoder, FAILING2\n" );
         exit(-1);
     }
     
@@ -48,7 +49,7 @@ void VideoDecoder::initDecoder( SmartPtr<SmartBuffer> spspps ) {
     memcpy( codecCtx_->extradata, spspps->data(), spspps->dataLength() );
     codecCtx_->extradata_size = spspps->dataLength();
     if( avcodec_open2( codecCtx_, codec_, &d ) < 0 ) {
-        fprintf( stderr, "FAILED to open h264 decoder, FAILING3\n" );
+        LOG("FAILED to open h264 decoder, FAILING3\n" );
     }
 
     frame_ = avcodec_alloc_frame();
@@ -68,7 +69,7 @@ bool VideoDecoder::newAccessUnit( SmartPtr<AccessUnit> au, SmartPtr<SmartBuffer>
         inWidth_ = 640;
         inHeight_ = 480;
 
-        fprintf( stderr, "Video decoded sps pps, len=%ld, ts=%d\n", spspps_->dataLength(), au->pts);
+        LOG("Video decoded sps pps, len=%ld, ts=%d\n", spspps_->dataLength(), au->pts);
     } else if( au->sp == kRawData ) {
         assert(inWidth_ && inHeight_);
         if ( spspps_ ) {
@@ -107,19 +108,19 @@ bool VideoDecoder::newAccessUnit( SmartPtr<AccessUnit> au, SmartPtr<SmartBuffer>
                     bIsValidFrame = true;
                     bHasFirstFrameStarted = true;
                     
-                    fprintf( stderr, "video decoded pkt size=%d size=640*480 ts=%d\n", pkt.size, au->pts);
+                    LOG( "video decoded pkt size=%d size=640*480 ts=%d\n", pkt.size, au->pts);
                     /*
-                    fprintf( stderr, "video decoded pkt size=%d stride0=%d, stride1=%d, stride2=%d, width=%d, height=%d, ts=%d\n", pkt.size, 
+                    LOG( "video decoded pkt size=%d stride0=%d, stride1=%d, stride2=%d, width=%d, height=%d, ts=%d\n", pkt.size, 
                              frame_->linesize[0], frame_->linesize[1], frame_->linesize[2],
                              frame_->width, frame_->height, au->pts);
                     */
                 } else {
-                    fprintf( stderr, "DIDNT get video frame\n");
+                    LOG( "DIDNT get video frame\n");
                 }
             } else if ( rval == 0 ) {
-                fprintf( stderr, "NO FRAME!\n");
+                LOG( "NO FRAME!\n");
             } else {
-                fprintf( stderr, "DECODE ERROR!\n");
+                LOG( "DECODE ERROR!\n");
             }
         }
     }
