@@ -10,6 +10,7 @@ import org.red5.server.api.service.IServiceCall;
 import org.red5.server.net.rtmp.IRTMPHandler;
 import org.red5.server.net.rtmp.RTMPConnManager;
 import org.red5.server.net.rtmp.RTMPMinaConnection;
+import org.red5.server.net.rtmp.event.ChunkSize;
 import org.red5.server.net.rtmp.event.Invoke;
 import org.red5.server.net.rtmp.event.IRTMPEvent;
 import org.red5.server.net.rtmp.message.Constants;
@@ -119,7 +120,7 @@ public class GroupMixer {
     		connAllInOne.handleMessageReceived(createStreamMsg);
     		
     		///////////////////////////////////
-    		//handle publish Stream event
+    		//handle publish event
 
     		//RTMP Chunk Header
     		Header publishMsgHeader = new Header();
@@ -145,7 +146,29 @@ public class GroupMixer {
  		
     		Packet publishMsg = new Packet(publishMsgHeader, publishMsgEvent);
     		connAllInOne.handleMessageReceived(publishMsg);
-    		
+                		
+            ///////////////////////////////////
+            //handle chunksize event
+            
+            //RTMP Chunk Header
+            Header chunkSizeMsgHeader = new Header();
+            chunkSizeMsgHeader.setDataType(Constants.TYPE_CHUNK_SIZE);//invoke is command, val=1
+            chunkSizeMsgHeader.setChannelId(2); //2 means protocol control message
+            // see RTMPProtocolDecoder::decodePacket() 
+            // final int readAmount = (readRemaining > chunkSize) ? chunkSize : readRemaining;
+            chunkSizeMsgHeader.setSize(1024);   //Chunk Data Length, a big enough buffersize
+            chunkSizeMsgHeader.setStreamId(1);  //1 means the newly created stream
+            chunkSizeMsgHeader.setTimerBase(0); //base+delta=timestamp
+            chunkSizeMsgHeader.setTimerDelta(0);
+            chunkSizeMsgHeader.setExtendedTimestamp(0); //extended timestamp
+            
+            ChunkSize chunkSizeMsgEvent = new ChunkSize(0xffffff); //maxsize
+            chunkSizeMsgEvent.setHeader(chunkSizeMsgHeader);
+            chunkSizeMsgEvent.setTimestamp(0);
+            
+            Packet chunkSizeMsg = new Packet(chunkSizeMsgHeader, chunkSizeMsgEvent);
+            connAllInOne.handleMessageReceived(chunkSizeMsg);
+            
     		// set it in MixerManager
     		allInOneSessionId_ = connAllInOne.getSessionId();
     	}
