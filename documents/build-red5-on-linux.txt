@@ -1,0 +1,31 @@
+################################################################################
+# Set up info
+################################################################################
+
+1. Download and Install Java
+
+2. Download and Install ant
+   * sudo apt-get -u install ant
+
+3. Setting up ENV if necessary
+   
+4. Building RED5 Server
+   * mv red5 /usr/share
+   * cd /usr/share/red5
+   * ant prepare
+   * ant dist
+   
+5. Setting up red5 
+
+   * from within /usr/share/red5
+     cp -r dist/conf .
+
+6. Setting up init script 
+
+################################################################################
+# References:
+################################################################################
+
+* http://anupdubbewar.blogspot.com/2013/04/install-red5-server-on-centos-57.html
+* Chapter 6.2 of red5-reference-1.0.pdf
+

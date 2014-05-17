@@ -33,6 +33,11 @@ documents:
 
 configuration: 
             /usr/share/red5/conf
+################################################################################
+# Buildign Red5 on AWS 
+################################################################################
+
+* Follow general instruction except that ant (1.8.2) has already been installed.
 
 ################################################################################
 # Current Issues 
