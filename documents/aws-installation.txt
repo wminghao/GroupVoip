@@ -15,7 +15,12 @@ starting the server:
             sudo /etc/init.d/red5-server start
 
           * The init.d script does not work for 1.0.2 compiled from MAC
-            as howard last checked on May 13, 2014
+            as Howard last checked on May 13, 2014
+
+          * While it works for the version Raymond compiled with ant on AWS.
+
+          * one thing to note is that if you start the server manually, 
+            the script won't stop it.
 
 log files:
             /usr/share/red5/log
