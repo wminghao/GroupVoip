@@ -1,0 +1,17 @@
+
+
+May 18, 2014
+
+1. (Raymond) try building 1.0.1 using eclipse
+
+2. (Raymond) try building 1.0.2 o AWS
+  
+3. (Howard) to copy RTMP for Raymond
+
+4. (Howard) threading model in red5 architecture
+
+5. (Howard) server modification to support stream massaging, mixing etc
+
+5. (Raymond) working on b/w estimation
+
+

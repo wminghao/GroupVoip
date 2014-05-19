@@ -45,4 +45,14 @@
 * http://red5.googlecode.com/svn/java/server/tags/
   - shows all available red5 tags
 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+building using maven for 1.0.2?
+
+
+http://red5.5842.n7.nabble.com/Red5-1-0-2-RC1-Compilation-failure-cannot-find-symbol-td44244.html
+
+mvn -e -X -U -Dmaven.test.skip=true -Dmaven.buildNumber.doUpdate=false -Dclassifier=bootstrap package
+
+http://mina.apache.org/mina-project/quick-start-guide.html
+
 
