@@ -1,0 +1,58 @@
+###############################################################################
+# Set up info
+################################################################################
+
+1. Download and Install Java
+
+2. Download and Install ant
+   * sudo apt-get -u install ant
+
+3. Setting up ENV if necessary
+   
+4. Building RED5 Server
+
+4.1 get source:
+    
+    - for 1.0
+        svn co http://red5.googlecode.com/svn/java/server/tags/1_0/ red5
+
+    - for 1.0.2
+
+        svn co http://red5.googlecode.com/svn/java/server/tags/1_0_2_RC1/ red5
+        This does not contain a build.xml file needed for ant and potentailly
+        other .xml file.
+        
+4.2 compiling and setting thigns up
+    
+   * mv red5 /usr/share
+   * cd /usr/share/red5
+   * ant prepare
+   * ant dist
+   
+5. Setting up red5 
+
+   * from within /usr/share/red5
+     cp -r dist/conf .
+
+6. Setting up init script 
+
+################################################################################
+# References:
+################################################################################
+
+* http://anupdubbewar.blogspot.com/2013/04/install-red5-server-on-centos-57.html
+* Chapter 6.2 of red5-reference-1.0.pdf
+* http://red5.googlecode.com/svn/java/server/tags/
+  - shows all available red5 tags
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+building using maven for 1.0.2?
+
+
+http://red5.5842.n7.nabble.com/Red5-1-0-2-RC1-Compilation-failure-cannot-find-symbol-td44244.html
+
+mvn -e -X -U -Dmaven.test.skip=true -Dmaven.buildNumber.doUpdate=false -Dclassifier=bootstrap package
+
+http://mina.apache.org/mina-project/quick-start-guide.html
+
+
