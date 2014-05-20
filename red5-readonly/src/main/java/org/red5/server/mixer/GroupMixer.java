@@ -3,22 +3,16 @@ package org.red5.server.mixer;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.red5.io.object.StreamAction;
-import org.red5.server.api.service.IPendingServiceCall;
-import org.red5.server.api.service.IPendingServiceCallback;
 import org.red5.server.api.service.IServiceCall;
 import org.red5.server.net.rtmp.IRTMPHandler;
 import org.red5.server.net.rtmp.RTMPConnManager;
 import org.red5.server.net.rtmp.RTMPMinaConnection;
 import org.red5.server.net.rtmp.event.ChunkSize;
 import org.red5.server.net.rtmp.event.Invoke;
-import org.red5.server.net.rtmp.event.IRTMPEvent;
 import org.red5.server.net.rtmp.message.Constants;
 import org.red5.server.net.rtmp.message.Header;
 import org.red5.server.net.rtmp.message.Packet;
 import org.red5.server.service.Call;
-import org.red5.server.service.PendingCall;
-import org.red5.io.object.StreamAction;
 
 public class GroupMixer {
 	
@@ -39,7 +33,7 @@ public class GroupMixer {
     
     public void tryToCreateAllInOneConn(IRTMPHandler handler)
     {
-    	if( allInOneSessionId_ ==null ) {
+    	if( allInOneSessionId_ == null ) {
     		// create a connection
     		RTMPMinaConnection connAllInOne = (RTMPMinaConnection) RTMPConnManager.getInstance().createConnection(RTMPMinaConnection.class);
     		// add session to the connection

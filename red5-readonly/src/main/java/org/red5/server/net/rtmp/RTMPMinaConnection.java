@@ -314,17 +314,19 @@ public class RTMPMinaConnection extends RTMPConnection implements RTMPMinaConnec
 	 * @param protocolSession  Protocol session
 	 */
 	public void setIoSession(IoSession protocolSession) {
-		SocketAddress remote = protocolSession.getRemoteAddress();
-		if (remote instanceof InetSocketAddress) {
-			remoteAddress = ((InetSocketAddress) remote).getAddress().getHostAddress();
-			remotePort = ((InetSocketAddress) remote).getPort();
-		} else {
-			remoteAddress = remote.toString();
-			remotePort = -1;
+		SocketAddress remote = (protocolSession != null) ? protocolSession.getRemoteAddress(): null;
+		if ( remote != null ) {
+    		if (remote instanceof InetSocketAddress) {
+    			remoteAddress = ((InetSocketAddress) remote).getAddress().getHostAddress();
+    			remotePort = ((InetSocketAddress) remote).getPort();
+    		} else {
+    			remoteAddress = remote.toString();
+    			remotePort = -1;
+    		}
+    		remoteAddresses = new ArrayList<String>(1);
+    		remoteAddresses.add(remoteAddress);
+    		remoteAddresses = Collections.unmodifiableList(remoteAddresses);
 		}
-		remoteAddresses = new ArrayList<String>(1);
-		remoteAddresses.add(remoteAddress);
-		remoteAddresses = Collections.unmodifiableList(remoteAddresses);
 		this.ioSession = protocolSession;
 		log.trace("setIoSession conn: {}", this);
 	}
