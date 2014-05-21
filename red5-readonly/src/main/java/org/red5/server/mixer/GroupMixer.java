@@ -3,6 +3,8 @@ package org.red5.server.mixer;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.red5.logging.Red5LoggerFactory;
+import org.red5.server.api.Red5;
 import org.red5.server.api.service.IServiceCall;
 import org.red5.server.net.rtmp.IRTMPHandler;
 import org.red5.server.net.rtmp.RTMPConnManager;
@@ -13,15 +15,61 @@ import org.red5.server.net.rtmp.message.Constants;
 import org.red5.server.net.rtmp.message.Header;
 import org.red5.server.net.rtmp.message.Packet;
 import org.red5.server.service.Call;
+import org.slf4j.Logger;
 
-public class GroupMixer {
+import java.util.List;
+import java.util.Iterator;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ArrayBlockingQueue;
+
+public class GroupMixer implements Runnable {
 	
 	private static final String AppName = "myRed5App";
 	private static final String ipAddr = "localhost"; //change to something else in the future ????
 	private static GroupMixer instance_;
-	public String allInOneSessionId_ = null; //all-in-one mixer rtmp connection
+	private String allInOneSessionId_ = null; //all-in-one mixer rtmp connection
+	private static Logger log = Red5LoggerFactory.getLogger(Red5.class);
+	
+	//2 events in the blocking queue                                                                                                                                                                     
+    public class GroupMixerAsyncEvent{
+
+        public GroupMixerAsyncEvent(int eventId, int param1, int param2) {
+            this.eventId = eventId;
+            this.param1 = param1;
+            this.param2 = param2;
+        }
+
+        public String getName() {
+            String eventName = "";
+            switch(eventId) {
+            case GroupMixerAsyncEvent.MESSAGEINPUT_REQ:
+                {
+                    eventName = "Input message to processpipe";
+                    break;
+                }
+            case GroupMixerAsyncEvent.MESSAGEOUTPUT_REQ:
+                {
+                    eventName = "Output message to processpipe";
+                    break;
+                }
+            }
+            return "event is " + eventName + " param1=" + param1 + " param2=" + param2;
+        }
+
+        private int eventId;
+        private int param1; //streamNumber = streamId in mixcoder
+        private int param2; //FLVFrame raw data
+
+        public static final int MESSAGEINPUT_REQ 	   = 0;
+        public static final int MESSAGEOUTPUT_REQ      = 1;
+        public static final int SHUTDOWN_REQ 		   = 2;
+    }
+    private BlockingQueue<GroupMixerAsyncEvent> asyncEventQueue = new ArrayBlockingQueue<GroupMixerAsyncEvent>(100);
 
 	public GroupMixer() {
+		//start the thread immediately
+    	Thread t = new Thread(this, "GroupMixerThread");
+    	t.start();
 	}
 	
     public static synchronized GroupMixer getInstance() {
@@ -50,6 +98,8 @@ public class GroupMixer {
             
     		// set it in MixerManager
     		allInOneSessionId_ = connAllInOne.getSessionId();
+
+    		log.info("Created all In One connection on thread: {}", Thread.currentThread().getName());
     	}
     }	
     
@@ -177,5 +227,45 @@ public class GroupMixer {
         
         Packet chunkSizeMsg = new Packet(chunkSizeMsgHeader, chunkSizeMsgEvent);
         conn.handleMessageReceived(chunkSizeMsg);
+    }
+    
+    public void addEvent(int eventId, int param1, int param2) {
+        try {
+            GroupMixerAsyncEvent event = new GroupMixerAsyncEvent(eventId, param1, param2);
+            log.info("GroupMixer addEvent ="+event.getName());
+            asyncEventQueue.put(event);
+        } catch (InterruptedException iex) {
+        	log.error("GroupMixer addEvent Interrupted error: "+iex.toString());
+        } catch (Exception ex) {
+        	log.error("GroupMixer addEvent Generic error: "+ex.toString());
+        }
+    }
+
+    @Override
+    public void run() {
+        log.info("GroupMix thread enters");
+        try {
+        	GroupMixerAsyncEvent event;
+            while ((event = asyncEventQueue.take()).eventId != GroupMixerAsyncEvent.SHUTDOWN_REQ) {
+
+                log.info("AVRecorder processEvent ="+event.getName());
+                
+                switch(event.eventId) {
+                case GroupMixerAsyncEvent.MESSAGEINPUT_REQ:
+                    {
+                    	//TODO input event
+                        break;
+                    }
+                case GroupMixerAsyncEvent.MESSAGEOUTPUT_REQ:
+                    {
+                    	//TODO handle output event
+                        break;
+                    }
+                }
+            }
+        } catch (Exception ex) {
+        	log.error("GroupMixer run Generic error: "+ex.toString());
+        }
+        log.info("GroupMix thread exits");
     }
 }
