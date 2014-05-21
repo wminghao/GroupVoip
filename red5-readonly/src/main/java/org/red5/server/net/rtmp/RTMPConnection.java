@@ -80,6 +80,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
+import org.red5.server.mixer.GroupMixer;
+
 /**
  * RTMP connection. Stores information about client streams, data transfer channels, pending RPC calls, bandwidth configuration, 
  * AMF encoding type (AMF0/AMF3), connection state (is alive, last ping time and ping result) and session.
@@ -859,6 +861,7 @@ public abstract class RTMPConnection extends BaseConnection implements IStreamCa
 				usedStreams.decrementAndGet();
 				streams.remove(streamId - 1);
 				streamBuffers.remove(streamId - 1);
+				GroupMixer.getInstance().deleteMixedStream(streamId);
 			}
 		}
 	}

@@ -51,6 +51,7 @@ import org.red5.server.net.rtmp.RTMPConnection;
 import org.red5.server.net.rtmp.status.Status;
 import org.red5.server.net.rtmp.status.StatusCodes;
 import org.red5.server.util.ScopeUtils;
+import org.red5.server.mixer.GroupMixer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -539,6 +540,11 @@ public class StreamService implements IStreamService {
 
 	/** {@inheritDoc} */
 	public void publish(String name, String mode) {
+		//create a mixed stream from here
+		if( mode.equalsIgnoreCase(IClientStream.MODE_LIVE)) {
+			GroupMixer.getInstance().createMixedStream(name);		
+		}
+		
 		Map<String, String> params = null;
 		if (name != null && name.contains("?")) {
 			// read and utilize the query string values
