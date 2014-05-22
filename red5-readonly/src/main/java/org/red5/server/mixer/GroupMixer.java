@@ -33,9 +33,10 @@ public class GroupMixer implements Runnable {
 	//mapping from original to streamId to newly generated stream
 	private class GroupMappingTableEntry {
 		public int 	  mixerId; //streamId used in MixCoder
-		public int	  streamId; //streamId used in RTMP protocol
+		public String streamName; //streamName used in publish
 	}
-	private Map<String,GroupMappingTableEntry> groupMappingTable=new HashMap<String,GroupMappingTableEntry>();
+	//key is streamId; //streamId used in RTMP protocol
+	private Map<Integer,GroupMappingTableEntry> groupMappingTable=new HashMap<Integer,GroupMappingTableEntry>();
 	
 	/**
 	 * Reserved stream ids. Stream id's directly relate to individual NetStream instances.
@@ -147,27 +148,23 @@ public class GroupMixer implements Runnable {
     	RTMPMinaConnection conn = getAllInOneConn();
     	GroupMappingTableEntry entry = new GroupMappingTableEntry();
     	entry.mixerId = getMixerId();
-    	entry.streamId = handleCreatePublishEvents(conn, "__mixed_"+streamName);
-    	groupMappingTable.put(streamName, entry);
-		log.info("A new stream id: {}, mixer id: {} is created on thread: {}", entry.streamId, entry.mixerId, Thread.currentThread().getName());
+    	entry.streamName = "__mixed_"+streamName;
+    	int streamId = handleCreatePublishEvents(conn, streamName);
+    	groupMappingTable.put(new Integer(streamId), entry);
+		log.info("A new stream id: {}, mixer id: {} is created on thread: {}", streamId, entry.mixerId, Thread.currentThread().getName());
     }
     
     private void deleteMixedStreamInternal(String streamIdStr)
     {
-    	String streamName = null;
-    	int streamId = Integer.parseInt(streamIdStr);
-    	for(String key : groupMappingTable.keySet()) {
-    		GroupMappingTableEntry value = groupMappingTable.get(key);
-    		if (value.streamId == streamId ) {
-    			streamName = key;
-    		}
-        }
-    	if ( streamName != null ) {        	
+    	Integer streamId = new Integer(Integer.parseInt(streamIdStr));
+        GroupMappingTableEntry entry = groupMappingTable.get(streamId);
+        if ( entry != null ) {
         	RTMPMinaConnection conn = getAllInOneConn();
-        	GroupMappingTableEntry entry = groupMappingTable.get(streamName);
         	handleDeleteEvent(conn, streamId, entry.mixerId);
-        	groupMappingTable.remove(streamName);
-    		log.info("A old stream id: {}, mixer id: {} is deleted on thread: {}", entry.streamId, entry.mixerId, Thread.currentThread().getName());
+        	groupMappingTable.remove(streamId);
+    		log.info("A old stream id: {}, mixer id: {}, streamName: {} is deleted on thread: {}", 
+    				streamId.intValue(), entry.mixerId, entry.streamName,
+    				Thread.currentThread().getName());
     	}
     }
     
