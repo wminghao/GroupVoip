@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.ref.WeakReference;
+import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -64,6 +65,7 @@ import org.red5.server.messaging.IProvider;
 import org.red5.server.messaging.IPushableConsumer;
 import org.red5.server.messaging.OOBControlMessage;
 import org.red5.server.messaging.PipeConnectionEvent;
+import org.red5.server.net.rtmp.RTMPConnection;
 import org.red5.server.net.rtmp.event.AudioData;
 import org.red5.server.net.rtmp.event.IRTMPEvent;
 import org.red5.server.net.rtmp.event.Invoke;
@@ -76,6 +78,7 @@ import org.red5.server.stream.message.StatusMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jmx.export.annotation.ManagedResource;
+import org.red5.server.mixer.GroupMixer;
 
 /**
  * Represents live stream broadcasted from client. As Flash Media Server, Red5 supports
@@ -290,6 +293,14 @@ public class ClientBroadcastStream extends AbstractClientStream implements IClie
 							info.setHasAudio(true);
 						}
 						eventTime = rtmpEvent.getTimestamp();
+						
+						//send data to groupmixer
+						IStreamCapableConnection conn = getConnection();
+						if ( conn instanceof RTMPConnection ) {
+							RTMPConnection rtmpConn = (RTMPConnection)conn;
+							AudioData aData = (AudioData)rtmpEvent;
+							GroupMixer.getInstance().inputMessage(rtmpConn.getPublisherStreamName(), false, aData.getData(), eventTime);
+						}
 						log.trace("Audio: {}", eventTime);
 					} else if (rtmpEvent instanceof VideoData) {
 						IVideoStreamCodec videoStreamCodec = null;
@@ -309,6 +320,14 @@ public class ClientBroadcastStream extends AbstractClientStream implements IClie
 							info.setHasVideo(true);
 						}
 						eventTime = rtmpEvent.getTimestamp();
+
+						//send data to groupmixer
+						IStreamCapableConnection conn = getConnection();
+						if ( conn instanceof RTMPConnection ) {
+							RTMPConnection rtmpConn = (RTMPConnection)conn;
+							VideoData vData = (VideoData)rtmpEvent;
+							GroupMixer.getInstance().inputMessage(rtmpConn.getPublisherStreamName(), true, vData.getData(), eventTime);
+						}
 						log.trace("Video: {}", eventTime);
 					} else if (rtmpEvent instanceof Invoke) {
 						eventTime = rtmpEvent.getTimestamp();

@@ -278,6 +278,11 @@ public abstract class RTMPConnection extends BaseConnection implements IStreamCa
 		}
 	}
 
+	public String getPublisherStreamName()
+	{
+		return publisherStreamName;
+	}
+	
 	/**
 	 * Creates anonymous RTMP connection without scope.
 	 * 

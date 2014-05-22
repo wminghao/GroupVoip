@@ -22,6 +22,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.nio.ByteBuffer;
 
+import org.apache.mina.core.buffer.IoBuffer;
+
 public class GroupMixer implements Runnable {
 	
 	public static final String ALL_IN_ONE_STREAM_NAME = "__mixed_all";
@@ -141,6 +143,35 @@ public class GroupMixer implements Runnable {
     public void deleteMixedStream(String streamName)
     {
     	addEvent(GroupMixerAsyncEvent.DELETESTREAM_REQ, streamName, null);
+    }
+    public void inputMessage(String streamName, boolean bIsVideo, IoBuffer buf, int eventTime)
+    {
+		int dataLen = buf.capacity();
+		ByteBuffer flvFrame = ByteBuffer.allocate(11 + dataLen + 4); //TODO direct?
+		flvFrame.put((byte)(bIsVideo?0x09:0x08)); //audio type
+		flvFrame.put((byte)((dataLen>>16)&0xff));//datalen
+		flvFrame.put((byte)((dataLen>>8)&0xff));//datalen
+		flvFrame.put((byte)( dataLen&0xff));//datalen
+
+		flvFrame.put((byte)((eventTime>>16)&0xff));//ts
+		flvFrame.put((byte)((eventTime>>8)&0xff));//ts
+		flvFrame.put((byte)( eventTime&0xff));//ts
+		flvFrame.put((byte)((eventTime>>24)&0xff));//ts
+
+		flvFrame.put((byte)0x0); //streamId, ignore
+		flvFrame.put((byte)0x0); //streamId, ignore
+		flvFrame.put((byte)0x0); //streamId, ignore
+		
+		flvFrame.put(buf.array());
+		flvFrame.putInt(0);//prevSize, ignore
+		
+		flvFrame.rewind();
+		
+    	addEvent(GroupMixerAsyncEvent.MESSAGEINPUT_REQ, streamName, flvFrame);
+    }
+    private void outputMessage(String streamName, ByteBuffer buffer)
+    {
+    	addEvent(GroupMixerAsyncEvent.MESSAGEOUTPUT_REQ, streamName, buffer);
     }
     
     private void createMixedStreamInternal(String streamName)
