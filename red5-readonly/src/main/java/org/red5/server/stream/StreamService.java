@@ -540,10 +540,6 @@ public class StreamService implements IStreamService {
 
 	/** {@inheritDoc} */
 	public void publish(String name, String mode) {
-		//create a mixed stream from here
-		if( mode.equalsIgnoreCase(IClientStream.MODE_LIVE)) {
-			GroupMixer.getInstance().createMixedStream(name);		
-		}
 		
 		Map<String, String> params = null;
 		if (name != null && name.contains("?")) {
@@ -629,6 +625,19 @@ public class StreamService implements IStreamService {
 					bs.start();
 				}
 				bs.startPublishing();
+
+				//create a mixed stream from here, TODO for mobile only
+				if( mode.equalsIgnoreCase(IClientStream.MODE_LIVE)) {
+					//save the streaminfo in rtmpconnection
+					if (streamConn instanceof RTMPConnection) {
+						RTMPConnection rtmpConn = (RTMPConnection) streamConn;
+						rtmpConn.setPublisherStreamInfo(name, streamId);
+					}
+					//don't create for __mixed_all__ stream
+					if ( !name.contains(GroupMixer.ALL_IN_ONE_STREAM_NAME) ) {
+						GroupMixer.getInstance().createMixedStream(name);		
+					}
+				}
 			} catch (IOException e) {
 				log.warn("Stream I/O exception", e);
 				sendNSFailed(streamConn, StatusCodes.NS_RECORD_NOACCESS, "The file could not be created/written to.", name, streamId);

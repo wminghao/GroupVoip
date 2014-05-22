@@ -24,6 +24,7 @@ import java.nio.ByteBuffer;
 
 public class GroupMixer implements Runnable {
 	
+	public static final String ALL_IN_ONE_STREAM_NAME = "__mixed_all";
 	private static final String AppName = "myRed5App";//TODO appName change to a room or something
 	private static final String ipAddr = "localhost"; //TODO change to something else in the future
 	private static GroupMixer instance_;
@@ -33,10 +34,9 @@ public class GroupMixer implements Runnable {
 	//mapping from original to streamId to newly generated stream
 	private class GroupMappingTableEntry {
 		public int 	  mixerId; //streamId used in MixCoder
-		public String streamName; //streamName used in publish
+		public int	  streamId; //streamId used in RTMP protocol
 	}
-	//key is streamId; //streamId used in RTMP protocol
-	private Map<Integer,GroupMappingTableEntry> groupMappingTable=new HashMap<Integer,GroupMappingTableEntry>();
+	private Map<String,GroupMappingTableEntry> groupMappingTable=new HashMap<String,GroupMappingTableEntry>();
 	
 	/**
 	 * Reserved stream ids. Stream id's directly relate to individual NetStream instances.
@@ -125,7 +125,7 @@ public class GroupMixer implements Runnable {
     
     		//handle connect, createStream and publish events
     		handleConnectEvent(connAllInOne);
-    		handleCreatePublishEvents( connAllInOne, "__mixed_all");
+    		handleCreatePublishEvents( connAllInOne, ALL_IN_ONE_STREAM_NAME);
             
     		// set it in MixerManager
     		allInOneSessionId_ = connAllInOne.getSessionId();
@@ -138,9 +138,9 @@ public class GroupMixer implements Runnable {
     {
     	addEvent(GroupMixerAsyncEvent.CREATESTREAM_REQ, streamName, null);
     }    
-    public void deleteMixedStream(int streamId)
+    public void deleteMixedStream(String streamName)
     {
-    	addEvent(GroupMixerAsyncEvent.DELETESTREAM_REQ, Integer.toString(streamId), null);
+    	addEvent(GroupMixerAsyncEvent.DELETESTREAM_REQ, streamName, null);
     }
     
     private void createMixedStreamInternal(String streamName)
@@ -148,27 +148,23 @@ public class GroupMixer implements Runnable {
     	RTMPMinaConnection conn = getAllInOneConn();
     	GroupMappingTableEntry entry = new GroupMappingTableEntry();
     	entry.mixerId = getMixerId();
-    	entry.streamName = "__mixed_"+streamName;
-    	int streamId = handleCreatePublishEvents(conn, streamName);
-    	groupMappingTable.put(new Integer(streamId), entry);
-		log.info("A new stream id: {}, mixer id: {} is created on thread: {}", streamId, entry.mixerId, Thread.currentThread().getName());
+    	entry.streamId = handleCreatePublishEvents(conn, "__mixed_"+streamName);
+    	groupMappingTable.put(streamName, entry);
+		log.info("A new stream id: {}, mixer id: {} is created on thread: {}", entry.streamId, entry.mixerId, Thread.currentThread().getName());
     }
     
-    private void deleteMixedStreamInternal(String streamIdStr)
+    private void deleteMixedStreamInternal(String streamName)
     {
-    	Integer streamId = new Integer(Integer.parseInt(streamIdStr));
-        GroupMappingTableEntry entry = groupMappingTable.get(streamId);
-        if ( entry != null ) {
+    	GroupMappingTableEntry entry = groupMappingTable.get(streamName);
+    	if ( entry != null ) {        	
         	RTMPMinaConnection conn = getAllInOneConn();
-        	handleDeleteEvent(conn, streamId, entry.mixerId);
-        	groupMappingTable.remove(streamId);
-    		log.info("A old stream id: {}, mixer id: {}, streamName: {} is deleted on thread: {}", 
-    				streamId.intValue(), entry.mixerId, entry.streamName,
-    				Thread.currentThread().getName());
+        	handleDeleteEvent(conn, entry.streamId, entry.mixerId);
+        	groupMappingTable.remove(streamName);
+    		log.info("A old stream id: {}, mixer id: {} is deleted on thread: {}", entry.streamId, entry.mixerId, Thread.currentThread().getName());
     	}
     }
     
-    private RTMPMinaConnection getAllInOneConn()
+    public RTMPMinaConnection getAllInOneConn()
     {
     	return (RTMPMinaConnection) RTMPConnManager.getInstance().getConnectionBySessionId(allInOneSessionId_);
     }

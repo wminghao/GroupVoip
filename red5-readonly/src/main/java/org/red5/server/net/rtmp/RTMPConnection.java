@@ -260,6 +260,23 @@ public abstract class RTMPConnection extends BaseConnection implements IStreamCa
 	 * Timestamp generator
 	 */
 	private final AtomicInteger timer = new AtomicInteger(0);
+	
+	/*
+	 * Howard, a quick hack, for normal video publishing, 
+	 *   only 1 publishing stream can be associated with a RTMPConnection
+	 *   so save the mapping between streamId and streamName here.
+	 * Exception, for all-in-one RTMPConnection, there could be
+	 * 	 > 1 publishing streams associated with that connection.
+	 */
+	private String publisherStreamName;
+	private int    publisherStreamId;
+	
+	public void setPublisherStreamInfo(String publisherStreamName, int publisherStreamId) {
+		if( this != GroupMixer.getInstance().getAllInOneConn()) {
+			this.publisherStreamName = publisherStreamName;
+			this.publisherStreamId = publisherStreamId;
+		}
+	}
 
 	/**
 	 * Creates anonymous RTMP connection without scope.
@@ -861,7 +878,9 @@ public abstract class RTMPConnection extends BaseConnection implements IStreamCa
 				usedStreams.decrementAndGet();
 				streams.remove(streamId - 1);
 				streamBuffers.remove(streamId - 1);
-				GroupMixer.getInstance().deleteMixedStream(streamId);
+				if ( streamId == this.publisherStreamId ) {
+					GroupMixer.getInstance().deleteMixedStream(this.publisherStreamName);
+				}
 			}
 		}
 	}
