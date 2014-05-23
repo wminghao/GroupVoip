@@ -1,6 +1,38 @@
 ###############################################################################
-# Set up info
-################################################################################
+# Build info for 1.0.2 RC4 
+###############################################################################
+
+# ............................................................
+# 1. Buld setup information
+# ............................................................
+
+wget http://archive.apache.org/dist/maven/binaries/apache-maven-3.0.4-bin.tar.gz
+sudo mkdir /usr/local/apache-maven
+gunzip apache-maven-3.0.4-bin.tar.gz
+tar xvf apache-maven-3.0.4-bin.tar
+sudo mv apache-maven-3.0.4 /usr/local/apache-maven/
+export M2=$M2_HOME/bin
+export PATH=$M2:$PATH
+export MAVEN_OPTS="-Xms256m -Xmx512m"
+sudo apt-get install openjdk-6-jdk
+export JAVA_HOME=/usr/lib/jvm/java-6-openjdk
+svn checkout http://red5.googlecode.com/svn/java/server/trunk/ red5-read-only
+
+# ............................................................
+# 2. Build information
+# ............................................................
+
+export M2=$M2_HOME/bin
+export PATH=$M2:$PATH
+export MAVEN_OPTS="-Xms256m -Xmx512m"
+export JAVA_HOME=/usr/lib/jvm/java-6-openjdk
+
+mvn -Dmaven.test.skip=true -Dclassifier=bootstrap install
+mvn -e -X -U -Dmaven.test.skip=true -Dmaven.buildNumber.doUpdate=false -Dclassifier=bootstrap package
+
+###############################################################################
+# Set up info for 1.0.1
+###############################################################################
 
 1. Download and Install Java
 
@@ -13,14 +45,9 @@
 
 4.1 get source:
     
-    - for 1.0
+    - for 1.0.1
         svn co http://red5.googlecode.com/svn/java/server/tags/1_0/ red5
 
-    - for 1.0.2
-
-        svn co http://red5.googlecode.com/svn/java/server/tags/1_0_2_RC1/ red5
-        This does not contain a build.xml file needed for ant and potentailly
-        other .xml file.
         
 4.2 compiling and setting thigns up
     
@@ -37,9 +64,32 @@
 6. Setting up init script 
 
 ################################################################################
+# Issues:
+################################################################################
+
+* Not able to build RC1 even with the instructions from Modain
+
+svn co http://red5.googlecode.com/svn/java/server/tags/1_0_2_RC1/ red5
+        This does not contain a build.xml file needed for ant and potentailly
+        other .xml file.
+
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:2.3.2:compile (default-compile) on project red5-server: Compilation failure: Compilation failure:
+[ERROR] /home/administrator/red5-1.0.2/red5/src/main/java/org/red5/server/net/servlet/StatisticsServlet.java:[29,24] cannot find symbol
+[ERROR] symbol  : class XmlRpcServer
+[ERROR] location: package org.apache.xmlrpc
+[ERROR] /home/administrator/red5-1.0.2/red5/src/main/java/org/red5/server/net/servlet/StatisticsServlet.java:[45,25] cannot find symbol
+[ERROR] symbol  : class XmlRpcServer
+[ERROR] location: class org.red5.server.net.servlet.StatisticsServlet
+[ERROR] /home/administrator/red5-1.0.2/red5/src/main/java/org/red5/server/net/servlet/StatisticsServlet.java:[45,51] cannot find symbol
+[ERROR] symbol  : class XmlRpcServer
+[ERROR] location: class org.red5.server.net.servlet.StatisticsServlet
+
+
+################################################################################
 # References:
 ################################################################################
 
+* https://code.google.com/p/red5/wiki/Help
 * http://anupdubbewar.blogspot.com/2013/04/install-red5-server-on-centos-57.html
 * Chapter 6.2 of red5-reference-1.0.pdf
 * http://red5.googlecode.com/svn/java/server/tags/
