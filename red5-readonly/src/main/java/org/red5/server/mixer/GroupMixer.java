@@ -9,8 +9,11 @@ import org.red5.server.api.service.IServiceCall;
 import org.red5.server.net.rtmp.IRTMPHandler;
 import org.red5.server.net.rtmp.RTMPConnManager;
 import org.red5.server.net.rtmp.RTMPMinaConnection;
+import org.red5.server.net.rtmp.event.AudioData;
 import org.red5.server.net.rtmp.event.ChunkSize;
 import org.red5.server.net.rtmp.event.Invoke;
+import org.red5.server.net.rtmp.event.Notify;
+import org.red5.server.net.rtmp.event.VideoData;
 import org.red5.server.net.rtmp.message.Constants;
 import org.red5.server.net.rtmp.message.Header;
 import org.red5.server.net.rtmp.message.Packet;
@@ -49,6 +52,11 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
 	 * Reserved mixer ids. Mixer id's directly relate to mixcoder.
 	 */
 	private volatile BitSet mixerStreams = new BitSet();
+	
+	/*
+	 * flv output segment parser
+	 */
+	private SegmentParser segParser_ = new SegmentParser(this);
 	
 	//n events in the blocking queue                                                                                                                                                                     
 	private class GroupMixerAsyncEvent{
@@ -232,11 +240,73 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
     		}
     		flvSegment.flip();
     	}
-    	//TODO
+    	//TODO send to process pipe
     }
     private void handleOutputFlvFrame(String streamName, ByteBuffer flvFrame)
     {
-    	//TODO
+		GroupMappingTableEntry value = groupMappingTable.get(streamName);
+		if( value != null ) {
+    		int streamId = value.streamId;
+    		
+        	flvFrame.flip();
+        	int msgType = flvFrame.get();
+        	int msgSize = (flvFrame.get()<<16) | (flvFrame.get()<<8) | flvFrame.get();
+        	int msgTimestamp = (flvFrame.get()<<16) | (flvFrame.get()<<8) | flvFrame.get() | (flvFrame.get()<<24);
+        	
+    		//RTMP Chunk Header
+    		Header msgHeader = new Header();
+    		msgHeader.setDataType((byte)msgType);//invoke is command, val=20
+    		msgHeader.setChannelId(3); //channel TODO does it really matter since we consume it internally.
+    		// see RTMPProtocolDecoder::decodePacket() 
+    		// final int readAmount = (readRemaining > chunkSize) ? chunkSize : readRemaining;
+    		msgHeader.setSize(msgSize);   //Chunk Data Length, a big enough buffersize
+    		msgHeader.setStreamId(streamId);  //streamid
+    		msgHeader.setTimerBase(0); //base+delta=timestamp
+    		msgHeader.setTimerDelta(msgTimestamp);
+    		msgHeader.setExtendedTimestamp(0); //extended timestamp
+    		
+        	RTMPMinaConnection conn = getAllInOneConn();
+        	switch(msgType) {
+        		case Constants.TYPE_AUDIO_DATA:
+        		{
+        			AudioData msgEvent = new AudioData();
+        			msgEvent.setHeader(msgHeader);
+        			msgEvent.setTimestamp(msgTimestamp);
+        			msgEvent.setDataRemaining(flvFrame); //TODO avoid copy   
+        			msgEvent.setSourceType(Constants.SOURCE_TYPE_LIVE);       			
+        			
+        			Packet msg = new Packet(msgHeader, msgEvent);
+        			conn.handleMessageReceived(msg);
+        			
+        			break;
+        		}
+        		case Constants.TYPE_VIDEO_DATA:
+        		{
+        			VideoData msgEvent = new VideoData();
+        			msgEvent.setHeader(msgHeader);
+        			msgEvent.setTimestamp(msgTimestamp);
+        			msgEvent.setDataRemaining(flvFrame); //TODO avoid copy   
+        			msgEvent.setSourceType(Constants.SOURCE_TYPE_LIVE);   
+        			
+        			Packet msg = new Packet(msgHeader, msgEvent);
+        			conn.handleMessageReceived(msg);
+        			break;
+        		}
+    
+        		case Constants.TYPE_STREAM_METADATA:
+        		{
+        			Notify msgEvent = new Notify();
+        			msgEvent.setHeader(msgHeader);
+        			msgEvent.setTimestamp(msgTimestamp);
+        			msgEvent.setDataRemaining(flvFrame); //TODO avoid copy  
+        			msgEvent.setSourceType(Constants.SOURCE_TYPE_LIVE);
+        			
+        			Packet msg = new Packet(msgHeader, msgEvent);
+        			conn.handleMessageReceived(msg);
+        			break;
+        		}
+        	}
+		}
     }
     private void createMixedStreamInternal(String streamName)
     {

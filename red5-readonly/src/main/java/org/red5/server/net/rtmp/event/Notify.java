@@ -25,6 +25,7 @@ import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
+import java.nio.ByteBuffer;
 import java.util.Map;
 
 import org.apache.mina.core.buffer.IoBuffer;
@@ -100,6 +101,14 @@ public class Notify extends BaseEvent implements ICommand, IStreamData<Notify>, 
 	 */
 	public void setData(IoBuffer data) {
 		this.data = data;
+	}
+
+	//copy the remaining of src into this.data
+	public void setDataRemaining(ByteBuffer src) {
+		byte[] remaining = new byte[src.remaining()];
+		src.get(remaining);
+		this.data = IoBuffer.allocate(src.remaining());
+		this.data.put(remaining).flip();
 	}
 
 	/**
