@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 class SegmentParser
 {
     public interface Delegate {
-        public void onFrameParsed(int streamId, byte[] frame, int len);
+        public void onFrameParsed(int mixerId, byte[] frame, int len);
     }
     
 	public SegmentParser(Delegate delegate) {
