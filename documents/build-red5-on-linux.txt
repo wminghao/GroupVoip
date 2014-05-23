@@ -11,6 +11,7 @@ sudo mkdir /usr/local/apache-maven
 gunzip apache-maven-3.0.4-bin.tar.gz
 tar xvf apache-maven-3.0.4-bin.tar
 sudo mv apache-maven-3.0.4 /usr/local/apache-maven/
+export M2_HOME=/usr/local/apache-maven/apache-maven-3.0.4/
 export M2=$M2_HOME/bin
 export PATH=$M2:$PATH
 export MAVEN_OPTS="-Xms256m -Xmx512m"
@@ -22,6 +23,7 @@ svn checkout http://red5.googlecode.com/svn/java/server/trunk/ red5-read-only
 # 2. Build information
 # ............................................................
 
+export M2_HOME=/usr/local/apache-maven/apache-maven-3.0.4/
 export M2=$M2_HOME/bin
 export PATH=$M2:$PATH
 export MAVEN_OPTS="-Xms256m -Xmx512m"
