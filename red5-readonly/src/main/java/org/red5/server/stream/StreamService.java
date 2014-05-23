@@ -51,6 +51,7 @@ import org.red5.server.net.rtmp.RTMPConnection;
 import org.red5.server.net.rtmp.status.Status;
 import org.red5.server.net.rtmp.status.StatusCodes;
 import org.red5.server.util.ScopeUtils;
+import org.red5.server.mixer.GroupMixer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -539,6 +540,7 @@ public class StreamService implements IStreamService {
 
 	/** {@inheritDoc} */
 	public void publish(String name, String mode) {
+		
 		Map<String, String> params = null;
 		if (name != null && name.contains("?")) {
 			// read and utilize the query string values
@@ -623,6 +625,19 @@ public class StreamService implements IStreamService {
 					bs.start();
 				}
 				bs.startPublishing();
+
+				//create a mixed stream from here, TODO for mobile only
+				if( mode.equalsIgnoreCase(IClientStream.MODE_LIVE)) {
+					//save the streaminfo in rtmpconnection
+					if (streamConn instanceof RTMPConnection) {
+						RTMPConnection rtmpConn = (RTMPConnection) streamConn;
+						rtmpConn.setPublisherStreamInfo(name, streamId);
+					}
+					//don't create for __mixed_all__ stream
+					if ( !name.contains(GroupMixer.ALL_IN_ONE_STREAM_NAME) ) {
+						GroupMixer.getInstance().createMixedStream(name);		
+					}
+				}
 			} catch (IOException e) {
 				log.warn("Stream I/O exception", e);
 				sendNSFailed(streamConn, StatusCodes.NS_RECORD_NOACCESS, "The file could not be created/written to.", name, streamId);
