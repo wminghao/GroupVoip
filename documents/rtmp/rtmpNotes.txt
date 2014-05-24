@@ -51,10 +51,56 @@ o Basic Header
     6b of BH is 1: 3B for Stream ID 64-65599 (64+65535)
     6b of BH is 2: 1B for low-level protocol control messages and commands
 
+  * 2b Chunk Type
+
+    b00 = 12B header (full)
+    b01 = 8B like b00 case excluding message ID
+    b02 = 4B (Basic Header + timestamp)
+    b11 = 1B (only Basic Header included)
+
 o Chunk Message Header
   * Message Size
   * Timestamp Delta
   * Message Type
+
+o Example
+
+  03 00 0b 68 00 00 19 14 00 00 00 00 02 00 0C 63 72 65 61 
+  74 65 53 74 72 65 61 6D 00 40 00 00 00 00 00 00 00 05
+
+  B1    - Chunk Header Type
+  B2:4  - Time stampe Delta
+  B5:7  - Packet Length (0x000019 = 25)
+  B8    - Message Type ID (0x14 = 20)
+  B9:12 - Message Sream ID
+
+o Message Type ID:
+
+  * efines whether the packet contains audio/vidoe data, a remote object, or a command
+
+  0x01 = Set Packet Size Message.
+  0x04 = Ping Message.
+  0x05 = Server Bandwidth
+  0x06 = Client Bandwidth.
+  0x08 = Audio Packet.
+  0x09 = Video Packet.
+  0x11 = An AMF3 type command.
+  0x12 = Invoke (onMetaData info is sent as such).
+  0x14 = An AMF0 type command.
+ 
+o Invoke Message Structure 
+  - used in AMF0 (0x14) and AMF3 (0x11)
+  - AMF encoded
+  - Format: <Command Name> <Transaction ID> <Argument>
+            String         Number           Mixed
+    * ID for commands tha tcan have a reply
+
+o Ping Message Stucture
+  - Message Type 0x4
+
+o Server BW, Client BW message Structure
+  - Message Type 0x05, 0x06
+
  
 ################################################################################
 # References 
