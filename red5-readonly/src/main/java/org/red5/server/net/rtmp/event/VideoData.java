@@ -25,6 +25,7 @@ import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
+import java.nio.ByteBuffer;
 
 import org.apache.mina.core.buffer.IoBuffer;
 import org.red5.io.IoConstants;
@@ -129,6 +130,14 @@ public class VideoData extends BaseEvent implements IoConstants, IStreamData<Vid
 	public void setData(byte[] data) {
 		this.data = IoBuffer.allocate(data.length);
 		this.data.put(data).flip();
+	}
+
+	//copy the remaining of src into this.data
+	public void setDataRemaining(ByteBuffer src) {
+		byte[] remaining = new byte[src.remaining()];
+		src.get(remaining);
+		this.data = IoBuffer.allocate(src.remaining());
+		this.data.put(remaining).flip();
 	}
 
 	/**
