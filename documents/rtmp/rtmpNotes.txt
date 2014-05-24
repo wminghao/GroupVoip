@@ -1,0 +1,65 @@
+################################################################################
+# Intro 
+################################################################################
+
+>>> Intro
+
+o TCP-based protocol
+
+  - persitent connection
+  - low latency
+
+  - 64B Audio
+  - 128B Video
+  - 1B header
+
+o Virtual Channels
+
+  - different channels
+    * one for requests and responses
+    * one for video
+    * one for audio
+    * oine for out of band control 
+
+o Encryption
+
+o HTTP tunneling
+
+  - for the case when RTMP ports are blocked and only port 80 is opened 
+
+>>> Spec
+
+################################################################################
+# Packet Structure
+################################################################################
+
+o Action Message Format (AMF)
+
+o Split into two parts
+  1. Basic Header
+  2. Chunk Message Header
+
+o Basic Header
+  * 1B there for all packets
+  * 2b - Chunk Type (fmt)
+    6b - Stream ID
+    8b - Stream ID
+    8b - Stream ID
+
+  * Extended to 2B/3B
+    6b of BH is 0: 2B for Stream ID 64-319 (64+255)
+    6b of BH is 1: 3B for Stream ID 64-65599 (64+65535)
+    6b of BH is 2: 1B for low-level protocol control messages and commands
+
+o Chunk Message Header
+  * Message Size
+  * Timestamp Delta
+  * Message Type
+ 
+################################################################################
+# References 
+################################################################################
+
+* Twiki: http://en.wikipedia.org/wiki/Real_Time_Messaging_Protocol
+* Adobe Spec: http://www.adobe.com/devnet/rtmp.html
+
