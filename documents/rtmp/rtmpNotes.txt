@@ -1,0 +1,180 @@
+################################################################################
+# Intro 
+################################################################################
+
+>>> Intro
+
+o TCP-based protocol
+
+  - persitent connection
+  - low latency
+
+  - 64B Audio
+  - 128B Video
+  - 1B header
+
+o Virtual Channels
+
+  - different channels
+    * one for requests and responses
+    * one for video
+    * one for audio
+    * oine for out of band control 
+
+o Encryption
+
+o HTTP tunneling
+
+  - for the case when RTMP ports are blocked and only port 80 is opened 
+
+>>> Spec
+
+################################################################################
+# Packet Structure
+################################################################################
+
+o Action Message Format (AMF)
+
+o Split into two parts
+  1. Basic Header
+  2. Chunk Message Header
+
+o Basic Header
+  * 1B there for all packets
+  * 2b - Chunk Type (fmt)
+    6b - Stream ID
+    8b - Stream ID
+    8b - Stream ID
+
+  * Extended to 2B/3B
+    6b of BH is 0: 2B for Stream ID 64-319 (64+255)
+    6b of BH is 1: 3B for Stream ID 64-65599 (64+65535)
+    6b of BH is 2: 1B for low-level protocol control messages and commands
+
+  * 2b Chunk Type
+
+    b00 = 12B header (full)
+    b01 = 8B like b00 case excluding message ID
+    b02 = 4B (Basic Header + timestamp)
+    b11 = 1B (only Basic Header included)
+
+o Chunk Message Header
+  * Message Size
+  * Timestamp Delta
+  * Message Type
+
+o Example
+
+  03 00 0b 68 00 00 19 14 00 00 00 00 02 00 0C 63 72 65 61 
+  74 65 53 74 72 65 61 6D 00 40 00 00 00 00 00 00 00 05
+
+  B1    - Chunk Header Type
+  B2:4  - Time stampe Delta
+  B5:7  - Packet Length (0x000019 = 25)
+  B8    - Message Type ID (0x14 = 20)
+  B9:12 - Message Sream ID
+
+o Message Type ID:
+
+  * efines whether the packet contains audio/vidoe data, a remote object, or a command
+
+  0x01 = Set Packet Size Message.
+  0x04 = Ping Message.
+  0x05 = Server Bandwidth
+  0x06 = Client Bandwidth.
+  0x08 = Audio Packet.
+  0x09 = Video Packet.
+  0x11 = An AMF3 type command.
+  0x12 = Invoke (onMetaData info is sent as such).
+  0x14 = An AMF0 type command.
+ 
+o Invoke Message Structure 
+  - used in AMF0 (0x14) and AMF3 (0x11)
+  - AMF encoded
+  - Format: <Command Name> <Transaction ID> <Argument>
+            String         Number           Mixed
+    * ID for commands tha tcan have a reply
+
+o Ping Message Stucture
+  - Message Type 0x4
+
+o Server BW, Client BW message Structure
+  - Message Type 0x05, 0x06
+
+################################################################################
+# Handshake 
+################################################################################
+
+..............................................
+. Handshake
+..............................................
+
+Client                                 Server
+   |          +------+                   |
+   C0-------- | 0x03 |------------------>|
+   |          +------+                   |
+   |       +------------------+          |     
+   C1------| 1536 random bytes|--------->|
+   |       +------------------+          |
+   |          +------+                   |
+   |<-------- | 0x03 |------------------S0
+   |          +------+                   |
+   |       +------------------+          |
+   |<------| 1536 random bytes|---------S1
+   |       +------------------+          |
+   |        +------------+               |
+   C2------ | copy of S1 |-------------->|
+   |        +------------+               |
+   |        +------------+               |
+   |<------ | copy of S2 |--------------S2
+   |        +------------+               |
+
+..............................................
+. Connect 
+..............................................
+
+Client                                 Server
+   |                                     |
+   |------- (Invoke) connect ----------->|
+   |<------ Server B/W ------------------|
+   |<------ Client B/W ------------------|
+   |<------ Set packet size--------------|
+   |<------ (Invoke) _result ------------|
+
+..............................................
+. Play video 
+..............................................
+
+
+Client                                 Server
+   |                                     |
+   |------- createStream --------------->|
+   |--------play invocation ------------>|
+   |<------ onStatus --------------------|
+   |<------ video data ------------------|
+
+################################################################################
+# Other Protocol Ffeatues 
+################################################################################
+
+..............................................
+. HTTP Tunneling (RTMPT) 
+..............................................
+
+o highlights
+  - communicates over port 80
+  - passes AMF data inside HTTP POST
+
+o HTTP requests/responses
+
+################################################################################
+# Software Implementations 
+################################################################################
+ 
+################################################################################
+# References 
+################################################################################
+
+* Twiki: http://en.wikipedia.org/wiki/Real_Time_Messaging_Protocol
+* Adobe Spec: http://www.adobe.com/devnet/rtmp.html
+

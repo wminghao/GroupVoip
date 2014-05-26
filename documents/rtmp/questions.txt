@@ -1,0 +1,16 @@
+
+
+o Deos the spec we have contain sufficient details?
+
+  According to http://en.wikipedia.org/wiki/Real_Time_Messaging_Protocol,
+  crucial detials of the protocol's implementation have been omitted.
+
+  - missing details
+    * RTMP h/s 
+    * chunking
+    * some control messags for streams
+
+
+
+
+
