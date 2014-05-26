@@ -1,10 +1,11 @@
 package org.red5.server.mixer;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
-import org.red5.logging.Red5LoggerFactory;
-import org.red5.server.api.Red5;
-import org.slf4j.Logger;
+//import org.red5.logging.Red5LoggerFactory;
+//import org.red5.server.api.Red5;
+//import org.slf4j.Logger;
 
 class SegmentParser
 {
@@ -14,9 +15,12 @@ class SegmentParser
     
 	public SegmentParser(Delegate delegate) {
 		this.delegate = delegate;
+
+		 // to use little endian
+		curBuf_.order(ByteOrder.LITTLE_ENDIAN);
 	}
 	private Delegate delegate;
-	private static Logger log = Red5LoggerFactory.getLogger(Red5.class);
+	//private static Logger log = Red5LoggerFactory.getLogger(Red5.class);
 	
     private int count_bits(int n) {
     	int c; // c accumulates the total bits set in v
@@ -41,10 +45,9 @@ class SegmentParser
     private int curStreamCnt_ = 0;
     private int numStreams_ = 0;
     
-    boolean readData(byte[] src)
+    boolean readData(byte[] src, int srcLen)
     {
     	int srcIndex = 0; //index into data byte array
-    	int srcLen = src.length;
         while( srcLen > 0 ) {
             switch( parsingState_ ) {
             case SEARCHING_SEGHEADER:
@@ -54,10 +57,13 @@ class SegmentParser
                         curBuf_.put(src, srcIndex, cpLen); //concatenate the string                                                                                                                 
                         srcLen -= cpLen;
                         srcIndex += cpLen; //advance
+                        curLen_+=cpLen;
                     }
 
                     if ( curLen_ >= 3 ) {
                         assert(curBuf_.array()[0] == 'S' && curBuf_.array()[1] == 'G' && curBuf_.array()[2] == 'O');
+
+                        System.out.println("---Read SGO header, len="+curLen_);
                         curBuf_.clear();
                         curLen_ = 0;
                         parsingState_ = SEARCHING_STREAM_MASK;
@@ -71,6 +77,7 @@ class SegmentParser
                         curBuf_.put(src, srcIndex, cpLen); //concatenate the string
                         srcLen -= cpLen;
                         srcIndex += cpLen; //advance
+                        curLen_+=cpLen;
                     }
 
                     if ( curLen_ >= 4 ) {
@@ -81,12 +88,14 @@ class SegmentParser
                         numStreams_ = count_bits(streamMask)+1;
                         assert(numStreams_ < MAX_XCODING_INSTANCES);
                         
-                        log.info("---streamMask={} numStreams_={}", streamMask, numStreams_);
+                        //log.info("---streamMask={} numStreams_={}", streamMask, numStreams_);
+                        System.out.println("---streamMask="+streamMask+" numStreams_="+numStreams_);
                         int index = 0;
                         while( streamMask !=0 ) {
                             int value = ((streamMask<<31)>>31); //mask off all other bits
                             if( value!=0 ) {
-                            	log.info("---streamMask index={} is valid.", index);
+                            	//log.info("---streamMask index={} is valid.", index);
+                            	System.out.println("---streamMask index="+index+" is valid.");
                             }
                             streamMask >>= 1; //shift 1 bit
                             index++;
@@ -106,13 +115,15 @@ class SegmentParser
                         curBuf_.put(src, srcIndex, cpLen);//concatenate the string
                         srcLen -= cpLen;
                         srcIndex += cpLen;
+                        curLen_+=cpLen;
                     }
                     if ( curLen_ >= 5 ) {
                     	curBuf_.flip();
                         curStreamId_ = curBuf_.get();
-                        log.info("---curBuf_[0]={}, curStreamId_={}\r\n", curBuf_.array()[0], curStreamId_);
                         assert(curStreamId_ <= MAX_XCODING_INSTANCES);                    
                         curStreamLen_ = curBuf_.getInt();
+                        //log.info("---curBuf_[0]={}, curStreamId_={}, len={}\r\n", curBuf_.array()[0], curStreamId_, curStreamLen_);
+                        System.out.println("---curBuf_[0]="+curBuf_.array()[0]+", curStreamId_="+curStreamId_ + " curStreamLen_="+ curStreamLen_);
                         curBuf_.clear();
                         curLen_ = 0;
                         parsingState_ = SEARCHING_STREAM_DATA;
@@ -127,9 +138,11 @@ class SegmentParser
                                       
                         srcLen -= cpLen;
                         srcIndex += cpLen;
+                        curLen_+=cpLen;
                     }
                     if ( curLen_ >= curStreamLen_ ) {
-                    	log.info("---curStreamId_={} curStreamLen_={}", curStreamId_, curStreamLen_);
+                    	//log.info("---curStreamId_={} curStreamLen_={}", curStreamId_, curStreamLen_);
+                    	System.out.println("---curStreamId_="+curStreamId_+" curStreamLen_="+curStreamLen_);
                         //read the actual buffer
                         if( curStreamLen_ > 0 ) {
                         	curBuf_.flip();
