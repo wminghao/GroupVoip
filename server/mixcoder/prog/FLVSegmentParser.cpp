@@ -107,7 +107,7 @@ bool FLVSegmentParser::isNextVideoStreamReady(u32& videoTimestamp, u32 audioTime
             isReady = true;
         } else if( hasSpsPps ) {
             //if there is no frame ready, only sps/pps pop out it immediately
-            LOG( "---found sps pps. but no other frames\r\n");
+            //LOG( "---found sps pps. but no other frames\r\n");
             isReady = true;
         }
     }
@@ -252,7 +252,7 @@ bool FLVSegmentParser::readData(SmartPtr<SmartBuffer> input)
                     assert(curStreamId_ < (u32)MAX_XCODING_INSTANCES);
 
                     u32 curStreamSource = (curBuf_[0]&0x7); //last 3 bits
-                    //LOG( "---curBuf_[0]=0x%x, curStreamId_=%d curStreamSource=%d\r\n", curBuf_[0], curStreamId_, curStreamSource);
+                    LOG( "---curBuf_[0]=0x%x, curStreamId_=%d curStreamSource=%d\r\n", curBuf_[0], curStreamId_, curStreamSource);
                     assert( curStreamSource < kTotalStreamSource);
                     streamSource[curStreamId_] = (StreamSource)curStreamSource;
 
@@ -277,7 +277,7 @@ bool FLVSegmentParser::readData(SmartPtr<SmartBuffer> input)
                         data += cpLen;
                     }
                     if ( curBuf_.size() >= curStreamLen_ ) {
-                        //LOG( "---curStreamId_=%d curStreamLen_=%d\r\n", curStreamId_, curStreamLen_);
+                        LOG( "---curStreamId_=%d curStreamLen_=%d\r\n", curStreamId_, curStreamLen_);
                         //read the actual buffer
                         SmartPtr<SmartBuffer> curStream = new SmartBuffer( curStreamLen_, curBuf_.data());
                         parser_[curStreamId_]->readData(curStream); 
