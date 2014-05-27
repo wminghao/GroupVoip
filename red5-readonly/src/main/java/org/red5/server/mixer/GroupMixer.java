@@ -24,10 +24,11 @@ import java.util.BitSet;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 import org.apache.mina.core.buffer.IoBuffer;
 
-public class GroupMixer implements Runnable, SegmentParser.Delegate {
+public class GroupMixer implements Runnable, SegmentParser.Delegate, ProcessPipe.Delegate {
 	
 	public static final String ALL_IN_ONE_STREAM_NAME = "__mixed_all";
 	private static final String AppName = "myRed5App";//TODO appName change to a room or something
@@ -165,6 +166,8 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
 		int flvFrameLen = 11 + dataLen + 4;
 
 		ByteBuffer flvFrame = ByteBuffer.allocate(flvFrameLen); //TODO direct?
+		
+		flvFrame.order(ByteOrder.LITTLE_ENDIAN);  // to use little endian
 		flvFrame.put((byte)(bIsVideo?0x09:0x08)); //audio type
 		flvFrame.put((byte)((dataLen>>16)&0xff));//datalen
 		flvFrame.put((byte)((dataLen>>8)&0xff));//datalen
@@ -183,7 +186,11 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
 		flvFrame.putInt(0);//prevSize, ignore
         addEvent(GroupMixerAsyncEvent.MESSAGEINPUT_REQ, streamName, flvFrame);
     }
-    
+
+    public void onSegmentOutput(byte[] src, int srcLen)
+    {
+    	segParser_.readData(src, srcLen); //send to segment parser
+    }
     public void onFrameParsed(int mixerId, byte[] frame, int len)
     {
     	String streamName = null;
@@ -195,6 +202,7 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
         }
     	if ( streamName != null ) {
     		ByteBuffer flvFrame = ByteBuffer.allocate(len);
+    		flvFrame.order(ByteOrder.LITTLE_ENDIAN);  // to use little endian
     		flvFrame.put(frame);
     		addEvent(GroupMixerAsyncEvent.MESSAGEOUTPUT_REQ, streamName, flvFrame);
     	}
