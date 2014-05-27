@@ -1,0 +1,9 @@
+
+May 18, 2014
+
+1. /etc/init.d/red5-server does not work on 1.0.2
+2. unable to build 1.0.2 on AWS
+3. Unknown event: NetStream.Play.UnpublishNotify
+   - (Howard) only need to remove the debug message
+ 
+
