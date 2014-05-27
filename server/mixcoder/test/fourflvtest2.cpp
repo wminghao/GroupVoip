@@ -25,15 +25,37 @@ bool doWrite( int fd, const void *buf, size_t len ) {
   return true;
 }
 
-int cpSGIHeader(unsigned char*& buffer, unsigned int mask4Stream)
+void cpSGIHeader(unsigned char*& buffer, unsigned int mask4Stream, int& totalLen)
 {
     //first send the segHeader
     unsigned char metaData []= {'S', 'G', 'I', 0x0}; //even layout
     memcpy(buffer, metaData, sizeof(metaData));
     memcpy(buffer+sizeof(metaData), &mask4Stream, sizeof(unsigned int));
-    return (sizeof(metaData)+sizeof(unsigned int));
+    buffer+=(sizeof(metaData)+sizeof(unsigned int));
+    totalLen += (sizeof(metaData)+sizeof(unsigned int));
 }
-
+void cpSGIData(unsigned char*& buffer, unsigned int mask4Stream, int& totalLen, unsigned char* result, int bufLen, int index)
+{
+    for(int i = 0;  i < 4; i++) {
+        unsigned char streamIdSource[] = {(i<<3)|0x02, 0x0}; //mobile stream
+        memcpy(buffer, &streamIdSource, sizeof(streamIdSource));
+        
+        if( i!=index ) {
+            int len = 0;
+            memcpy(buffer+sizeof(streamIdSource), &len, sizeof(unsigned int));
+            buffer += (sizeof(streamIdSource)+sizeof(unsigned int));
+            totalLen += (sizeof(streamIdSource)+sizeof(unsigned int));
+        } else {
+            int maskForI = (1<<i);
+            if( (mask4Stream & maskForI ) == maskForI) {
+                memcpy(buffer+sizeof(streamIdSource), &bufLen, sizeof(unsigned int));
+                memcpy((char*)buffer+sizeof(streamIdSource)+sizeof(unsigned int), result, bufLen);
+                buffer += (sizeof(streamIdSource)+sizeof(unsigned int)+bufLen);
+                totalLen += (sizeof(streamIdSource)+sizeof(unsigned int)+bufLen);
+            }
+        }
+    }    
+}
 long runTest(FILE* fd1, FILE* fd2, FILE* fd3, FILE* fd4)
 {
     unsigned char bigBuf[MAX_BUFFER_SIZE];
@@ -48,8 +70,6 @@ long runTest(FILE* fd1, FILE* fd2, FILE* fd3, FILE* fd4)
     FLVRealTimeParser realtimeParser4;
     unsigned char* result = NULL;
     while(!(bFile1Done && bFile2Done && bFile3Done && bFile4Done)) {
-        fprintf(stderr, "=================round \r\n");
-        unsigned char* buffer = bigBuf;
         unsigned int mask4Stream = 0x0f;
         if( bFile1Done ) {
             mask4Stream &= 0xfe;
@@ -68,29 +88,13 @@ long runTest(FILE* fd1, FILE* fd2, FILE* fd3, FILE* fd4)
             //then send the stream heaer of stream 1
             result = realtimeParser1.readData(fd1, &bufLen);
             if ( result ) {
+                unsigned char* buffer = bigBuf;
+
                 int totalLen = 0;
 
-                int headerSize = cpSGIHeader(buffer, mask4Stream);
-                totalLen += headerSize;
-                buffer += headerSize;
-                
-                unsigned char streamIdSource[] = {0x02, 0x0}; //mobile stream
-                memcpy(buffer, &streamIdSource, sizeof(streamIdSource));
-                memcpy(buffer+sizeof(streamIdSource), &bufLen, sizeof(unsigned int));
-                memcpy((char*)buffer+sizeof(streamIdSource)+sizeof(unsigned int), result, bufLen);
-                buffer += (sizeof(streamIdSource)+sizeof(unsigned int)+bufLen);
-                totalLen += (sizeof(streamIdSource)+sizeof(unsigned int)+bufLen);
+                cpSGIHeader(buffer, mask4Stream, totalLen);
+                cpSGIData(buffer, mask4Stream, totalLen, result, bufLen, 0);
 
-                for(int i = 0;  i < 4; i++) {
-                    if( i!=0 ) {
-                        int len = 0;
-                        unsigned char streamIdSource[] = {(i<<3)|0x02, 0x0}; //mobile stream
-                        memcpy(buffer, &streamIdSource, sizeof(streamIdSource));
-                        memcpy(buffer+sizeof(streamIdSource), &len, sizeof(unsigned int));
-                        buffer += (sizeof(streamIdSource)+sizeof(unsigned int));
-                        totalLen += (sizeof(streamIdSource)+sizeof(unsigned int));
-                    } 
-                }
                 doWrite(1, bigBuf, totalLen);
                 //fprintf(stderr,"==file 1 write=%d\r\n", totalLen);
             } else {
@@ -104,29 +108,12 @@ long runTest(FILE* fd1, FILE* fd2, FILE* fd3, FILE* fd4)
             //then send the stream heaer of stream 2
             result = realtimeParser2.readData(fd2, &bufLen);
             if ( result ) {
+                unsigned char* buffer = bigBuf;
+
                 int totalLen = 0;
 
-                int headerSize = cpSGIHeader(buffer, mask4Stream);
-                totalLen += headerSize;
-                buffer += headerSize;
-
-                unsigned char streamIdSource[] = {0x0a, 0x0}; //mobile stream
-                memcpy(buffer, &streamIdSource, sizeof(streamIdSource));
-                memcpy(buffer+sizeof(streamIdSource), &bufLen, sizeof(unsigned int));
-                memcpy((char*)buffer+sizeof(streamIdSource)+sizeof(unsigned int), result, bufLen);
-                buffer += (sizeof(streamIdSource)+sizeof(unsigned int)+bufLen);
-                totalLen += (sizeof(streamIdSource)+sizeof(unsigned int)+bufLen);
-
-                for(int i = 0;  i < 4; i++) {
-                    if( i!=1 ) {
-                        int len = 0;
-                        unsigned char streamIdSource[] = {(i<<3)|0x02, 0x0}; //mobile stream
-                        memcpy(buffer, &streamIdSource, sizeof(streamIdSource));
-                        memcpy(buffer+sizeof(streamIdSource), &len, sizeof(unsigned int));
-                        buffer += (sizeof(streamIdSource)+sizeof(unsigned int));
-                        totalLen += (sizeof(streamIdSource)+sizeof(unsigned int));
-                    } 
-                }
+                cpSGIHeader(buffer, mask4Stream, totalLen);
+                cpSGIData(buffer, mask4Stream, totalLen, result, bufLen, 1);
 
                 doWrite(1, bigBuf, totalLen);
                 //fprintf(stderr,"==file 2 write=%d\r\n", totalLen);
@@ -140,31 +127,11 @@ long runTest(FILE* fd1, FILE* fd2, FILE* fd3, FILE* fd4)
             //then send the stream heaer of stream 3
             result = realtimeParser3.readData(fd3, &bufLen);
             if ( result ) {
+                unsigned char* buffer = bigBuf;
                 int totalLen = 0;
 
-                int headerSize = cpSGIHeader(buffer, mask4Stream);
-                totalLen += headerSize;
-                buffer += headerSize;
-
-                //then send the stream heaer of stream 3
-                unsigned char streamIdSource[] = {0x12, 0x0};//mobile stream
-                memcpy(buffer, &streamIdSource, sizeof(streamIdSource));
-                memcpy(buffer+sizeof(streamIdSource), &bufLen, sizeof(unsigned int));
-                
-                memcpy((char*)buffer+sizeof(streamIdSource)+sizeof(unsigned int), result, bufLen);
-                buffer += (sizeof(streamIdSource)+sizeof(unsigned int)+bufLen);
-                totalLen += (sizeof(streamIdSource)+sizeof(unsigned int)+bufLen);
-
-                for(int i = 0;  i < 4; i++) {
-                    if( i!=2 ) {
-                        int len = 0;
-                        unsigned char streamIdSource[] = {(i<<3)|0x02, 0x0}; //mobile stream
-                        memcpy(buffer, &streamIdSource, sizeof(streamIdSource));
-                        memcpy(buffer+sizeof(streamIdSource), &len, sizeof(unsigned int));
-                        buffer += (sizeof(streamIdSource)+sizeof(unsigned int));
-                        totalLen += (sizeof(streamIdSource)+sizeof(unsigned int));
-                    } 
-                }
+                cpSGIHeader(buffer, mask4Stream, totalLen);
+                cpSGIData(buffer, mask4Stream, totalLen, result, bufLen, 2);
 
                 doWrite(1, bigBuf, totalLen);
                 //fprintf(stderr,"==file 3 write=%d\r\n", totalLen);
@@ -178,30 +145,11 @@ long runTest(FILE* fd1, FILE* fd2, FILE* fd3, FILE* fd4)
             //then send the stream heaer of stream 4
             result = realtimeParser4.readData(fd4, &bufLen);
             if ( result ) {
+                unsigned char* buffer = bigBuf;
                 int totalLen = 0;
 
-                int headerSize = cpSGIHeader(buffer, mask4Stream);
-                totalLen += headerSize;
-                buffer += headerSize;
-
-                //then send the stream heaer of stream 4
-                unsigned char streamIdSource[] = {0x1a, 0x0};//mobile stream
-                memcpy(buffer, &streamIdSource, sizeof(streamIdSource));
-                memcpy(buffer+sizeof(streamIdSource), &bufLen, sizeof(unsigned int));
-                memcpy((char*)buffer+sizeof(streamIdSource)+sizeof(unsigned int), result, bufLen);
-                buffer += (sizeof(streamIdSource)+sizeof(unsigned int)+bufLen);
-                totalLen += (sizeof(streamIdSource)+sizeof(unsigned int)+bufLen);
-
-                for(int i = 0;  i < 4; i++) {
-                    if( i!=3 ) {
-                        int len = 0;
-                        unsigned char streamIdSource[] = {(i<<3)|0x02, 0x0}; //mobile stream
-                        memcpy(buffer, &streamIdSource, sizeof(streamIdSource));
-                        memcpy(buffer+sizeof(streamIdSource), &len, sizeof(unsigned int));
-                        buffer += (sizeof(streamIdSource)+sizeof(unsigned int));
-                        totalLen += (sizeof(streamIdSource)+sizeof(unsigned int));
-                    } 
-                }
+                cpSGIHeader(buffer, mask4Stream, totalLen);
+                cpSGIData(buffer, mask4Stream, totalLen, result, bufLen, 3);
 
                 doWrite(1, bigBuf, totalLen);
                 //fprintf(stderr,"==file 4 write=%d\r\n", totalLen);
