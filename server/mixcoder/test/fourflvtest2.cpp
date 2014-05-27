@@ -41,18 +41,18 @@ void cpSGIData(unsigned char*& buffer, unsigned int mask4Stream, int& totalLen, 
         memcpy(buffer, &streamIdSource, sizeof(streamIdSource));
         
         if( i!=index ) {
-            int len = 0;
-            memcpy(buffer+sizeof(streamIdSource), &len, sizeof(unsigned int));
-            buffer += (sizeof(streamIdSource)+sizeof(unsigned int));
-            totalLen += (sizeof(streamIdSource)+sizeof(unsigned int));
-        } else {
             int maskForI = (1<<i);
             if( (mask4Stream & maskForI ) == maskForI) {
-                memcpy(buffer+sizeof(streamIdSource), &bufLen, sizeof(unsigned int));
-                memcpy((char*)buffer+sizeof(streamIdSource)+sizeof(unsigned int), result, bufLen);
-                buffer += (sizeof(streamIdSource)+sizeof(unsigned int)+bufLen);
-                totalLen += (sizeof(streamIdSource)+sizeof(unsigned int)+bufLen);
+                int len = 0;
+                memcpy(buffer+sizeof(streamIdSource), &len, sizeof(unsigned int));
+                buffer += (sizeof(streamIdSource)+sizeof(unsigned int));
+                totalLen += (sizeof(streamIdSource)+sizeof(unsigned int));
             }
+        } else {
+            memcpy(buffer+sizeof(streamIdSource), &bufLen, sizeof(unsigned int));
+            memcpy((char*)buffer+sizeof(streamIdSource)+sizeof(unsigned int), result, bufLen);
+            buffer += (sizeof(streamIdSource)+sizeof(unsigned int)+bufLen);
+            totalLen += (sizeof(streamIdSource)+sizeof(unsigned int)+bufLen);            
         }
     }    
 }
