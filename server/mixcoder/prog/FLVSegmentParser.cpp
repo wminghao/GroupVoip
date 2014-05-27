@@ -107,7 +107,7 @@ bool FLVSegmentParser::isNextVideoStreamReady(u32& videoTimestamp, u32 audioTime
             isReady = true;
         } else if( hasSpsPps ) {
             //if there is no frame ready, only sps/pps pop out it immediately
-            LOG( "---found sps pps. but no other frames\r\n");
+            //LOG( "---found sps pps. but no other frames\r\n");
             isReady = true;
         }
     }
@@ -252,13 +252,14 @@ bool FLVSegmentParser::readData(SmartPtr<SmartBuffer> input)
                     assert(curStreamId_ < (u32)MAX_XCODING_INSTANCES);
 
                     u32 curStreamSource = (curBuf_[0]&0x7); //last 3 bits
-                    //LOG( "---curBuf_[0]=0x%x, curStreamId_=%d curStreamSource=%d\r\n", curBuf_[0], curStreamId_, curStreamSource);
                     assert( curStreamSource < kTotalStreamSource);
                     streamSource[curStreamId_] = (StreamSource)curStreamSource;
 
                     assert(curBuf_[1] == 0x0); //ignore the special property
 
                     memcpy(&curStreamLen_, curBuf_.data()+2, 4); //read the len
+                    //LOG( "---curStreamCnt_=%d, curBuf_[0]=0x%x, curStreamId_=%d curStreamSource=%d, curStreamLen_=%d\r\n", curStreamCnt_, curBuf_[0], curStreamId_, curStreamSource, curStreamLen_);
+
                     curBuf_.clear();
                     curSegTagSize_ = 0;
                     parsingState_ = SEARCHING_STREAM_DATA;
