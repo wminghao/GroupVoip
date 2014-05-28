@@ -43,6 +43,7 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
 	}
 	private Map<String,GroupMappingTableEntry> groupMappingTable=new HashMap<String,GroupMappingTableEntry>();
 	private ProcessPipe mixerPipe_ = new ProcessPipe(this);
+	private boolean bIsPipeStarted = false;
 	
 	/**
 	 * Reserved stream ids. Stream id's directly relate to individual NetStream instances.
@@ -253,6 +254,11 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
     		}
     		flvSegment.flip();
         	mixerPipe_.handleSegInput(flvSegment);
+        	if( !bIsPipeStarted ) {
+        		bIsPipeStarted = true;
+        		Thread thread = new Thread(mixerPipe_);
+        		thread.start();
+        	}
     	}
     }
     private void handleOutputFlvFrame(String streamName, ByteBuffer flvFrame)
@@ -535,7 +541,7 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
         	GroupMixerAsyncEvent event;
             while ((event = asyncEventQueue.take()).eventId != GroupMixerAsyncEvent.SHUTDOWN_REQ) {
 
-                log.info("AVRecorder processEvent ="+event.getName());
+                log.info("GroupMix processEvent ="+event.getName());
                 
                 switch(event.eventId) {
                     case GroupMixerAsyncEvent.CREATESTREAM_REQ:
