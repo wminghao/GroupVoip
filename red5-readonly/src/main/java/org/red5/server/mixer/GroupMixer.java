@@ -18,6 +18,7 @@ import org.red5.server.net.rtmp.message.Constants;
 import org.red5.server.net.rtmp.message.Header;
 import org.red5.server.net.rtmp.message.Packet;
 import org.red5.server.service.Call;
+import org.red5.server.service.PendingCall;
 import org.slf4j.Logger;
 
 import java.util.BitSet;
@@ -28,7 +29,7 @@ import java.nio.ByteOrder;
 
 import org.apache.mina.core.buffer.IoBuffer;
 
-public class GroupMixer implements Runnable, SegmentParser.Delegate, ProcessPipe.Delegate {
+public class GroupMixer implements Runnable, SegmentParser.Delegate {
 	
 	public static final String ALL_IN_ONE_STREAM_NAME = "__mixed_all";
 	private static final String AppName = "myRed5App";//TODO appName change to a room or something
@@ -44,6 +45,7 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate, ProcessPipe
 		public int	  streamId; //streamId used in RTMP protocol
 	}
 	private Map<String,GroupMappingTableEntry> groupMappingTable=new HashMap<String,GroupMappingTableEntry>();
+	private ProcessPipe mixerPipe_ = new ProcessPipe(this);
 	
 	/**
 	 * Reserved stream ids. Stream id's directly relate to individual NetStream instances.
@@ -53,11 +55,6 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate, ProcessPipe
 	 * Reserved mixer ids. Mixer id's directly relate to mixcoder.
 	 */
 	private volatile BitSet mixerStreams = new BitSet();
-	
-	/*
-	 * flv output segment parser
-	 */
-	private SegmentParser segParser_ = new SegmentParser(this);
 	
 	//n events in the blocking queue                                                                                                                                                                     
 	private class GroupMixerAsyncEvent{
@@ -113,7 +110,7 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate, ProcessPipe
     
     private BlockingQueue<GroupMixerAsyncEvent> asyncEventQueue = new ArrayBlockingQueue<GroupMixerAsyncEvent>(100);
     
-	public GroupMixer() {
+	private GroupMixer() {
 	}
 	
     public static synchronized GroupMixer getInstance() {
@@ -185,12 +182,10 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate, ProcessPipe
 		flvFrame.put(buf.array());
 		flvFrame.putInt(0);//prevSize, ignore
         addEvent(GroupMixerAsyncEvent.MESSAGEINPUT_REQ, streamName, flvFrame);
+    	
+		log.info("=====>input message from {} type {} ts {} on thread: {}", streamName, bIsVideo?"video":"audio", eventTime,  Thread.currentThread().getName());
     }
 
-    public void onSegmentOutput(byte[] src, int srcLen)
-    {
-    	segParser_.readData(src, srcLen); //send to segment parser
-    }
     public void onFrameParsed(int mixerId, byte[] frame, int len)
     {
     	String streamName = null;
@@ -247,8 +242,8 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate, ProcessPipe
     			}
     		}
     		flvSegment.flip();
+        	mixerPipe_.handleSegInput(flvSegment);
     	}
-    	//TODO send to process pipe
     }
     private void handleOutputFlvFrame(String streamName, ByteBuffer flvFrame)
     {
@@ -314,9 +309,10 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate, ProcessPipe
         			break;
         		}
         	}
+    		log.info("=====>out message from {} msgType {} ts {} on thread: {}", streamName, msgType, msgTimestamp,  Thread.currentThread().getName());
 		}
     }
-    private void createMixedStreamInternal(String streamName)
+    private void handleCreateMixedStream(String streamName)
     {
     	RTMPMinaConnection conn = getAllInOneConn();
     	GroupMappingTableEntry entry = new GroupMappingTableEntry();
@@ -327,7 +323,7 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate, ProcessPipe
 		log.info("A new stream id: {}, mixer id: {} is created on thread: {}", entry.streamId, entry.mixerId, Thread.currentThread().getName());
     }
     
-    private void deleteMixedStreamInternal(String streamName)
+    private void handleDeleteMixedStream(String streamName)
     {
     	GroupMappingTableEntry entry = groupMappingTable.get(streamName);
     	if ( entry != null ) {        	
@@ -366,11 +362,11 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate, ProcessPipe
 			registerPendingCall(connectMsgEvent.getTransactionId(), (IPendingServiceCall) connectMsgEvent);
 		}
 		*/   
-		Invoke connectMsgEvent = new Invoke();
+		PendingCall connectCall = new PendingCall( "connect");
+		Invoke connectMsgEvent = new Invoke(connectCall);
 		connectMsgEvent.setHeader(connectMsgHeader);
 		connectMsgEvent.setTimestamp(0);
 		connectMsgEvent.setTransactionId(1);
-		IServiceCall connectCall = new Call( "connect");
 		connectMsgEvent.setCall(connectCall);
 		
 		Map<String, Object> connectParams = new HashMap<String, Object>();
@@ -410,12 +406,12 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate, ProcessPipe
 		createStreamMsgHeader.setTimerBase(0); //base+delta=timestamp
 		createStreamMsgHeader.setTimerDelta(0);
 		createStreamMsgHeader.setExtendedTimestamp(0); //extended timestamp
-		
-		Invoke createStreamMsgEvent = new Invoke();
+
+		PendingCall createStreamCall = new PendingCall( "createStream" );
+		Invoke createStreamMsgEvent = new Invoke(createStreamCall);
 		createStreamMsgEvent.setHeader(createStreamMsgHeader);
 		createStreamMsgEvent.setTimestamp(0);
 		createStreamMsgEvent.setTransactionId(2);
-		IServiceCall createStreamCall = new Call( "createStream" );
 		createStreamMsgEvent.setCall(createStreamCall);
 		
 		Packet createStreamMsg = new Packet(createStreamMsgHeader, createStreamMsgEvent);
@@ -435,15 +431,15 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate, ProcessPipe
 		publishMsgHeader.setTimerBase(0); //base+delta=timestamp
 		publishMsgHeader.setTimerDelta(0);
 		publishMsgHeader.setExtendedTimestamp(0); //extended timestamp
-		
-		Invoke publishMsgEvent = new Invoke();
-		publishMsgEvent.setHeader(publishMsgHeader);
-		publishMsgEvent.setTimestamp(0);
-		publishMsgEvent.setTransactionId(3);
+
 		Object [] publishArgs = new Object[2];
 		publishArgs[0] = streamName;
 		publishArgs[1] = "live";
-		IServiceCall publishCall = new Call( "publish", publishArgs );
+		PendingCall publishCall = new PendingCall( "publish", publishArgs );
+		Invoke publishMsgEvent = new Invoke(publishCall);
+		publishMsgEvent.setHeader(publishMsgHeader);
+		publishMsgEvent.setTimestamp(0);
+		publishMsgEvent.setTransactionId(3);
 		publishMsgEvent.setCall(publishCall);
 		
 		Packet publishMsg = new Packet(publishMsgHeader, publishMsgEvent);
@@ -494,18 +490,20 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate, ProcessPipe
 		deleteStreamMsgHeader.setTimerBase(0); //base+delta=timestamp
 		deleteStreamMsgHeader.setTimerDelta(0);
 		deleteStreamMsgHeader.setExtendedTimestamp(0); //extended timestamp
-		
-		Invoke deleteStreamMsgEvent = new Invoke();
+
+		Object [] deleteArgs = new Object[1];
+		deleteArgs[0] = streamId;
+		PendingCall deleteStreamCall = new PendingCall( "deleteStream", deleteArgs );
+		Invoke deleteStreamMsgEvent = new Invoke(deleteStreamCall);
 		deleteStreamMsgEvent.setHeader(deleteStreamMsgHeader);
 		deleteStreamMsgEvent.setTimestamp(0);
 		deleteStreamMsgEvent.setTransactionId(0);
-		Object [] deleteArgs = new Object[1];
-		deleteArgs[0] = streamId;
-		IServiceCall deleteStreamCall = new Call( "deleteStream", deleteArgs );
 		deleteStreamMsgEvent.setCall(deleteStreamCall);
 		
 		Packet deleteStreamMsg = new Packet(deleteStreamMsgHeader, deleteStreamMsgEvent);
 		conn.handleMessageReceived(deleteStreamMsg);
+
+		log.info("A old stream with id {} is deleted on thread: {}", streamId, Thread.currentThread().getName());
     }
     
     private void addEvent(int eventId, String paramStr, ByteBuffer flvFrame) {
@@ -521,7 +519,7 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate, ProcessPipe
     }
 
     @Override
-    public void run() {
+	public void run() {
         log.info("GroupMix thread enters");
         try {
         	GroupMixerAsyncEvent event;
@@ -533,13 +531,13 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate, ProcessPipe
                     case GroupMixerAsyncEvent.CREATESTREAM_REQ:
                     {
                     	//handle create stream event
-                    	createMixedStreamInternal(event.paramStr);
+                    	handleCreateMixedStream(event.paramStr);
                         break;
                     }
                     case GroupMixerAsyncEvent.DELETESTREAM_REQ:
                     {
                     	//handle delete stream event
-                    	deleteMixedStreamInternal(event.paramStr);
+                    	handleDeleteMixedStream(event.paramStr);
                         break;
                     }
                     case GroupMixerAsyncEvent.MESSAGEINPUT_REQ:

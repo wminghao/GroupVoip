@@ -298,8 +298,11 @@ public class ClientBroadcastStream extends AbstractClientStream implements IClie
 						IStreamCapableConnection conn = getConnection();
 						if ( conn instanceof RTMPConnection ) {
 							RTMPConnection rtmpConn = (RTMPConnection)conn;
-							AudioData aData = (AudioData)rtmpEvent;
-							GroupMixer.getInstance().inputMessage(rtmpConn.getPublisherStreamName(), false, aData.getData(), eventTime);
+							String publisherStreamName = rtmpConn.getPublisherStreamName();
+							//TODO only for mobile streams
+							if ( !publisherStreamName.contains(GroupMixer.ALL_IN_ONE_STREAM_NAME) ) {
+								GroupMixer.getInstance().inputMessage(publisherStreamName, false, buf.asReadOnlyBuffer(), eventTime);
+							}
 						}
 						log.trace("Audio: {}", eventTime);
 					} else if (rtmpEvent instanceof VideoData) {
@@ -325,8 +328,11 @@ public class ClientBroadcastStream extends AbstractClientStream implements IClie
 						IStreamCapableConnection conn = getConnection();
 						if ( conn instanceof RTMPConnection ) {
 							RTMPConnection rtmpConn = (RTMPConnection)conn;
-							VideoData vData = (VideoData)rtmpEvent;
-							GroupMixer.getInstance().inputMessage(rtmpConn.getPublisherStreamName(), true, vData.getData(), eventTime);
+							String publisherStreamName = rtmpConn.getPublisherStreamName();
+							//TODO only for mobile streams
+							if ( !publisherStreamName.contains(GroupMixer.ALL_IN_ONE_STREAM_NAME) ) {
+								GroupMixer.getInstance().inputMessage(rtmpConn.getPublisherStreamName(), true, buf.asReadOnlyBuffer(), eventTime);
+							}
 						}
 						log.trace("Video: {}", eventTime);
 					} else if (rtmpEvent instanceof Invoke) {

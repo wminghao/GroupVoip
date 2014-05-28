@@ -8,15 +8,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 
-public class ProcessPipe implements Runnable{
+public class ProcessPipe implements Runnable, SegmentParser.Delegate{
 	private boolean bTest = true; //read from a file instead
 
-    public interface Delegate {
-        public void onSegmentOutput(byte[] src, int srcLen);
-    }
-	private Delegate delegate;
+	/*
+	 * flv output segment parser
+	 */
+	private SegmentParser segParser_ = new SegmentParser(this);
 	
-	public ProcessPipe(Delegate delegate)
+	private SegmentParser.Delegate delegate;
+	
+	public ProcessPipe(SegmentParser.Delegate delegate)
 	{
 		this.delegate = delegate;
 	}
@@ -52,9 +54,9 @@ public class ProcessPipe implements Runnable{
         	            totalBytesRead = totalBytesRead + bytesRead;
         	          }
         	        }
-        	        this.delegate.onSegmentOutput(result, totalBytesRead);
+        	        segParser_.readData(result, totalBytesRead); //send to segment parser
         	        bytesTotal += totalBytesRead;
-        	        Thread.sleep(300); //sleep 300 ms
+        	        Thread.sleep(30); //sleep 30 ms
         	        System.out.println("Total bytes read: " + bytesTotal);
     	        }
     	      }catch (InterruptedException ex) {
@@ -72,5 +74,10 @@ public class ProcessPipe implements Runnable{
     	    	System.out.println(ex);
     	    }
     	}
+	}
+
+	@Override
+	public void onFrameParsed(int mixerId, byte[] frame, int len) {
+		this.delegate.onFrameParsed(mixerId, frame, len);		
 	}	
 }
