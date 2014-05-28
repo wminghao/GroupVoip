@@ -22,7 +22,6 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.ref.WeakReference;
-import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -300,8 +299,8 @@ public class ClientBroadcastStream extends AbstractClientStream implements IClie
 							RTMPConnection rtmpConn = (RTMPConnection)conn;
 							String publisherStreamName = rtmpConn.getPublisherStreamName();
 							//TODO only for mobile streams
-							if ( !publisherStreamName.contains(GroupMixer.ALL_IN_ONE_STREAM_NAME) ) {
-								GroupMixer.getInstance().inputMessage(publisherStreamName, false, buf.asReadOnlyBuffer(), eventTime);
+							if ( !publisherStreamName.contains(GroupMixer.MIXED_STREAM_NAME) ) {
+								GroupMixer.getInstance().inputMessage(publisherStreamName, false, buf.buf(), eventTime);
 							}
 						}
 						log.trace("Audio: {}", eventTime);
@@ -330,8 +329,8 @@ public class ClientBroadcastStream extends AbstractClientStream implements IClie
 							RTMPConnection rtmpConn = (RTMPConnection)conn;
 							String publisherStreamName = rtmpConn.getPublisherStreamName();
 							//TODO only for mobile streams
-							if ( !publisherStreamName.contains(GroupMixer.ALL_IN_ONE_STREAM_NAME) ) {
-								GroupMixer.getInstance().inputMessage(rtmpConn.getPublisherStreamName(), true, buf.asReadOnlyBuffer(), eventTime);
+							if ( !publisherStreamName.contains(GroupMixer.MIXED_STREAM_NAME) ) {
+								GroupMixer.getInstance().inputMessage(rtmpConn.getPublisherStreamName(), true, buf.buf(), eventTime);
 							}
 						}
 						log.trace("Video: {}", eventTime);
