@@ -127,6 +127,9 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
     		// add the handler
     		connAllInOne.setHandler(handler);
     		
+    		// set it in MixerManager
+    		allInOneSessionId_ = connAllInOne.getSessionId();
+    		
     		//??? different thread , see mina threading model ???
     		//next assume the session is opened
     		handler.connectionOpened(connAllInOne);
@@ -135,8 +138,6 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
     		handleConnectEvent(connAllInOne);
     		handleCreatePublishEvents( connAllInOne, ALL_IN_ONE_STREAM_NAME);
             
-    		// set it in MixerManager
-    		allInOneSessionId_ = connAllInOne.getSessionId();
 
     		//start the thread immediately
         	Thread t = new Thread(this, "GroupMixerThread");
@@ -204,11 +205,11 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
         		}
             }
     	}
-    	log.info("=====>onFrameParsed mixerId {} frame {} len {} streamName {}", mixerId, frame, len, streamName );
+    	log.info("=====>onFrameParsed mixerId {} len {} streamName {}", mixerId, len, streamName );
     	if ( streamName != null ) {
     		ByteBuffer flvFrame = ByteBuffer.allocate(len);
     		flvFrame.order(ByteOrder.LITTLE_ENDIAN);  // to use little endian
-    		flvFrame.put(frame);
+    		flvFrame.put(frame, 0, len);
     		addEvent(GroupMixerAsyncEvent.MESSAGEOUTPUT_REQ, streamName, flvFrame);
     	}
     }
@@ -279,6 +280,7 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
     		msgHeader.setExtendedTimestamp(0); //extended timestamp
     		
         	RTMPMinaConnection conn = getAllInOneConn();
+    		log.info("=====>out message from {} msgType {} msgSize{} ts {} on thread: {}", streamName, msgType, msgSize, msgTimestamp,  Thread.currentThread().getName());
         	switch(msgType) {
         		case Constants.TYPE_AUDIO_DATA:
         		{
@@ -319,7 +321,6 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
         			break;
         		}
         	}
-    		log.info("=====>out message from {} msgType {} ts {} on thread: {}", streamName, msgType, msgTimestamp,  Thread.currentThread().getName());
 		}
     }
     private void handleCreateMixedStream(String streamName)
@@ -395,7 +396,7 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
 		Packet connectMsg = new Packet(connectMsgHeader, connectMsgEvent);
 		conn.handleMessageReceived(connectMsg);    	
 
-		log.info("Connect event sent on thread: {}", Thread.currentThread().getName());
+		log.info("A new connection event sent on thread: {}", Thread.currentThread().getName());
     }
     
     private int handleCreatePublishEvents(RTMPMinaConnection conn, String streamName)

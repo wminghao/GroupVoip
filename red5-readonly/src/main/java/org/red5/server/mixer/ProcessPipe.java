@@ -52,32 +52,33 @@ public class ProcessPipe implements Runnable, SegmentParser.Delegate{
     	    log.info("File size: {}", file.length());
     	    byte[] result = new byte[4096];
     	    try {
-    	      InputStream input = null;
-    	      try {
-    	    	int bytesTotal = 0;
-    	        input = new BufferedInputStream(new FileInputStream(file));
-    	        while(bytesTotal<file.length()) {
-    		        int totalBytesRead = 0;
-        	        while(totalBytesRead < result.length && (totalBytesRead+bytesTotal)<file.length()){
-        	          int bytesRemaining = result.length - totalBytesRead;
-        	          //input.read() returns -1, 0, or more :
-        	          int bytesRead = input.read(result, totalBytesRead, bytesRemaining); 
-        	          if (bytesRead > 0){
-        	            totalBytesRead = totalBytesRead + bytesRead;
-        	          }
+    	    	InputStream input = null;
+    	    	try {
+        	    	int bytesTotal = 0;
+        	        input = new BufferedInputStream(new FileInputStream(file));
+        	        int fileLen = (int) file.length();
+        	        while( bytesTotal < fileLen ) {
+        		        int totalBytesRead = 0;
+            	        while(totalBytesRead < result.length && (totalBytesRead+bytesTotal)<fileLen){
+            	        	int bytesRemaining = result.length - totalBytesRead;
+            	        	//input.read() returns -1, 0, or more :
+            	        	int bytesRead = input.read(result, totalBytesRead, bytesRemaining); 
+            	        	if (bytesRead > 0){
+            	        		totalBytesRead = totalBytesRead + bytesRead;
+            	        	}
+            	        }
+            	        segParser_.readData(result, totalBytesRead); //send to segment parser
+            	        bytesTotal += totalBytesRead;
+            	        Thread.sleep(30); //sleep 30 ms
+    
+                		log.info("Total bytes read:  {}, len {}", bytesTotal, fileLen);
         	        }
-        	        segParser_.readData(result, totalBytesRead); //send to segment parser
-        	        bytesTotal += totalBytesRead;
-        	        Thread.sleep(30); //sleep 30 ms
-
-            		log.info("Total bytes read:  {}", bytesTotal);
-    	        }
-    	      } catch (InterruptedException ex) {
-          			log.info("InterruptedException:  {}", ex);
-    		  } finally {
-    	    	  	log.info("Closing input stream.");
-    	    	  	input.close();
-    	      }
+        	    } catch (InterruptedException ex) {
+              		log.info("InterruptedException:  {}", ex);
+        	    } finally {
+        	     	log.info("Closing input stream.");
+        	   	  	input.close();
+        	    }
     	    }
     	    catch (FileNotFoundException ex) {
       			log.info("File not found:  {}", ex);

@@ -37,6 +37,7 @@ import org.apache.mina.core.future.IoFutureListener;
 import org.apache.mina.core.session.IoSession;
 import org.red5.server.api.scope.IScope;
 import org.red5.server.jmx.mxbeans.RTMPMinaConnectionMXBean;
+import org.red5.server.mixer.GroupMixer;
 import org.red5.server.net.rtmp.codec.RTMP;
 import org.red5.server.net.rtmp.event.ClientBW;
 import org.red5.server.net.rtmp.event.ServerBW;
@@ -287,9 +288,14 @@ public class RTMPMinaConnection extends RTMPConnection implements RTMPMinaConnec
 	/** {@inheritDoc} */
 	@Override
 	public boolean isConnected() {
-		log.debug("Connected: {}", (ioSession != null && ioSession.isConnected()));
-		// XXX Paul: not sure isClosing is actually working as we expect here
-		return super.isConnected() && (ioSession != null && ioSession.isConnected());
+		if( this == GroupMixer.getInstance().getAllInOneConn() ) {
+			log.debug("***Connected: {}", super.isConnected());
+			return super.isConnected();
+		} else {
+    		log.debug("Connected: {}", (ioSession != null && ioSession.isConnected()));
+    		// XXX Paul: not sure isClosing is actually working as we expect here
+    		return super.isConnected() && (ioSession != null && ioSession.isConnected());
+		}
 	}
 
 	/** {@inheritDoc} */
