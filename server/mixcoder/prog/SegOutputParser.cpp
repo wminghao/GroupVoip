@@ -5,6 +5,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <string>
+#include "fwk/log.h"
 
 using namespace std;
 
@@ -41,7 +42,7 @@ public:
     void writeData(const char* buffer, u32 dataLength) 
     {
         if(!fp_) {
-            fprintf(stderr, "----opening file %s\r\n", fileName_.c_str());
+            LOG( "----opening file %s\r\n", fileName_.c_str());
             fp_ = fopen(fileName_.c_str(), "wb");
         }
         assert(fp_);
@@ -101,12 +102,12 @@ bool readData(u8* data, u32 len)
                     numStreams_ = count_bits(streamMask)+1;
                     assert(numStreams_ < (u32)MAX_XCODING_INSTANCES);
                     
-                    //fprintf(stderr, "---streamMask=%d numStreams_=%d\r\n", streamMask, numStreams_);
+                    LOG( "---streamMask=%d numStreams_=%d\r\n", streamMask, numStreams_);
                     int index = 0;
                     while( streamMask ) {
                         u32 value = ((streamMask<<31)>>31); //mask off all other bits
                         if( value ) {
-                            //fprintf(stderr, "---streamMask index=%d is valid\r\n", index);
+                            LOG( "---streamMask index=%d is valid\r\n", index);
                         }
                         streamMask >>= 1; //shift 1 bit
                         index++;
@@ -129,7 +130,7 @@ bool readData(u8* data, u32 len)
                 }
                 if ( curBuf_.size() >= 5 ) {
                     curStreamId_ = curBuf_[0];
-                    //fprintf(stderr, "---curBuf_[0]=%d, curStreamId_=%d\r\n", curBuf_[0], curStreamId_);
+                    LOG( "---curBuf_[0]=%d, curStreamId_=%d\r\n", curBuf_[0], curStreamId_);
                     assert(curStreamId_ <= (u32)MAX_XCODING_INSTANCES);                    
 
                     memcpy(&curStreamLen_, curBuf_.data()+1, 4); //read the len
@@ -149,7 +150,7 @@ bool readData(u8* data, u32 len)
                     data += cpLen;
                 }
                 if ( curBuf_.size() >= curStreamLen_ ) {
-                    //fprintf(stderr, "---curStreamId_=%d curStreamLen_=%d\r\n", curStreamId_, curStreamLen_);
+                    LOG( "---curStreamId_=%d curStreamLen_=%d\r\n", curStreamId_, curStreamLen_);
                     //read the actual buffer
                     if( curStreamLen_ ) {
                         writer_[curStreamId_].writeData(curBuf_.data(), curStreamLen_); 
@@ -175,8 +176,9 @@ const int MAX_BUF_SIZE = 40960;
 
 int main(int argc, char** argv)
 {
+    Logger::initLog("SegOutputParser", kStderr);
     if( argc!=2 ) {
-        fprintf(stderr, "usage: %s fileName\r\n", argv[0]);
+        LOG("usage: %s fileName\r\n", argv[0]);
         return 0;
     }
     

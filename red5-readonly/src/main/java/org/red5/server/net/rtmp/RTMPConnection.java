@@ -80,6 +80,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
+import org.red5.server.mixer.GroupMixer;
+
 /**
  * RTMP connection. Stores information about client streams, data transfer channels, pending RPC calls, bandwidth configuration, 
  * AMF encoding type (AMF0/AMF3), connection state (is alive, last ping time and ping result) and session.
@@ -258,7 +260,29 @@ public abstract class RTMPConnection extends BaseConnection implements IStreamCa
 	 * Timestamp generator
 	 */
 	private final AtomicInteger timer = new AtomicInteger(0);
+	
+	/*
+	 * Howard, a quick hack, for normal video publishing, 
+	 *   only 1 publishing stream can be associated with a RTMPConnection
+	 *   so save the mapping between streamId and streamName here.
+	 * Exception, for all-in-one RTMPConnection, there could be
+	 * 	 > 1 publishing streams associated with that connection.
+	 */
+	private String publisherStreamName;
+	private int    publisherStreamId;
+	
+	public void setPublisherStreamInfo(String publisherStreamName, int publisherStreamId) {
+		if( this != GroupMixer.getInstance().getAllInOneConn()) {
+			this.publisherStreamName = publisherStreamName;
+			this.publisherStreamId = publisherStreamId;
+		}
+	}
 
+	public String getPublisherStreamName()
+	{
+		return publisherStreamName;
+	}
+	
 	/**
 	 * Creates anonymous RTMP connection without scope.
 	 * 
@@ -859,6 +883,9 @@ public abstract class RTMPConnection extends BaseConnection implements IStreamCa
 				usedStreams.decrementAndGet();
 				streams.remove(streamId - 1);
 				streamBuffers.remove(streamId - 1);
+				if ( streamId == this.publisherStreamId ) {
+					GroupMixer.getInstance().deleteMixedStream(this.publisherStreamName);
+				}
 			}
 		}
 	}

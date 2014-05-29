@@ -1,4 +1,5 @@
 #include "FLVSegmentParser.h"
+#include "fwk/log.h"
 #include <assert.h>
 #include <stdio.h>
 
@@ -58,7 +59,7 @@ bool FLVSegmentParser::isNextVideoStreamReady(u32& videoTimestamp, u32 audioTime
                     }
                 }
             } else {
-                //fprintf(stderr, "---streamMask online unavailable index=%d, numStreams=%d\r\n", i, numStreams_);
+                //LOG( "---streamMask online unavailable index=%d, numStreams=%d\r\n", i, numStreams_);
             }
         } 
     }
@@ -72,7 +73,7 @@ bool FLVSegmentParser::isNextVideoStreamReady(u32& videoTimestamp, u32 audioTime
                     videoTimestamp = lastBucketTimestamp_ = nextBucketTimestamp; //strictly follow
                     isReady = true;
                     /*
-                    fprintf(stderr, "===follow up video timstamp=%d, hasAnyStreamStartedAndReady=%d, audioBucketTimestamp=%d nextBucketTimestamp=%d, lastBucketTimestamp_=%d\r\n", 
+                    LOG( "===follow up video timstamp=%d, hasAnyStreamStartedAndReady=%d, audioBucketTimestamp=%d nextBucketTimestamp=%d, lastBucketTimestamp_=%d\r\n", 
                             videoTimestamp, hasAnyStreamStartedAndReady, (u32)audioBucketTimestamp, (u32)nextBucketTimestamp, (u32)lastBucketTimestamp_);
                     */
                 } else {
@@ -86,7 +87,7 @@ bool FLVSegmentParser::isNextVideoStreamReady(u32& videoTimestamp, u32 audioTime
                 //if audio is already ahead, pop that frame out
                 videoTimestamp = lastBucketTimestamp_ = audioBucketTimestamp;
                 /*
-                  fprintf(stderr, "===follow up 2 video timstamp=%d, hasAnyStreamStartedAndReady=%d, audioBucketTimestamp=%d nextBucketTimestamp=%d, lastBucketTimestamp_=%d\r\n", 
+                  LOG( "===follow up 2 video timstamp=%d, hasAnyStreamStartedAndReady=%d, audioBucketTimestamp=%d nextBucketTimestamp=%d, lastBucketTimestamp_=%d\r\n", 
                         videoTimestamp, hasAnyStreamStartedAndReady, (u32)audioBucketTimestamp, (u32)nextBucketTimestamp, (u32)lastBucketTimestamp_);
                 */
                 isReady = true;
@@ -102,11 +103,11 @@ bool FLVSegmentParser::isNextVideoStreamReady(u32& videoTimestamp, u32 audioTime
             hasStarted_ = true;
             lastBucketTimestamp_ = frameTimestamp;
             videoTimestamp = frameTimestamp;
-            fprintf(stderr, "===first video timstamp=%d\r\n", (u32)lastBucketTimestamp_);
+            LOG( "===first video timstamp=%d\r\n", (u32)lastBucketTimestamp_);
             isReady = true;
         } else if( hasSpsPps ) {
             //if there is no frame ready, only sps/pps pop out it immediately
-            fprintf(stderr, "---found sps pps. but no other frames\r\n");
+            //LOG( "---found sps pps. but no other frames\r\n");
             isReady = true;
         }
     }
@@ -125,7 +126,7 @@ bool FLVSegmentParser::isNextAudioStreamReady(u32& audioTimestamp) {
                 audioTimestamp = MIN(audioQueue_[i].front()->pts, audioTimestamp);
             } else {
                 isReady = false;
-                //fprintf(stderr, "---streamMask online unavailable index=%d, numStreams=%d\r\n", i, numStreams_);
+                //LOG( "---streamMask online unavailable index=%d, numStreams=%d\r\n", i, numStreams_);
                 break;
             }   
             totalStreams++;
@@ -209,7 +210,7 @@ bool FLVSegmentParser::readData(SmartPtr<SmartBuffer> input)
                     //handle mask here 
                     numStreams_ = count_bits(streamMask);
                     assert(numStreams_ < (u32)MAX_XCODING_INSTANCES);
-                    //fprintf(stderr, "---streamMask=0x%x\r\n", streamMask);
+                    //LOG( "---streamMask=0x%x\r\n", streamMask);
                     int index = 0;
                     while( index < (int)MAX_XCODING_INSTANCES ) {
                         u32 value = ((streamMask<<31)>>31); //mask off all other bits
@@ -220,11 +221,11 @@ bool FLVSegmentParser::readData(SmartPtr<SmartBuffer> input)
                             if ( audioStreamStatus_[index] == kStreamOffline ) {
                                 audioStreamStatus_[index] = kStreamOnlineNotStarted;
                             }
-                            //fprintf(stderr, "---streamMask online  index=%d, numStreams=%d\r\n", index, numStreams_);
+                            //LOG( "---streamMask online  index=%d, numStreams=%d\r\n", index, numStreams_);
                         } else {
                             videoStreamStatus_[index] = kStreamOffline;
                             audioStreamStatus_[index] = kStreamOffline;
-                            //fprintf(stderr, "---streamMask offline index=%d, numStreams=%d\r\n", index, numStreams_);
+                            //LOG( "---streamMask offline index=%d, numStreams=%d\r\n", index, numStreams_);
                         }
                         streamMask >>= 1; //shift 1 bit
                         index++;
@@ -251,13 +252,14 @@ bool FLVSegmentParser::readData(SmartPtr<SmartBuffer> input)
                     assert(curStreamId_ < (u32)MAX_XCODING_INSTANCES);
 
                     u32 curStreamSource = (curBuf_[0]&0x7); //last 3 bits
-                    //fprintf(stderr, "---curBuf_[0]=0x%x, curStreamId_=%d curStreamSource=%d\r\n", curBuf_[0], curStreamId_, curStreamSource);
                     assert( curStreamSource < kTotalStreamSource);
                     streamSource[curStreamId_] = (StreamSource)curStreamSource;
 
                     assert(curBuf_[1] == 0x0); //ignore the special property
 
                     memcpy(&curStreamLen_, curBuf_.data()+2, 4); //read the len
+                    //LOG( "---curStreamCnt_=%d, curBuf_[0]=0x%x, curStreamId_=%d curStreamSource=%d, curStreamLen_=%d\r\n", curStreamCnt_, curBuf_[0], curStreamId_, curStreamSource, curStreamLen_);
+
                     curBuf_.clear();
                     curSegTagSize_ = 0;
                     parsingState_ = SEARCHING_STREAM_DATA;
@@ -276,7 +278,7 @@ bool FLVSegmentParser::readData(SmartPtr<SmartBuffer> input)
                         data += cpLen;
                     }
                     if ( curBuf_.size() >= curStreamLen_ ) {
-                        //fprintf(stderr, "---curStreamId_=%d curStreamLen_=%d\r\n", curStreamId_, curStreamLen_);
+                        //LOG( "---curStreamId_=%d curStreamLen_=%d\r\n", curStreamId_, curStreamLen_);
                         //read the actual buffer
                         SmartPtr<SmartBuffer> curStream = new SmartBuffer( curStreamLen_, curBuf_.data());
                         parser_[curStreamId_]->readData(curStream); 
@@ -323,10 +325,10 @@ SmartPtr<AccessUnit> FLVSegmentParser::getNextVideoFrame(u32 index, u32 timestam
     if ( videoQueue_[index].size() > 0 ) {
         au = videoQueue_[index].front();
         if ( au && au->pts <= timestamp ) {
-            //fprintf( stderr, "------pop Next video frame, index=%d pts=%d\r\n", index, au->pts);
+            //LOG("------pop Next video frame, index=%d pts=%d\r\n", index, au->pts);
             videoQueue_[index].pop();
         } else {
-            //fprintf( stderr, "------nopop Next video frame, index=%d pts=%d\r\n", index, au->pts);
+            //LOG("------nopop Next video frame, index=%d pts=%d\r\n", index, au->pts);
             //don't pop anything that has a bigger timestamp
             au = NULL;
         }

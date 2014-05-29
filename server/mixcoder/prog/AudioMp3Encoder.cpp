@@ -2,10 +2,11 @@
 #include <assert.h>
 #include <stdio.h>
 #include <lame/lame.h>
+#include "fwk/log.h"
 
 void error_handler_function(const char *format, va_list ap)
 {
-    fprintf(stderr, format, ap);
+    LOG( format, ap);
     assert(0);
 }
 AudioMp3Encoder::AudioMp3Encoder(AudioStreamSetting* inputSetting, AudioStreamSetting* outputSetting, int aBitrate):AudioEncoder(inputSetting, outputSetting, aBitrate)
@@ -29,7 +30,7 @@ AudioMp3Encoder::AudioMp3Encoder(AudioStreamSetting* inputSetting, AudioStreamSe
         //lame_set_highpassfreq(m_gfp, -1);
 
         int ret_code = lame_init_params(lgf_);
-        //fprintf(stderr, "AudioMp3Encoder lame encoder initialized=%d, bitRate=%dkbps\n", ret_code, aBitrate);
+        //LOG( "AudioMp3Encoder lame encoder initialized=%d, bitRate=%dkbps\n", ret_code, aBitrate);
         //ret_code < 0 means failed
     }
 }
@@ -56,10 +57,10 @@ SmartPtr<SmartBuffer> AudioMp3Encoder::encodeAFrame(SmartPtr<SmartBuffer> input)
             int paddingSize = lame_encode_flush_nogap(lgf_, (u8*)encodedBits_+encodedSize, MAX_WB_BYTES-encodedSize);
             encodedSize += paddingSize;
         
-            fprintf( stderr, "AudioMp3Encoder lame encoded pkt size=%d sample size=%d\n", encodedSize, sampleSize); 
+            LOG("AudioMp3Encoder lame encoded pkt size=%d sample size=%d\n", encodedSize, sampleSize); 
             result = new SmartBuffer( encodedSize, encodedBits_);
         } else {
-            fprintf( stderr, "*** nothing encoded AudioMp3Encoder lame encoded pkt size=%d sample size=%d\n", encodedSize, sampleSize); 
+            LOG("*** nothing encoded AudioMp3Encoder lame encoded pkt size=%d sample size=%d\n", encodedSize, sampleSize); 
         }
     }
     return result;

@@ -37,6 +37,7 @@ import org.apache.mina.core.future.IoFutureListener;
 import org.apache.mina.core.session.IoSession;
 import org.red5.server.api.scope.IScope;
 import org.red5.server.jmx.mxbeans.RTMPMinaConnectionMXBean;
+import org.red5.server.mixer.GroupMixer;
 import org.red5.server.net.rtmp.codec.RTMP;
 import org.red5.server.net.rtmp.event.ClientBW;
 import org.red5.server.net.rtmp.event.ServerBW;
@@ -287,9 +288,14 @@ public class RTMPMinaConnection extends RTMPConnection implements RTMPMinaConnec
 	/** {@inheritDoc} */
 	@Override
 	public boolean isConnected() {
-		log.debug("Connected: {}", (ioSession != null && ioSession.isConnected()));
-		// XXX Paul: not sure isClosing is actually working as we expect here
-		return super.isConnected() && (ioSession != null && ioSession.isConnected());
+		if( this == GroupMixer.getInstance().getAllInOneConn() ) {
+			log.debug("***Connected: {}", super.isConnected());
+			return super.isConnected();
+		} else {
+    		log.debug("Connected: {}", (ioSession != null && ioSession.isConnected()));
+    		// XXX Paul: not sure isClosing is actually working as we expect here
+    		return super.isConnected() && (ioSession != null && ioSession.isConnected());
+		}
 	}
 
 	/** {@inheritDoc} */
@@ -314,17 +320,19 @@ public class RTMPMinaConnection extends RTMPConnection implements RTMPMinaConnec
 	 * @param protocolSession  Protocol session
 	 */
 	public void setIoSession(IoSession protocolSession) {
-		SocketAddress remote = protocolSession.getRemoteAddress();
-		if (remote instanceof InetSocketAddress) {
-			remoteAddress = ((InetSocketAddress) remote).getAddress().getHostAddress();
-			remotePort = ((InetSocketAddress) remote).getPort();
-		} else {
-			remoteAddress = remote.toString();
-			remotePort = -1;
+		SocketAddress remote = (protocolSession != null) ? protocolSession.getRemoteAddress(): null;
+		if ( remote != null ) {
+    		if (remote instanceof InetSocketAddress) {
+    			remoteAddress = ((InetSocketAddress) remote).getAddress().getHostAddress();
+    			remotePort = ((InetSocketAddress) remote).getPort();
+    		} else {
+    			remoteAddress = remote.toString();
+    			remotePort = -1;
+    		}
+    		remoteAddresses = new ArrayList<String>(1);
+    		remoteAddresses.add(remoteAddress);
+    		remoteAddresses = Collections.unmodifiableList(remoteAddresses);
 		}
-		remoteAddresses = new ArrayList<String>(1);
-		remoteAddresses.add(remoteAddress);
-		remoteAddresses = Collections.unmodifiableList(remoteAddresses);
 		this.ioSession = protocolSession;
 		log.trace("setIoSession conn: {}", this);
 	}

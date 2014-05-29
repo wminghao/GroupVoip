@@ -120,7 +120,7 @@ SmartPtr<SmartBuffer> FLVOutput::packageVideoFrame(SmartPtr<SmartBuffer> videoPa
     data[tl+2] = (u8)((tl>>8)&0xff);  
     data[tl+3] = (u8)(tl&0xff);  
 
-    //fprintf( stderr, "====>video frame len=%d, videoDataLen=%d ts=%d\n", tl, videoDataLen, ts);
+    //LOG("====>video frame len=%d, videoDataLen=%d ts=%d\n", tl, videoDataLen, ts);
 
     if( !flvHeaderSent_ ) {
         SmartPtr<SmartBuffer> header = newHeader();
@@ -183,7 +183,7 @@ SmartPtr<SmartBuffer> FLVOutput::packageAudioFrame(SmartPtr<SmartBuffer> audioPa
     data[tl+2] = (u8)((tl>>8)&0xff);    
     data[tl+3] = (u8)(tl&0xff);
 
-    //fprintf( stderr, "====>audio frame len=%d, audioDataLen=%d ts=%d\n", tl, audioDataLen, ts);
+    //LOG("====>audio frame len=%d, audioDataLen=%d ts=%d\n", tl, audioDataLen, ts);
     if( !flvHeaderSent_ ) {
         SmartPtr<SmartBuffer> header = newHeader();
         int totalLen = header->dataLength() + audioFrame->dataLength();
