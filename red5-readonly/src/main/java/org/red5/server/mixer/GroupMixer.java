@@ -43,7 +43,6 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
 	}
 	private Map<String,GroupMappingTableEntry> groupMappingTable=new HashMap<String,GroupMappingTableEntry>();
 	private ProcessPipe mixerPipe_ = new ProcessPipe(this);
-	private boolean bIsPipeStarted = false;
 	
 	/**
 	 * Reserved stream ids. Stream id's directly relate to individual NetStream instances.
@@ -92,7 +91,7 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
                     break;
                 }
             }
-            return "event is " + eventName + " param1=" + paramStr + " param2=" + flvFrame.capacity();
+            return "event is " + eventName + " param1=" + paramStr + " param2=" + (flvFrame!=null?flvFrame.capacity():0);
         }
 
         private int eventId;
@@ -143,7 +142,7 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
         	Thread t = new Thread(this, "GroupMixerThread");
         	t.start();
         	
-    		log.info("Created all In One connection on thread: {}", Thread.currentThread().getName());
+    		log.info("Created all In One connection with sessionId {} on thread: {}", allInOneSessionId_, Thread.currentThread().getName());
     	}
     }	
     
@@ -254,11 +253,6 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
     		}
     		flvSegment.flip();
         	mixerPipe_.handleSegInput(flvSegment);
-        	if( !bIsPipeStarted ) {
-        		bIsPipeStarted = true;
-        		Thread thread = new Thread(mixerPipe_);
-        		thread.start();
-        	}
     	}
     }
     private void handleOutputFlvFrame(String streamName, ByteBuffer flvFrame)

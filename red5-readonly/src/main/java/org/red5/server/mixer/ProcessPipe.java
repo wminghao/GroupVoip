@@ -8,8 +8,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 
+import org.red5.logging.Red5LoggerFactory;
+import org.red5.server.api.Red5;
+import org.slf4j.Logger;
+
 public class ProcessPipe implements Runnable, SegmentParser.Delegate{
 	private boolean bTest = true; //read from a file instead
+	private static Logger log = Red5LoggerFactory.getLogger(Red5.class);
+	private boolean bIsPipeStarted = false;
 
 	/*
 	 * flv output segment parser
@@ -25,19 +31,25 @@ public class ProcessPipe implements Runnable, SegmentParser.Delegate{
 	
 	public void handleSegInput(ByteBuffer seg)
 	{
-		if(!bTest) {
-			//TODO	
+		if(bTest) {
+			//start the thread here
+        	if( !bIsPipeStarted ) {
+        		bIsPipeStarted = true;
+        		Thread thread = new Thread(this, "MixerPipe");
+        		thread.start();
+        	}
 		}
 	}
 
 	@Override
 	public void run() {
+		log.info("Thread is started");
 		if(bTest) {
 			//read a segment file and send it over
     		final String INPUT_FILE_NAME = "/Users/wminghao/Develop/red5-server/red5-readonly/testvideos/fourflvtest.seg";
-    		System.out.println("Reading in binary file named : " + INPUT_FILE_NAME);
+    		log.info("Reading in binary file named : {}", INPUT_FILE_NAME);
     	    File file = new File(INPUT_FILE_NAME);
-    	    System.out.println("File size: " + file.length());
+    	    log.info("File size: {}", file.length());
     	    byte[] result = new byte[4096];
     	    try {
     	      InputStream input = null;
@@ -57,21 +69,21 @@ public class ProcessPipe implements Runnable, SegmentParser.Delegate{
         	        segParser_.readData(result, totalBytesRead); //send to segment parser
         	        bytesTotal += totalBytesRead;
         	        Thread.sleep(30); //sleep 30 ms
-        	        System.out.println("Total bytes read: " + bytesTotal);
+
+            		log.info("Total bytes read:  {}", bytesTotal);
     	        }
-    	      }catch (InterruptedException ex) {
-    	    	  System.out.println(ex);
-    		  }
-    	      finally {
-    	    	  System.out.println("Closing input stream.");
-    	        input.close();
+    	      } catch (InterruptedException ex) {
+          			log.info("InterruptedException:  {}", ex);
+    		  } finally {
+    	    	  	log.info("Closing input stream.");
+    	    	  	input.close();
     	      }
     	    }
     	    catch (FileNotFoundException ex) {
-    	    	System.out.println("File not found.");
+      			log.info("File not found:  {}", ex);
     	    }
     	    catch (IOException ex) {
-    	    	System.out.println(ex);
+      			log.info("Other exception:  {}", ex);
     	    }
     	}
 	}
