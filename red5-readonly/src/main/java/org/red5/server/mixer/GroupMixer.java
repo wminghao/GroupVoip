@@ -27,8 +27,8 @@ import java.nio.ByteOrder;
 
 public class GroupMixer implements Runnable, SegmentParser.Delegate {
 
-	public static final String MIXED_STREAM_NAME = "__mixed_";
-	private static final String ALL_IN_ONE_STREAM_NAME = MIXED_STREAM_NAME+"_all";
+	public static final String MIXED_STREAM_PREFIX = "__mixed__";
+	private static final String ALL_IN_ONE_STREAM_NAME = "allinone";
 	private static final String AppName = "myRed5App";//TODO appName change to a room or something
 	private static final String ipAddr = "localhost"; //TODO change to something else in the future
 	private static GroupMixer instance_;
@@ -56,10 +56,11 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
 	//n events in the blocking queue                                                                                                                                                                     
 	private class GroupMixerAsyncEvent{
 
-        public GroupMixerAsyncEvent(int eventId, String paramStr, ByteBuffer flvFrame) {
+        public GroupMixerAsyncEvent(int eventId, String paramStr, ByteBuffer flvFrame, int len) {
             this.eventId  = eventId;
             this.paramStr = paramStr;
             this.flvFrame = flvFrame;
+            this.flvFrameLen = len;
         }
 
         public String getName() {
@@ -91,12 +92,13 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
                     break;
                 }
             }
-            return "event is " + eventName + " param1=" + paramStr + " param2=" + (flvFrame!=null?flvFrame.capacity():0);
+            return "event is " + eventName + " param1=" + paramStr + " param2=" + flvFrameLen;
         }
 
         private int eventId;
         private String paramStr; //either it's the streamName or streamId (!= streamId in mixcoder from 0-32)
         private ByteBuffer flvFrame; //FLVFrame raw data
+        private int flvFrameLen; //frame len
 
         public static final int CREATESTREAM_REQ      	= 0;
         public static final int DELETESTREAM_REQ      	= 1;
@@ -121,7 +123,7 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
     {
     	if( allInOneSessionId_ == null ) {
     		// create a connection
-    		RTMPMinaConnection connAllInOne = (RTMPMinaConnection) RTMPConnManager.getInstance().createConnection(RTMPMinaConnection.class);
+    		RTMPMinaConnection connAllInOne = (RTMPMinaConnection) RTMPConnManager.getInstance().createConnection(RTMPMinaConnection.class, false);
     		// add session to the connection
     		connAllInOne.setIoSession(null);
     		// add the handler
@@ -136,12 +138,14 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
     
     		//handle connect, createStream and publish events
     		handleConnectEvent(connAllInOne);
-    		handleCreatePublishEvents( connAllInOne, ALL_IN_ONE_STREAM_NAME);
             
 
     		//start the thread immediately
         	Thread t = new Thread(this, "GroupMixerThread");
         	t.start();
+        	
+        	//kick off createStream event
+        	createMixedStream(ALL_IN_ONE_STREAM_NAME);
         	
     		log.info("Created all In One connection with sessionId {} on thread: {}", allInOneSessionId_, Thread.currentThread().getName());
     	}
@@ -149,11 +153,11 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
     
     public void createMixedStream(String streamName)
     {
-    	addEvent(GroupMixerAsyncEvent.CREATESTREAM_REQ, streamName, null);
+    	addEvent(GroupMixerAsyncEvent.CREATESTREAM_REQ, streamName, null, 0);
     }    
     public void deleteMixedStream(String streamName)
     {
-    	addEvent(GroupMixerAsyncEvent.DELETESTREAM_REQ, streamName, null);
+    	addEvent(GroupMixerAsyncEvent.DELETESTREAM_REQ, streamName, null, 0);
     }
     public void inputMessage(String streamName, boolean bIsVideo, ByteBuffer buf, int eventTime)
     {	
@@ -187,12 +191,12 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
 	    readOnlyCopy.flip();
 		flvFrame.put(readOnlyCopy);
 		flvFrame.putInt(0);//prevSize, ignore
-        addEvent(GroupMixerAsyncEvent.MESSAGEINPUT_REQ, streamName, flvFrame);
+        addEvent(GroupMixerAsyncEvent.MESSAGEINPUT_REQ, streamName, flvFrame, flvFrameLen);
     	
         log.info("=====>input message from {} type {} ts {} on thread: {}", streamName, bIsVideo?"video":"audio", eventTime,  Thread.currentThread().getName());
     }
 
-    public void onFrameParsed(int mixerId, byte[] frame, int len)
+    public void onFrameParsed(int mixerId, ByteBuffer frame, int len)
     {
     	String streamName = null;
     	if( mixerId == 32) {
@@ -209,14 +213,19 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
     	if ( streamName != null ) {
     		ByteBuffer flvFrame = ByteBuffer.allocate(len);
     		flvFrame.order(ByteOrder.LITTLE_ENDIAN);  // to use little endian
-    		flvFrame.put(frame, 0, len);
-    		addEvent(GroupMixerAsyncEvent.MESSAGEOUTPUT_REQ, streamName, flvFrame);
+
+    	    final ByteBuffer readOnlyCopy = frame.asReadOnlyBuffer();
+    	    readOnlyCopy.flip();
+    	    readOnlyCopy.limit(len);
+    		flvFrame.put(readOnlyCopy);
+    		flvFrame.flip();
+    		addEvent(GroupMixerAsyncEvent.MESSAGEOUTPUT_REQ, streamName, flvFrame, len);
     	}
     }
     
     public void shutdown() 
     {
-    	addEvent(GroupMixerAsyncEvent.SHUTDOWN_REQ, null, null);
+    	addEvent(GroupMixerAsyncEvent.SHUTDOWN_REQ, null, null, 0);
     }
     
     private void handleShutdown()
@@ -224,12 +233,11 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
     	//TODO close all-in-one RTMPConnections and all its associated assets
     }
 
-    private void handleInputFlvFrame(String streamName, ByteBuffer flvFrame)
+    private void handleInputFlvFrame(String streamName, ByteBuffer flvFrame, int rawDataLen)
     {
     	GroupMappingTableEntry entry = groupMappingTable.get(streamName);
     	if ( entry != null ) {        	
-    		int dataLen = flvFrame.capacity();
-    		int flvFrameLen = 11 + dataLen + 4;
+    		int flvFrameLen = 11 + rawDataLen + 4;
     		int segHeaderLen = 8 + 6*totalInputStreams; //additional headers
     		ByteBuffer flvSegment = ByteBuffer.allocate(flvFrameLen+segHeaderLen); //TODO direct?
     		flvSegment.put((byte)'S');
@@ -246,7 +254,7 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
     				
     				if( entry.mixerId == i) {
         				flvSegment.putInt(flvFrameLen);
-        				flvSegment.put(flvFrame.array()); //TODO optimization here
+        				flvSegment.put(flvFrame.array(), 0, rawDataLen); //TODO optimization here
     				} else {
         				flvSegment.putInt(0); //no data for this stream
     				}
@@ -256,71 +264,80 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
         	mixerPipe_.handleSegInput(flvSegment);
     	}
     }
-    private void handleOutputFlvFrame(String streamName, ByteBuffer flvFrame)
+    private void handleOutputFlvFrame(String streamName, ByteBuffer flvFrameBuffer, int flvFrameLen)
     {
 		GroupMappingTableEntry value = groupMappingTable.get(streamName);
 		if( value != null ) {
     		int streamId = value.streamId;
     		
-        	flvFrame.flip();
-        	int msgType = flvFrame.get();
-        	int msgSize = (flvFrame.get()<<16) | (flvFrame.get()<<8) | flvFrame.get();
-        	int msgTimestamp = (flvFrame.get()<<16) | (flvFrame.get()<<8) | flvFrame.get() | (flvFrame.get()<<24);
-        	
-    		//RTMP Chunk Header
-    		Header msgHeader = new Header();
-    		msgHeader.setDataType((byte)msgType);//invoke is command, val=20
-    		msgHeader.setChannelId(3); //channel TODO does it really matter since we consume it internally.
-    		// see RTMPProtocolDecoder::decodePacket() 
-    		// final int readAmount = (readRemaining > chunkSize) ? chunkSize : readRemaining;
-    		msgHeader.setSize(msgSize);   //Chunk Data Length, a big enough buffersize
-    		msgHeader.setStreamId(streamId);  //streamid
-    		msgHeader.setTimerBase(0); //base+delta=timestamp
-    		msgHeader.setTimerDelta(msgTimestamp);
-    		msgHeader.setExtendedTimestamp(0); //extended timestamp
-    		
-        	RTMPMinaConnection conn = getAllInOneConn();
-    		log.info("=====>out message from {} msgType {} msgSize{} ts {} on thread: {}", streamName, msgType, msgSize, msgTimestamp,  Thread.currentThread().getName());
-        	switch(msgType) {
-        		case Constants.TYPE_AUDIO_DATA:
-        		{
-        			AudioData msgEvent = new AudioData();
-        			msgEvent.setHeader(msgHeader);
-        			msgEvent.setTimestamp(msgTimestamp);
-        			msgEvent.setDataRemaining(flvFrame); //TODO avoid copy   
-        			msgEvent.setSourceType(Constants.SOURCE_TYPE_LIVE);       			
-        			
-        			Packet msg = new Packet(msgHeader, msgEvent);
-        			conn.handleMessageReceived(msg);
-        			
-        			break;
-        		}
-        		case Constants.TYPE_VIDEO_DATA:
-        		{
-        			VideoData msgEvent = new VideoData();
-        			msgEvent.setHeader(msgHeader);
-        			msgEvent.setTimestamp(msgTimestamp);
-        			msgEvent.setDataRemaining(flvFrame); //TODO avoid copy   
-        			msgEvent.setSourceType(Constants.SOURCE_TYPE_LIVE);   
-        			
-        			Packet msg = new Packet(msgHeader, msgEvent);
-        			conn.handleMessageReceived(msg);
-        			break;
-        		}
-    
-        		case Constants.TYPE_STREAM_METADATA:
-        		{
-        			Notify msgEvent = new Notify();
-        			msgEvent.setHeader(msgHeader);
-        			msgEvent.setTimestamp(msgTimestamp);
-        			msgEvent.setDataRemaining(flvFrame); //TODO avoid copy  
-        			msgEvent.setSourceType(Constants.SOURCE_TYPE_LIVE);
-        			
-        			Packet msg = new Packet(msgHeader, msgEvent);
-        			conn.handleMessageReceived(msg);
-        			break;
-        		}
-        	}
+    		byte[] flvFrame = flvFrameBuffer.array();
+    		int curIndex = 0;
+        	if(flvFrame[0] =='F' && flvFrame[1]=='L' && flvFrame[2] == 'V') {
+        		curIndex+=13;
+        	}        		
+    		while( curIndex < flvFrameLen ) {
+        		int msgType = flvFrame[curIndex];
+            	int msgSize = ((((int)flvFrame[curIndex+1])&0xff)<<16) | ((((int)flvFrame[curIndex+2])&0xff)<<8) | ((int)(flvFrame[curIndex+3])&0xff);
+            	int msgTimestamp = ((((int)flvFrame[curIndex+4])&0xff)<<16) | ((((int)flvFrame[curIndex+5])&0xff)<<8) | ((int)(flvFrame[curIndex+6])&0xff) | ((((int)flvFrame[curIndex+7])&0xff)<<24);
+        		log.info("=====>out message from {} msgType {} msgSize {} ts {} streamId {} on thread: {}", streamName, msgType, msgSize, msgTimestamp, streamId, Thread.currentThread().getName());
+            	
+        		curIndex += 11;
+        		
+        		//RTMP Chunk Header
+        		Header msgHeader = new Header();
+        		msgHeader.setDataType((byte)msgType);//invoke is command, val=20
+        		msgHeader.setChannelId(3); //channel TODO does it really matter since we consume it internally.
+        		// see RTMPProtocolDecoder::decodePacket() 
+        		// final int readAmount = (readRemaining > chunkSize) ? chunkSize : readRemaining;
+        		msgHeader.setSize(msgSize);   //Chunk Data Length, a big enough buffersize
+        		msgHeader.setStreamId(streamId);  //streamid
+        		msgHeader.setTimerBase(0); //base+delta=timestamp
+        		msgHeader.setTimerDelta(msgTimestamp);
+        		msgHeader.setExtendedTimestamp(0); //extended timestamp
+        		
+            	RTMPMinaConnection conn = getAllInOneConn();
+            	switch(msgType) {
+            		case Constants.TYPE_AUDIO_DATA:
+            		{
+            			AudioData msgEvent = new AudioData();
+            			msgEvent.setHeader(msgHeader);
+            			msgEvent.setTimestamp(msgTimestamp);
+            			msgEvent.setDataRemaining(flvFrame, curIndex, msgSize);   
+            			msgEvent.setSourceType(Constants.SOURCE_TYPE_LIVE);       			
+            			
+            			Packet msg = new Packet(msgHeader, msgEvent);
+            			conn.handleMessageReceived(msg);
+            			
+            			break;
+            		}
+            		case Constants.TYPE_VIDEO_DATA:
+            		{
+            			VideoData msgEvent = new VideoData();
+            			msgEvent.setHeader(msgHeader);
+            			msgEvent.setTimestamp(msgTimestamp);
+            			msgEvent.setDataRemaining(flvFrame, curIndex, msgSize);     
+            			msgEvent.setSourceType(Constants.SOURCE_TYPE_LIVE);   
+            			
+            			Packet msg = new Packet(msgHeader, msgEvent);
+            			conn.handleMessageReceived(msg);
+            			break;
+            		}
+        
+            		case Constants.TYPE_STREAM_METADATA:
+            		{
+            			Notify msgEvent = new Notify();
+            			msgEvent.setHeader(msgHeader);
+            			msgEvent.setTimestamp(msgTimestamp);
+            			msgEvent.setDataRemaining(flvFrame, curIndex, msgSize);    
+            			msgEvent.setSourceType(Constants.SOURCE_TYPE_LIVE);
+            			
+            			Packet msg = new Packet(msgHeader, msgEvent);
+            			conn.handleMessageReceived(msg);
+            			break;
+            		}
+            	}
+            	curIndex += (msgSize+4); //4 bytes unused
+    		}
 		}
     }
     private void handleCreateMixedStream(String streamName)
@@ -328,7 +345,7 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
     	RTMPMinaConnection conn = getAllInOneConn();
     	GroupMappingTableEntry entry = new GroupMappingTableEntry();
     	entry.mixerId = getMixerId();
-    	entry.streamId = handleCreatePublishEvents(conn, MIXED_STREAM_NAME+streamName);
+    	entry.streamId = handleCreatePublishEvents(conn, MIXED_STREAM_PREFIX+streamName);
     	groupMappingTable.put(streamName, entry);
     	totalInputStreams++;
 		log.info("A new stream id: {}, mixer id: {} is created on thread: {}", entry.streamId, entry.mixerId, Thread.currentThread().getName());
@@ -517,9 +534,9 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
 		log.info("A old stream with id {} is deleted on thread: {}", streamId, Thread.currentThread().getName());
     }
     
-    private void addEvent(int eventId, String paramStr, ByteBuffer flvFrame) {
+    private void addEvent(int eventId, String paramStr, ByteBuffer flvFrame, int len) {
         try {
-            GroupMixerAsyncEvent event = new GroupMixerAsyncEvent(eventId, paramStr, flvFrame);
+            GroupMixerAsyncEvent event = new GroupMixerAsyncEvent(eventId, paramStr, flvFrame, len);
             log.info("GroupMixer addEvent ="+event.getName());
             asyncEventQueue.put(event);
         } catch (InterruptedException iex) {
@@ -553,12 +570,12 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
                     }
                     case GroupMixerAsyncEvent.MESSAGEINPUT_REQ:
                     {
-                    	handleInputFlvFrame(event.paramStr, event.flvFrame);
+                    	handleInputFlvFrame(event.paramStr, event.flvFrame, event.flvFrameLen);
                         break;
                     }
                     case GroupMixerAsyncEvent.MESSAGEOUTPUT_REQ:
                     {
-                    	handleOutputFlvFrame(event.paramStr, event.flvFrame);
+                    	handleOutputFlvFrame(event.paramStr, event.flvFrame, event.flvFrameLen);
                         break;
                     }
                 }

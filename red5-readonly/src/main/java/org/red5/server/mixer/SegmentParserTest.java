@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.FileInputStream;
 import java.io.BufferedInputStream;
+import java.nio.ByteBuffer;
 
 public class SegmentParserTest implements SegmentParser.Delegate{
 
@@ -60,7 +61,7 @@ public class SegmentParserTest implements SegmentParser.Delegate{
 	}
 
 	@Override
-	public void onFrameParsed(int mixerId, byte[] frame, int len) {
+	public void onFrameParsed(int mixerId, ByteBuffer frame, int len) {
         System.out.println("Read a frame, mixerId: " + mixerId+" len="+len);
 	}
 

@@ -299,7 +299,7 @@ public class ClientBroadcastStream extends AbstractClientStream implements IClie
 							RTMPConnection rtmpConn = (RTMPConnection)conn;
 							String publisherStreamName = rtmpConn.getPublisherStreamName();
 							//TODO only for mobile streams
-							if ( !publisherStreamName.contains(GroupMixer.MIXED_STREAM_NAME) ) {
+							if (publisherStreamName !=null && !publisherStreamName.contains(GroupMixer.MIXED_STREAM_PREFIX) ) {
 								GroupMixer.getInstance().inputMessage(publisherStreamName, false, buf.buf(), eventTime);
 							}
 						}
@@ -329,7 +329,7 @@ public class ClientBroadcastStream extends AbstractClientStream implements IClie
 							RTMPConnection rtmpConn = (RTMPConnection)conn;
 							String publisherStreamName = rtmpConn.getPublisherStreamName();
 							//TODO only for mobile streams
-							if ( !publisherStreamName.contains(GroupMixer.MIXED_STREAM_NAME) ) {
+							if ( publisherStreamName !=null && !publisherStreamName.contains(GroupMixer.MIXED_STREAM_PREFIX) ) {
 								GroupMixer.getInstance().inputMessage(rtmpConn.getPublisherStreamName(), true, buf.buf(), eventTime);
 							}
 						}

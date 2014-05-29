@@ -61,6 +61,14 @@ public interface IConnectionManager<T> {
 	T createConnection(Class<?> connCls);
 	
 	/**
+	 * Creates a connection based on the given type class.
+	 * 
+	 * @param connCls
+	 * @return connection
+	 */
+	T createConnection(Class<?> connCls, boolean bNeedHandshake);
+	
+	/**
 	 * Creates a connection of the type specified with associated session id.
 	 * 
 	 * @param connCls

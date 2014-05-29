@@ -90,7 +90,7 @@ public class ProcessPipe implements Runnable, SegmentParser.Delegate{
 	}
 
 	@Override
-	public void onFrameParsed(int mixerId, byte[] frame, int len) {
+	public void onFrameParsed(int mixerId, ByteBuffer frame, int len) {
 		this.delegate.onFrameParsed(mixerId, frame, len);		
 	}	
 }
