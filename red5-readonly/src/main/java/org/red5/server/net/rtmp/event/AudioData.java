@@ -25,7 +25,6 @@ import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
-import java.nio.ByteBuffer;
 
 import org.apache.mina.core.buffer.IoBuffer;
 import org.red5.server.api.stream.IStreamPacket;

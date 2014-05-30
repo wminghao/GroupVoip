@@ -279,7 +279,7 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
         		int msgType = flvFrame[curIndex];
             	int msgSize = ((((int)flvFrame[curIndex+1])&0xff)<<16) | ((((int)flvFrame[curIndex+2])&0xff)<<8) | ((int)(flvFrame[curIndex+3])&0xff);
             	int msgTimestamp = ((((int)flvFrame[curIndex+4])&0xff)<<16) | ((((int)flvFrame[curIndex+5])&0xff)<<8) | ((int)(flvFrame[curIndex+6])&0xff) | ((((int)flvFrame[curIndex+7])&0xff)<<24);
-        		log.info("=====>out message from {} msgType {} msgSize {} ts {} streamId {} on thread: {}", streamName, msgType, msgSize, msgTimestamp, streamId, Thread.currentThread().getName());
+        		log.info("=====>out message from {} curIndex {} msgType {} msgSize {} ts {} streamId {} on thread: {}", streamName, curIndex, msgType, msgSize, msgTimestamp, streamId, Thread.currentThread().getName());
             	
         		curIndex += 11;
         		
@@ -325,10 +325,9 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
         
             		case Constants.TYPE_STREAM_METADATA:
             		{
-            			Notify msgEvent = new Notify();
+            			Notify msgEvent = new Notify(flvFrame, curIndex, msgSize);
             			msgEvent.setHeader(msgHeader);
             			msgEvent.setTimestamp(msgTimestamp);
-            			msgEvent.setDataRemaining(flvFrame, curIndex, msgSize);    
             			msgEvent.setSourceType(Constants.SOURCE_TYPE_LIVE);
             			
             			Packet msg = new Packet(msgHeader, msgEvent);
