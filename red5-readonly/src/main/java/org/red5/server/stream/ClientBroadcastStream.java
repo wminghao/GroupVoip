@@ -295,7 +295,7 @@ public class ClientBroadcastStream extends AbstractClientStream implements IClie
 						eventTime = rtmpEvent.getTimestamp();
 						
 						//send data to groupmixer
-						sendToGroupMixer(buf.buf(), eventTime);
+						sendToGroupMixer(buf.buf(), eventTime, AudioData.TYPE_AUDIO_DATA);
 						
 						log.trace("Audio: {}", eventTime);
 					} else if (rtmpEvent instanceof VideoData) {
@@ -318,7 +318,7 @@ public class ClientBroadcastStream extends AbstractClientStream implements IClie
 						eventTime = rtmpEvent.getTimestamp();
 
 						//send data to groupmixer
-						sendToGroupMixer(buf.buf(), eventTime);
+						sendToGroupMixer(buf.buf(), eventTime, AudioData.TYPE_VIDEO_DATA);
 						
 						log.trace("Video: {}", eventTime);
 					} else if (rtmpEvent instanceof Invoke) {
@@ -380,7 +380,7 @@ public class ClientBroadcastStream extends AbstractClientStream implements IClie
 		}
 	}
 
-	private void sendToGroupMixer(ByteBuffer buf, int eventTime) {
+	private void sendToGroupMixer(ByteBuffer buf, int eventTime, int msgType) {
 
 		IStreamCapableConnection conn = getConnection();
 		if ( conn instanceof RTMPConnection ) {
@@ -388,7 +388,7 @@ public class ClientBroadcastStream extends AbstractClientStream implements IClie
 			String publisherStreamName = rtmpConn.getPublisherStreamName();
 			//TODO only for mobile streams
 			if (publisherStreamName !=null && !publisherStreamName.contains(GroupMixer.MIXED_STREAM_PREFIX) ) {
-				GroupMixer.getInstance().inputMessage(publisherStreamName, false, buf, eventTime);
+				GroupMixer.getInstance().pushInputMessage(publisherStreamName, msgType, buf, eventTime);
 			}
 		}
 	}

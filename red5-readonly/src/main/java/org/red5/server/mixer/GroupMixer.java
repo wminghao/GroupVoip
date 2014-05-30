@@ -28,6 +28,7 @@ import java.nio.ByteOrder;
 public class GroupMixer implements Runnable, SegmentParser.Delegate {
 
 	public static final String MIXED_STREAM_PREFIX = "__mixed__";
+	private static final int MAX_STREAM_COUNT = 32;
 	private static final String ALL_IN_ONE_STREAM_NAME = "allinone";
 	private static final String AppName = "myRed5App";//TODO appName change to a room or something
 	private static final String ipAddr = "localhost"; //TODO change to something else in the future
@@ -96,7 +97,7 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
         }
 
         private int eventId;
-        private String paramStr; //either it's the streamName or streamId (!= streamId in mixcoder from 0-32)
+        private String paramStr; //either it's the streamName or streamId (!= streamId in mixcoder from 0-MAX_STREAM_COUNT)
         private ByteBuffer flvFrame; //FLVFrame raw data
         private int flvFrameLen; //frame len
 
@@ -159,7 +160,7 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
     {
     	addEvent(GroupMixerAsyncEvent.DELETESTREAM_REQ, streamName, null, 0);
     }
-    public void inputMessage(String streamName, boolean bIsVideo, ByteBuffer buf, int eventTime)
+    public void pushInputMessage(String streamName, int msgType, ByteBuffer buf, int eventTime)
     {	
 		int dataLen = buf.limit();
 		int flvFrameLen = 11 + dataLen + 4;
@@ -172,7 +173,7 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
         }
 		
 		flvFrame.order(ByteOrder.LITTLE_ENDIAN);  // to use little endian
-		flvFrame.put((byte)(bIsVideo?0x09:0x08)); //audio type
+		flvFrame.put((byte)msgType); //audio type
 		flvFrame.put((byte)((dataLen>>16)&0xff));//datalen
 		flvFrame.put((byte)((dataLen>>8)&0xff));//datalen
 		flvFrame.put((byte)( dataLen&0xff));//datalen
@@ -193,13 +194,13 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
 		flvFrame.putInt(0);//prevSize, ignore
         addEvent(GroupMixerAsyncEvent.MESSAGEINPUT_REQ, streamName, flvFrame, flvFrameLen);
     	
-        log.info("=====>input message from {} type {} ts {} on thread: {}", streamName, bIsVideo?"video":"audio", eventTime,  Thread.currentThread().getName());
+        log.info("=====>input message from {} type {} ts {} on thread: {}", streamName, (msgType==0x09)?"video":"audio", eventTime,  Thread.currentThread().getName());
     }
 
     public void onFrameParsed(int mixerId, ByteBuffer frame, int len)
     {
     	String streamName = null;
-    	if( mixerId == 32) {
+    	if( mixerId == MAX_STREAM_COUNT) {
     		streamName = ALL_IN_ONE_STREAM_NAME;
     	} else {
         	for(String key : groupMappingTable.keySet()) {
@@ -233,11 +234,10 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
     	//TODO close all-in-one RTMPConnections and all its associated assets
     }
 
-    private void handleInputFlvFrame(String streamName, ByteBuffer flvFrame, int rawDataLen)
+    private void handleInputFlvFrame(String streamName, ByteBuffer flvFrame, int flvFrameLen)
     {
     	GroupMappingTableEntry entry = groupMappingTable.get(streamName);
     	if ( entry != null ) {        	
-    		int flvFrameLen = 11 + rawDataLen + 4;
     		int segHeaderLen = 8 + 6*totalInputStreams; //additional headers
     		ByteBuffer flvSegment = ByteBuffer.allocate(flvFrameLen+segHeaderLen); //TODO direct?
     		flvSegment.put((byte)'S');
@@ -246,7 +246,7 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
     		flvSegment.put((byte)0); //even layout
     		flvSegment.putInt(getMixerMask()); //calc mask here
     		
-    		for (int i = 0; i < 32; i++) {
+    		for (int i = 0; i < MAX_STREAM_COUNT; i++) {
     			if (mixerStreams.get(i)) {
     				byte idtype = (byte)((i<<3) | 0x02);// TODO assume all mobile channels
     				flvSegment.put(idtype);
@@ -254,7 +254,7 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
     				
     				if( entry.mixerId == i) {
         				flvSegment.putInt(flvFrameLen);
-        				flvSegment.put(flvFrame.array(), 0, rawDataLen); //TODO optimization here
+        				flvSegment.put(flvFrame.array(), 0, flvFrameLen); //TODO optimization here
     				} else {
         				flvSegment.putInt(0); //no data for this stream
     				}
@@ -610,7 +610,7 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
 		}
 	}
 	
-    //map streamId to the 0-32 streamId used in mixcoder
+    //map streamId to the 0-MAX_STREAM_COUNT streamId used in mixcoder
 	private int getMixerId() {
 		int result = -1;
 		for (int i = 0; true; i++) {
@@ -625,7 +625,7 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
 	//return a mask of mixerid
 	private int getMixerMask() {
 		int result = 0;
-		for (int i = 0; i < 32; i++) {
+		for (int i = 0; i < MAX_STREAM_COUNT; i++) {
 			if (mixerStreams.get(i)) {
 				result |= 0x1;
 			}
