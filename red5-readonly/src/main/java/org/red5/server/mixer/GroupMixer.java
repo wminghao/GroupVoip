@@ -209,7 +209,7 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
         		}
             }
     	}
-    	log.info("=====>onFrameParsed mixerId {} len {} streamName {}", mixerId, len, streamName );
+    	//log.info("=====>onFrameParsed mixerId {} len {} streamName {}", mixerId, len, streamName );
     	if ( streamName != null ) {
     		ByteBuffer flvFrame = ByteBuffer.allocate(len);
     		flvFrame.order(ByteOrder.LITTLE_ENDIAN);  // to use little endian
@@ -553,7 +553,7 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
         	GroupMixerAsyncEvent event;
             while ((event = asyncEventQueue.take()).eventId != GroupMixerAsyncEvent.SHUTDOWN_REQ) {
 
-                log.info("GroupMix processEvent ="+event.getName());
+                //log.info("GroupMix processEvent ="+event.getName());
                 
                 switch(event.eventId) {
                     case GroupMixerAsyncEvent.CREATESTREAM_REQ:
