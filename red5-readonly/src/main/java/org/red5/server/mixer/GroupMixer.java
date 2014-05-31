@@ -200,16 +200,12 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
     public void onFrameParsed(int mixerId, ByteBuffer frame, int len)
     {
     	String streamName = null;
-    	if( mixerId == MAX_STREAM_COUNT) {
-    		streamName = ALL_IN_ONE_STREAM_NAME;
-    	} else {
-        	for(String key : groupMappingTable.keySet()) {
-        		GroupMappingTableEntry value = groupMappingTable.get(key);
-        		if(value.mixerId == mixerId) {
-        			streamName = key;
-        		}
-            }
-    	}
+    	for(String key : groupMappingTable.keySet()) {
+    		GroupMappingTableEntry value = groupMappingTable.get(key);
+    		if(value.mixerId == mixerId) {
+    			streamName = key;
+    		}
+        }
     	//log.info("=====>onFrameParsed mixerId {} len {} streamName {}", mixerId, len, streamName );
     	if ( streamName != null ) {
     		ByteBuffer flvFrame = ByteBuffer.allocate(len);
@@ -343,11 +339,11 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
     {
     	RTMPMinaConnection conn = getAllInOneConn();
     	GroupMappingTableEntry entry = new GroupMappingTableEntry();
-    	entry.mixerId = getMixerId();
+    	entry.mixerId = reserveMixerId(streamName);
     	entry.streamId = handleCreatePublishEvents(conn, MIXED_STREAM_PREFIX+streamName);
     	groupMappingTable.put(streamName, entry);
     	totalInputStreams++;
-		log.info("A new stream id: {}, mixer id: {} is created on thread: {}", entry.streamId, entry.mixerId, Thread.currentThread().getName());
+		log.info("A new stream id: {}, mixer id: {} name: {} is created on thread: {}", entry.streamId, entry.mixerId, streamName, Thread.currentThread().getName());
     }
     
     private void handleDeleteMixedStream(String streamName)
@@ -610,14 +606,18 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
 	}
 	
     //map streamId to the 0-MAX_STREAM_COUNT streamId used in mixcoder
-	private int getMixerId() {
+	private int reserveMixerId(String streamName) {
 		int result = -1;
-		for (int i = 0; true; i++) {
-			if (!mixerStreams.get(i)) {
-				mixerStreams.set(i);
-				result = i;
-				break;
-			}
+		if(streamName.equalsIgnoreCase(ALL_IN_ONE_STREAM_NAME)) {
+			result = MAX_STREAM_COUNT;
+		} else {
+    		for (int i = 0; true; i++) {
+    			if (!mixerStreams.get(i)) {
+    				mixerStreams.set(i);
+    				result = i;
+    				break;
+    			}
+    		}
 		}
 		return result;
 	}

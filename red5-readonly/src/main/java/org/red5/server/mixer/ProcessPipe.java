@@ -69,7 +69,7 @@ public class ProcessPipe implements Runnable, SegmentParser.Delegate{
             	        }
             	        segParser_.readData(result, totalBytesRead); //send to segment parser
             	        bytesTotal += totalBytesRead;
-            	        Thread.sleep(30); //sleep 30 ms
+            	        Thread.sleep(10);
     
                 		log.info("Total bytes read:  {}, len {}", bytesTotal, fileLen);
         	        }
