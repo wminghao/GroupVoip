@@ -69,7 +69,6 @@
 					//Alert.show("Camera Access Has Been Granted", "Information");
 				}
 			}
-
 			private function onMicStatus(evt:StatusEvent):void {
 				switch (evt.code) {
 					case "Microphone.Unmuted":
@@ -121,7 +120,7 @@
 					soundTrans.volume = 6;
 					mic.soundTransform = soundTrans;
 					streamPub.attachAudio(mic);
-					Alert.show("camera width="+camera.width);
+					//Alert.show("camera width="+camera.width);
 				}
 			}
 			private function netStatusHandler(event:NetStatusEvent):void {
