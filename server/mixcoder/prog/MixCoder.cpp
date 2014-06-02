@@ -102,7 +102,7 @@ SmartPtr<SmartBuffer> MixCoder::getOutput()
 
     SmartPtr<SmartBuffer> resultFlvPacket = NULL;
     if ( curStreamType != kUnknownStreamType ) {
-        //LOG("------curStreamType=%d, audioPts=%d, videoPts=%d, bIsVideoReady=%d, bIsAudioReady=%d\n", curStreamType, audioPts, videoPts, bIsVideoReady, bIsAudioReady );
+        LOG("------curStreamType=%d, audioPts=%d, videoPts=%d, bIsVideoReady=%d, bIsAudioReady=%d\n", curStreamType, audioPts, videoPts, bIsVideoReady, bIsAudioReady );
         int totalStreams = 0;
         int totalMobileStreams = 0;
         if ( curStreamType == kVideoStreamType ) {
@@ -141,9 +141,8 @@ SmartPtr<SmartBuffer> MixCoder::getOutput()
                 SmartPtr<SmartBuffer> rawFrameMixed = videoMixer_->mixStreams(rawVideoPlanes_, rawVideoStrides_, rawVideoSettings_, totalStreams, videoRect);
                 SmartPtr<SmartBuffer> encodedFrame = videoEncoder_->encodeAFrame(rawFrameMixed, &bIsKeyFrame);
                 if ( encodedFrame ) {
-                    //for each individual mobile stream, except for 1 stream case
-                    bool bIsOnlyOneMobileStream = (totalMobileStreams == 1 && totalStreams == 1);
-                    if ( totalMobileStreams && !bIsOnlyOneMobileStream) { 
+                    //for each individual mobile stream
+                    if ( totalMobileStreams ) { 
                         //for non-mobile stream, there is nothing to mix
                         for( u32 i = 0; i < MAX_XCODING_INSTANCES; i ++ ) {
                             if( rawVideoSettings_[i].bIsValid && kMobileStreamSource == rawVideoSettings_[i].ss) {
@@ -188,8 +187,7 @@ SmartPtr<SmartBuffer> MixCoder::getOutput()
             if ( totalStreams > 0 ) {
                 //LOG("------totalAudioStreams = %d, totalMobileStreams=%d\n", totalStreams, totalMobileStreams );
                 //for each individual mobile stream
-                bool bIsOnlyOneMobileStream = (totalMobileStreams == 1 && totalStreams == 1);
-                if ( totalMobileStreams && !bIsOnlyOneMobileStream ) { 
+                if ( totalMobileStreams ) { 
                     //for non-mobile stream, there is nothing to mix
                     for( u32 i = 0; i < MAX_XCODING_INSTANCES; i ++ ) {
                         if( rawVideoSettings_[i].bIsValid && kMobileStreamSource == rawVideoSettings_[i].ss) {

@@ -75,7 +75,7 @@ class FLVSegmentParser:public FLVSegmentParserDelegate
     SmartPtr<AccessUnit> getNextVideoFrame(u32 index, u32 timestamp); // can return more than 1 frames
 
  private:
-    bool isNextVideoFrameSpsPps(u32 index);
+    bool isNextVideoFrameSpsPps(u32 index, u32& timestamp);
     virtual void onFLVFrameParsed( SmartPtr<AccessUnit> au, int index );
     
  private:

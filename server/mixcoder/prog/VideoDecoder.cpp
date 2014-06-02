@@ -92,6 +92,7 @@ bool VideoDecoder::newAccessUnit( SmartPtr<AccessUnit> au, SmartPtr<SmartBuffer>
             int rval;
             if( ( rval = avcodec_decode_video2( codecCtx_, frame_, &gotPic, &pkt ) ) > 0) {
                 if( gotPic ) {
+                    //LOG("Video decoded width=%d, height=%d\n", frame_->width, frame_->height);
                     assert(inWidth_ == frame_->width);
                     assert(inHeight_ == frame_->height);
 

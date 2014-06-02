@@ -29,26 +29,26 @@ bool doWrite( int fd, const void *buf, size_t len ) {
 
 long runTest(FILE* fd, int totalFlvChunks, int flvChunkStartPos)
 {
-  for(int i = 0; i < totalFlvChunks; i++) {
-      unsigned char buffer[FIXED_DATA_SIZE+14];
-      unsigned int bufLen = FIXED_DATA_SIZE;
+    for(int i = 0; i < totalFlvChunks; i++) {
+        unsigned char buffer[FIXED_DATA_SIZE+14];
+        unsigned int bufLen = FIXED_DATA_SIZE;
+        
+        //first send the segHeader
+        unsigned char metaData []= {'S', 'G', 'I', 0x0};
+        memcpy(buffer, metaData, sizeof(metaData));
+        unsigned int mask1Stream = 0x01;
+        memcpy(buffer+sizeof(metaData), &mask1Stream, sizeof(unsigned int));
 
-      //first send the segHeader
-      unsigned char metaData []= {'S', 'G', 'I', 0x0};
-      memcpy(buffer, metaData, sizeof(metaData));
-      unsigned int mask1Stream = 0x01;
-      memcpy(buffer+sizeof(metaData), &mask1Stream, sizeof(unsigned int));
-
-      //then send the stream heaer
-      unsigned char streamIdSource[] = {0x02, 0x0}; //mobile stream
-      memcpy(buffer+sizeof(metaData)+sizeof(unsigned int), &streamIdSource, sizeof(streamIdSource));
-      memcpy(buffer+sizeof(metaData)+sizeof(unsigned int)+sizeof(streamIdSource), &bufLen, sizeof(unsigned int));
-
-      //then send the buffer
-      fread((char*)buffer+sizeof(metaData)+sizeof(unsigned int)+sizeof(streamIdSource)+sizeof(unsigned int), 1, bufLen, fd);
-      doWrite(1, buffer, sizeof(buffer));
-  }    
-  return 1;
+        //then send the stream heaer
+        unsigned char streamIdSource[] = {0x02, 0x0}; //mobile stream
+        memcpy(buffer+sizeof(metaData)+sizeof(unsigned int), &streamIdSource, sizeof(streamIdSource));
+        memcpy(buffer+sizeof(metaData)+sizeof(unsigned int)+sizeof(streamIdSource), &bufLen, sizeof(unsigned int));
+        
+        //then send the buffer
+        fread((char*)buffer+sizeof(metaData)+sizeof(unsigned int)+sizeof(streamIdSource)+sizeof(unsigned int), 1, bufLen, fd);
+        doWrite(1, buffer, sizeof(buffer));
+    }    
+    return 1;
 }
 
 int main( int argc, char** argv ) {

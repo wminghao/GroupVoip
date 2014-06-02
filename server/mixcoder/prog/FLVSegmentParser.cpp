@@ -36,10 +36,11 @@ bool FLVSegmentParser::isNextVideoStreamReady(u32& videoTimestamp, u32 audioTime
 
     bool hasAnyStreamStartedAndReady = false;
     bool hasSpsPps = false;
+    u32  spsPpsTimestamp = 0;
     for(u32 i = 0; i < MAX_XCODING_INSTANCES; i++ ) {
         if ( videoStreamStatus_[i] == kStreamOnlineStarted ) {
             if( videoQueue_[i].size() > 0 ) {
-                if (isNextVideoFrameSpsPps(i)) {
+                if (isNextVideoFrameSpsPps(i, spsPpsTimestamp)) {
                     hasSpsPps = true;
                 } else {
                     hasAnyStreamStartedAndReady = true;
@@ -72,10 +73,8 @@ bool FLVSegmentParser::isNextVideoStreamReady(u32& videoTimestamp, u32 audioTime
                     //video has accumulated some data and audio has already catch up
                     videoTimestamp = lastBucketTimestamp_ = nextBucketTimestamp; //strictly follow
                     isReady = true;
-                    /*
-                    LOG( "===follow up video timstamp=%d, hasAnyStreamStartedAndReady=%d, audioBucketTimestamp=%d nextBucketTimestamp=%d, lastBucketTimestamp_=%d\r\n", 
-                            videoTimestamp, hasAnyStreamStartedAndReady, (u32)audioBucketTimestamp, (u32)nextBucketTimestamp, (u32)lastBucketTimestamp_);
-                    */
+                    //LOG( "===follow up video timstamp=%d, hasAnyStreamStartedAndReady=%d, audioBucketTimestamp=%d nextBucketTimestamp=%d, lastBucketTimestamp_=%d\r\n", 
+                    //   videoTimestamp, hasAnyStreamStartedAndReady, (u32)audioBucketTimestamp, (u32)nextBucketTimestamp, (u32)lastBucketTimestamp_);
                 } else {
                     //wait for the nextBucketTimestamp, since audio is not ready yet
                     //not ready yet
@@ -86,10 +85,9 @@ bool FLVSegmentParser::isNextVideoStreamReady(u32& videoTimestamp, u32 audioTime
                 assert( audioBucketTimestamp > nextBucketTimestamp );
                 //if audio is already ahead, pop that frame out
                 videoTimestamp = lastBucketTimestamp_ = audioBucketTimestamp;
-                /*
-                  LOG( "===follow up 2 video timstamp=%d, hasAnyStreamStartedAndReady=%d, audioBucketTimestamp=%d nextBucketTimestamp=%d, lastBucketTimestamp_=%d\r\n", 
-                        videoTimestamp, hasAnyStreamStartedAndReady, (u32)audioBucketTimestamp, (u32)nextBucketTimestamp, (u32)lastBucketTimestamp_);
-                */
+                //LOG( "===follow up 2 video timstamp=%d, hasAnyStreamStartedAndReady=%d, audioBucketTimestamp=%d nextBucketTimestamp=%d, lastBucketTimestamp_=%d\r\n", 
+                //videoTimestamp, hasAnyStreamStartedAndReady, (u32)audioBucketTimestamp, (u32)nextBucketTimestamp, (u32)lastBucketTimestamp_);
+                
                 isReady = true;
             }
         } else {
@@ -103,11 +101,12 @@ bool FLVSegmentParser::isNextVideoStreamReady(u32& videoTimestamp, u32 audioTime
             hasStarted_ = true;
             lastBucketTimestamp_ = frameTimestamp;
             videoTimestamp = frameTimestamp;
-            LOG( "===first video timstamp=%d\r\n", (u32)lastBucketTimestamp_);
+            //LOG( "===first video timstamp=%d\r\n", (u32)lastBucketTimestamp_);
             isReady = true;
         } else if( hasSpsPps ) {
             //if there is no frame ready, only sps/pps pop out it immediately
-            //LOG( "---found sps pps. but no other frames\r\n");
+            //LOG( "===found sps pps. but no other frames\r\n");
+            videoTimestamp = spsPpsTimestamp;
             isReady = true;
         }
     }
@@ -306,13 +305,14 @@ bool FLVSegmentParser::readData(SmartPtr<SmartBuffer> input)
     return true;
 }
 
-bool FLVSegmentParser::isNextVideoFrameSpsPps(u32 index)
+bool FLVSegmentParser::isNextVideoFrameSpsPps(u32 index, u32& timestamp)
 {
     bool bIsSpsPps = false;
     if ( videoQueue_[index].size() > 0 ) {
         SmartPtr<AccessUnit> au = videoQueue_[index].front();
         if ( au && au->sp == kSpsPps ) {
             bIsSpsPps = true;
+            timestamp = au->pts;
         }
     }
     return bIsSpsPps;
