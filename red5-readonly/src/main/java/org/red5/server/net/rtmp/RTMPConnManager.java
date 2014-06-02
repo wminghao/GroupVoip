@@ -137,6 +137,9 @@ public class RTMPConnManager implements IConnectionManager<RTMPConnection>, Appl
 
 	/** {@inheritDoc} */
 	public RTMPConnection createConnection(Class<?> connCls) {
+		return createConnection(connCls, true);
+	}
+	public RTMPConnection createConnection(Class<?> connCls, boolean bNeedHandshake) {
 		RTMPConnection conn = null;
 		if (RTMPConnection.class.isAssignableFrom(connCls)) {
 			try {
@@ -151,7 +154,9 @@ public class RTMPConnManager implements IConnectionManager<RTMPConnection>, Appl
 				}
 				log.trace("Connection created: {}", conn);
 				// start the wait for handshake
-				conn.startWaitForHandshake();
+				if( bNeedHandshake ) {
+					conn.startWaitForHandshake();
+				}
 			} catch (Exception ex) {
 				log.warn("Exception creating connection", ex);
 			}

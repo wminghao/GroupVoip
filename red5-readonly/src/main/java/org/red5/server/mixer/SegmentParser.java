@@ -10,7 +10,7 @@ import java.nio.ByteOrder;
 class SegmentParser
 {
     public interface Delegate {
-        public void onFrameParsed(int mixerId, byte[] frame, int len);
+        public void onFrameParsed(int mixerId, ByteBuffer frame, int len);
     }
     
 	public SegmentParser(Delegate delegate) {
@@ -146,7 +146,7 @@ class SegmentParser
                         //read the actual buffer
                         if( curStreamLen_ > 0 ) {
                         	curBuf_.flip();
-                            delegate.onFrameParsed(curStreamId_, curBuf_.array(), curStreamLen_); 
+                            delegate.onFrameParsed(curStreamId_, curBuf_, curStreamLen_); 
                         }
                         curBuf_.clear();
                         curLen_ = 0;

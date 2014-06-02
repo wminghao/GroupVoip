@@ -634,7 +634,7 @@ public class StreamService implements IStreamService {
 						rtmpConn.setPublisherStreamInfo(name, streamId);
 					}
 					//don't create for __mixed_all__ stream
-					if ( !name.contains(GroupMixer.MIXED_STREAM_NAME) ) {
+					if ( !name.contains(GroupMixer.MIXED_STREAM_PREFIX) ) {
 						GroupMixer.getInstance().createMixedStream(name);		
 					}
 				}
