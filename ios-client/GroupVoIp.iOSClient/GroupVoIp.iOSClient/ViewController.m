@@ -31,7 +31,7 @@
     
     _mediaplayer.media = nil;
     
-    self.ipAddr = @"54.186.122.59";
+    self.ipAddr = @"192.168.2.104";
     self.ipAddrTextField.text = self.ipAddr;
     self.ipAddrTextField.delegate = self;
     [self.ipAddrTextField addTarget:self
@@ -50,7 +50,7 @@
     
     if( _mediaplayer.media == nil ) {
         /* create a media object and give it to the player */
-        _mediaplayer.media = [VLCMedia mediaWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"rtmp://%@/oflaDemo/abc_32", self.ipAddr]]];
+        _mediaplayer.media = [VLCMedia mediaWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"rtmp://%@/myRed5App/__mixed__allinone", self.ipAddr]]];
     }
     
     if (_mediaplayer.isPlaying) {

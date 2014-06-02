@@ -69,6 +69,7 @@
 					//Alert.show("Camera Access Has Been Granted", "Information");
 				}
 			}
+
 			private function onMicStatus(evt:StatusEvent):void {
 				switch (evt.code) {
 					case "Microphone.Unmuted":
@@ -87,7 +88,7 @@
 				if (camera == null) {
 					Security.showSettings(SecurityPanel.CAMERA) ;
 				} else{
-					camera.setMode(videoWidth, videoHeight, 30); //30 fps
+					camera.setMode(videoWidth*2, videoHeight*2, 30); //640*480 30 fps
 					camera.setQuality(0,50); //50% quality, no bw limitation
 					
 					// container ( IVisualElement ) for DisplayObjects
@@ -120,6 +121,7 @@
 					soundTrans.volume = 6;
 					mic.soundTransform = soundTrans;
 					streamPub.attachAudio(mic);
+					Alert.show("camera width="+camera.width);
 				}
 			}
 			private function netStatusHandler(event:NetStatusEvent):void {
