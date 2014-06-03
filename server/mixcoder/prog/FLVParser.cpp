@@ -180,9 +180,24 @@ void FLVParser::parseNextFLVFrame( string& strFlvTag )
                     accessUnit->sp = kRawData;
                 }
                 if ( inputData.size() > 0 ) {
-                    //read payload. 
-                    accessUnit->payload = new SmartBuffer( inputData.size(), inputData.data());
-                    frameReady = true;
+                    
+                    bool bIsFrameReady = true;
+                    if( accessUnit->sp == kSpsPps ) {
+                        //same spspps, don't enqueue
+                        if( !inputData.compare(curSpsPps_) ) {
+                            bIsFrameReady = false;
+                        } else {
+                            curSpsPps_ = inputData;
+                        }
+                    }
+                    
+                    if( bIsFrameReady ) {
+                        //read payload. 
+                        accessUnit->payload = new SmartBuffer( inputData.size(), inputData.data());
+                        frameReady = true;
+                    } else {
+                        frameReady = false;
+                    }
                 }
                 //LOG( "---video accessUnit, isKey=%d, codecType=%d, specialProperty=%d, naluSize=%ld\r\n", accessUnit->isKey, accessUnit->ct, accessUnit->sp, inputData.size());
                             
@@ -238,17 +253,22 @@ void FLVParser::parseNextFLVFrame( string& strFlvTag )
         //if there is NO global timestamp, we use a relative timestamp to re-adjust the clock
         //based on the very 1st audio frame or very 1st video frame(not sps)
         if( MAX_U32 == relTimeStampOffset_ && accessUnit->st != kDataStreamType && accessUnit->sp != kSpsPps) {
-            u64 curEpocTime = getEpocTime();
-            assert( curEpocTime > startEpocTime_ );
-            relTimeStampOffset_ = ( curEpocTime - startEpocTime_ ) - tsUnion.timestamp;
+            //u64 curEpocTime = getEpocTime();
+            //assert( curEpocTime > startEpocTime_ );
+            //relTimeStampOffset_ = ( curEpocTime - startEpocTime_ ) - tsUnion.timestamp;
+            relTimeStampOffset_ = delegate_->getGlobalAudioTimestamp() - tsUnion.timestamp;
         }
         if ( accessUnit->sp == kSpsPps ) {
-            //reset the spspps timestamp to be 0
-            accessUnit->pts = accessUnit->dts = 0;
+            //reset the spspps timestamp to be next ts
+            accessUnit->pts = accessUnit->dts = prevVideoPts_+1;
         } else {
             accessUnit->pts = accessUnit->dts = tsUnion.timestamp + ((relTimeStampOffset_ == MAX_U32)?0:relTimeStampOffset_);
         }
-        //LOG( "---index=%d, ready=%d, streamType=%d, flvTagSize=%d, oPts=%d,  relTsOffset_=%d, npts=%d\r\n", index_, frameReady, curStreamType_, curFlvTagSize_, tsUnion.timestamp, relTimeStampOffset_, (u32)accessUnit->pts  );
+        if( accessUnit->st == kVideoStreamType ) {
+            prevVideoPts_ = accessUnit->pts;
+        }
+
+        LOG( "---index=%d, ready=%d, streamType=%d, flvTagSize=%d, oPts=%d,  relTsOffset_=%d, npts=%d\r\n", index_, frameReady, curStreamType_, curFlvTagSize_, tsUnion.timestamp, relTimeStampOffset_, (u32)accessUnit->pts );
 
         if( frameReady ) {
             delegate_->onFLVFrameParsed( accessUnit, index_ );

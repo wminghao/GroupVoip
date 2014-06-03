@@ -115,6 +115,7 @@
 					
 					mic.rate = 8;
 					mic.codec = SoundCodec.SPEEX; 
+					mic.framesPerPacket = 1; //20ms per frame, instead of 40ms per frame
 					mic.setSilenceLevel(0,200);
 					var soundTrans:SoundTransform = new SoundTransform();
 					soundTrans.volume = 6;

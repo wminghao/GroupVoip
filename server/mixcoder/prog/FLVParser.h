@@ -13,7 +13,7 @@ using namespace std;
 class FLVParser
 {
  public:
- FLVParser(FLVSegmentParserDelegate* delegate, int index):delegate_(delegate), index_(index), scanState_ (SCAN_HEADER_TYPE_LEN), curFlvTagSize_(0), curStreamType_(kUnknownStreamType), relTimeStampOffset_(MAX_U32)
+ FLVParser(FLVSegmentParserDelegate* delegate, int index):delegate_(delegate), index_(index), scanState_ (SCAN_HEADER_TYPE_LEN), curFlvTagSize_(0), curStreamType_(kUnknownStreamType), relTimeStampOffset_(MAX_U32), prevVideoPts_(0)
     {
         startEpocTime_ = getEpocTime();
     }
@@ -37,6 +37,9 @@ class FLVParser
     //calculate the relative time of 1st frame
     u64 startEpocTime_;
     u32 relTimeStampOffset_;
+
+    u32 prevVideoPts_;
+    string curSpsPps_;
 };
 
 #endif
