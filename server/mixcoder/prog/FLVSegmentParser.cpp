@@ -165,6 +165,7 @@ void FLVSegmentParser::onFLVFrameParsed( SmartPtr<AccessUnit> au, int index )
     } else if ( au->st == kAudioStreamType ) {
         audioQueue_[index].push( au );
         audioStreamStatus_[index] = kStreamOnlineStarted;
+        globalAudioTimestamp_ = au->pts; //global audio timestamp updated here
     } else {
         //do nothing
     }

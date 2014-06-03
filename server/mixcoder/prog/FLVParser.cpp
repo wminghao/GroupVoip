@@ -253,9 +253,10 @@ void FLVParser::parseNextFLVFrame( string& strFlvTag )
         //if there is NO global timestamp, we use a relative timestamp to re-adjust the clock
         //based on the very 1st audio frame or very 1st video frame(not sps)
         if( MAX_U32 == relTimeStampOffset_ && accessUnit->st != kDataStreamType && accessUnit->sp != kSpsPps) {
-            u64 curEpocTime = getEpocTime();
-            assert( curEpocTime > startEpocTime_ );
-            relTimeStampOffset_ = ( curEpocTime - startEpocTime_ ) - tsUnion.timestamp;
+            //u64 curEpocTime = getEpocTime();
+            //assert( curEpocTime > startEpocTime_ );
+            //relTimeStampOffset_ = ( curEpocTime - startEpocTime_ ) - tsUnion.timestamp;
+            relTimeStampOffset_ = delegate_->getGlobalAudioTimestamp() - tsUnion.timestamp;
         }
         if ( accessUnit->sp == kSpsPps ) {
             //reset the spspps timestamp to be next ts
@@ -267,7 +268,7 @@ void FLVParser::parseNextFLVFrame( string& strFlvTag )
             prevVideoPts_ = accessUnit->pts;
         }
 
-        //LOG( "---index=%d, ready=%d, streamType=%d, flvTagSize=%d, oPts=%d,  relTsOffset_=%d, npts=%d\r\n", index_, frameReady, curStreamType_, curFlvTagSize_, tsUnion.timestamp, relTimeStampOffset_, (u32)accessUnit->pts  );
+        LOG( "---index=%d, ready=%d, streamType=%d, flvTagSize=%d, oPts=%d,  relTsOffset_=%d, npts=%d\r\n", index_, frameReady, curStreamType_, curFlvTagSize_, tsUnion.timestamp, relTimeStampOffset_, (u32)accessUnit->pts );
 
         if( frameReady ) {
             delegate_->onFLVFrameParsed( accessUnit, index_ );
