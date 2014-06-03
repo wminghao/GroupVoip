@@ -136,7 +136,6 @@ SmartPtr<SmartBuffer> MixCoder::getOutput()
 
             if ( totalStreams > 0 ) {
                 bool bIsKeyFrame = false;
-                //LOG("------totalVideoStreams = %d, totalMobileStreams=%d\n", totalStreams, totalMobileStreams );
                 VideoRect videoRect[MAX_XCODING_INSTANCES];
                 SmartPtr<SmartBuffer> rawFrameMixed = videoMixer_->mixStreams(rawVideoPlanes_, rawVideoStrides_, rawVideoSettings_, totalStreams, videoRect);
                 SmartPtr<SmartBuffer> encodedFrame = videoEncoder_->encodeAFrame(rawFrameMixed, &bIsKeyFrame);
@@ -146,6 +145,7 @@ SmartPtr<SmartBuffer> MixCoder::getOutput()
                         //for non-mobile stream, there is nothing to mix
                         for( u32 i = 0; i < MAX_XCODING_INSTANCES; i ++ ) {
                             if( rawVideoSettings_[i].bIsValid && kMobileStreamSource == rawVideoSettings_[i].ss) {
+                                //LOG("------totalVideoStreams = %d, totalMobileStreams=%d\n", totalStreams, totalMobileStreams );
                                 flvSegOutput_->packageVideoFrame(encodedFrame, videoPts, bIsKeyFrame, i, &videoRect[i]);
                             }
                         }
@@ -178,7 +178,7 @@ SmartPtr<SmartBuffer> MixCoder::getOutput()
                 if( rawAudioSettings_[i].bIsValid ) {
                     totalStreams++;
                     audioSampleSize = audioDecoder_[i]->getSampleSize();
-                    if( kMobileStreamSource == rawVideoSettings_[i].ss ) {
+                    if( kMobileStreamSource == rawAudioSettings_[i].ss ) {
                         totalMobileStreams++;
                     }
                 }
@@ -190,8 +190,8 @@ SmartPtr<SmartBuffer> MixCoder::getOutput()
                 if ( totalMobileStreams ) { 
                     //for non-mobile stream, there is nothing to mix
                     for( u32 i = 0; i < MAX_XCODING_INSTANCES; i ++ ) {
-                        if( rawVideoSettings_[i].bIsValid && kMobileStreamSource == rawVideoSettings_[i].ss) {
-                            //LOG("------totalAudioStreams = %d, mobileStream index=%d\n", totalStreams, i );
+                        if( rawAudioSettings_[i].bIsValid && kMobileStreamSource == rawAudioSettings_[i].ss) {
+                            //LOG("----------------------------totalAudioStreams = %d, mobileStream index=%d\n", totalStreams, i );
                             SmartPtr<SmartBuffer> rawFrameMixed = audioMixer_[i]->mixStreams(rawAudioFrame_, rawAudioSettings_, audioSampleSize, totalStreams, i);
                             SmartPtr<SmartBuffer> encodedFrame = audioEncoder_[i]->encodeAFrame(rawFrameMixed);
                             if ( encodedFrame ) {
