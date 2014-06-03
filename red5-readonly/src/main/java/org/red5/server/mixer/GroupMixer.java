@@ -212,7 +212,7 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
     		flvFrame.putInt(0);//prevSize, ignore
             addEvent(GroupMixerAsyncEvent.MESSAGEINPUT_REQ, streamName, flvFrame, flvFrameLen);
         	
-            log.info("=====>input message from {} type {} ts {} len {} on thread: {}", streamName, (msgType==0x09)?"video":"audio", eventTime, dataLen, Thread.currentThread().getName());
+            log.info("=====>in message from {} type {} ts {} len {} on thread: {}", streamName, (msgType==0x09)?"video":"audio", eventTime, dataLen, Thread.currentThread().getName());
         }
     }
 
@@ -279,7 +279,7 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
     		}
     		flvSegment.flip();
         	mixerPipe_.handleSegInput(flvSegment, totalLen);
-        	log.info("=====>handleInputFlvFrame message from {} flvFrameLen {}, totalLen{}", streamName, flvFrameLen, totalLen);
+        	//log.info("=====>handleInputFlvFrame message from {} flvFrameLen {}, totalLen{}", streamName, flvFrameLen, totalLen);
     	}
     }
     private void handleOutputFlvFrame(String streamName, ByteBuffer flvFrameBuffer, int flvFrameLen)
@@ -654,7 +654,7 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
 				result <<= 1;
 			}
 		}
-        log.info("======>getMixerMask value={}", result);
+        //log.info("======>getMixerMask value={}", result);
 		return result;
 	}
 

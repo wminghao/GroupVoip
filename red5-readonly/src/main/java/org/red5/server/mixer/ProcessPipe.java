@@ -2,6 +2,8 @@ package org.red5.server.mixer;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -19,9 +21,16 @@ public class ProcessPipe implements Runnable, SegmentParser.Delegate{
 	private boolean bTest = true; //read from a file instead
 	private static Logger log = Red5LoggerFactory.getLogger(Red5.class);
 	private boolean bIsPipeStarted = false;
+	
+	//test only
 	private final String INPUT_FILE_NAME = "/Users/wminghao/Develop/red5-server/red5-readonly/testvideos/fourflvtest.seg";
 	private final String OUTPUT_FILE_NAME = "/Users/wminghao/Develop/red5-server/red5-readonly/testvideos/realface.seg";
-	private OutputStream outputFile = null;
+	private OutputStream outputFile_ = null;
+	
+	//non-test
+	private final String MIXCODER_PROCESS_NAME = "/usr/bin/mixcoder";
+	private DataInputStream in_ = null;
+	private DataOutputStream out_ = null;
 	
 	/*
 	 * flv output segment parser
@@ -44,16 +53,16 @@ public class ProcessPipe implements Runnable, SegmentParser.Delegate{
         		Thread thread = new Thread(this, "MixerPipe");
         		thread.start();
         	    try {
-        	    	outputFile = new BufferedOutputStream(new FileOutputStream(OUTPUT_FILE_NAME));
+        	    	outputFile_ = new BufferedOutputStream(new FileOutputStream(OUTPUT_FILE_NAME));
         	    }catch(Exception e) {
         	    	log.info("Output file cannot be opened");
         	    }
         	}	
     	    try {
-    	    	log.info("=====>Writing binary file... totalLen={} size={}", totalLen, seg.limit());
-    	    	if( outputFile != null ) {
-        	    	log.info("=====>array totalLen={} size={}", totalLen, seg.array().length);
-    	    		outputFile.write(seg.array(), 0, totalLen);
+    	    	//log.info("=====>Writing binary file... totalLen={} size={}", totalLen, seg.limit());
+    	    	if( outputFile_ != null ) {
+        	    	//log.info("=====>array totalLen={} size={}", totalLen, seg.array().length);
+    	    		outputFile_.write(seg.array(), 0, totalLen);
     	    	}
     	    }
     	    catch(FileNotFoundException ex){
@@ -62,6 +71,20 @@ public class ProcessPipe implements Runnable, SegmentParser.Delegate{
     	    catch(IOException ex){
     		    log.info("IO exception.");
     	    }
+		} else {
+			try {
+				if ( in_==null || out_==null ) {
+    		        Process p = Runtime.getRuntime().exec(MIXCODER_PROCESS_NAME);
+    
+    		        in_ = new DataInputStream( p.getInputStream() );
+    		        out_ = new DataOutputStream( p.getOutputStream() );
+    	    		log.info("Opening process: {}", MIXCODER_PROCESS_NAME);
+				}
+				out_.write(seg.array(), 0, totalLen);
+		    }
+		    catch (Exception err) {
+		        err.printStackTrace();
+		    }
 		}
 	}
 
@@ -81,17 +104,17 @@ public class ProcessPipe implements Runnable, SegmentParser.Delegate{
         	        input = new BufferedInputStream(new FileInputStream(file));
         	        int fileLen = (int) file.length();
         	        while( bytesTotal < fileLen ) {
-        		        int totalBytesRead = 0;
-            	        while(totalBytesRead < result.length && (totalBytesRead+bytesTotal)<fileLen){
-            	        	int bytesRemaining = result.length - totalBytesRead;
+        		        int bytesToRead = 0;
+            	        while(bytesToRead < result.length && (bytesToRead+bytesTotal)<fileLen){
+            	        	int bytesRemaining = result.length - bytesToRead;
             	        	//input.read() returns -1, 0, or more :
-            	        	int bytesRead = input.read(result, totalBytesRead, bytesRemaining); 
+            	        	int bytesRead = input.read(result, bytesToRead, bytesRemaining); 
             	        	if (bytesRead > 0){
-            	        		totalBytesRead = totalBytesRead + bytesRead;
+            	        		bytesToRead += bytesRead;
             	        	}
             	        }
-            	        segParser_.readData(result, totalBytesRead); //send to segment parser
-            	        bytesTotal += totalBytesRead;
+            	        segParser_.readData(result, bytesToRead); //send to segment parser
+            	        bytesTotal += bytesToRead;
             	        Thread.sleep(10);
     
                 		log.info("Total bytes read:  {}, len {}", bytesTotal, fileLen);
@@ -109,6 +132,29 @@ public class ProcessPipe implements Runnable, SegmentParser.Delegate{
     	    catch (IOException ex) {
       			log.info("Other exception:  {}", ex);
     	    }
+    	} else {
+    		log.info("Reading in binary from process: {}", MIXCODER_PROCESS_NAME);
+    	    byte[] result = new byte[4096];
+    	    try {
+    	    	int bytesTotal = 0;
+    	        while( true ) { //TODO wait until pipe is down
+    		        int bytesToRead = 0;
+        	        while(bytesToRead < result.length){
+        	        	int bytesRemaining = result.length - bytesToRead;
+        	        	//input.read() returns -1, 0, or more :
+        	        	int bytesRead = in_.read(result, bytesToRead, bytesRemaining); 
+        	        	if (bytesRead > 0){
+        	        		bytesToRead += bytesRead;
+        	        	}
+        	        }
+        	        segParser_.readData(result, bytesToRead); //send to segment parser
+        	        bytesTotal += bytesToRead;
+
+            		log.info("Total bytes read:  {}", bytesTotal);
+    	        }
+    	    }catch (IOException ex) {
+      			log.info("Other exception:  {}", ex);
+    	    }
     	}
 	}
 
@@ -119,10 +165,20 @@ public class ProcessPipe implements Runnable, SegmentParser.Delegate{
 	
 	private void close()
 	{
-	    try {
-	    	outputFile.close();
-	    }catch (IOException ex) {
-  			log.info("close exception:  {}", ex);
-	    }
+		if(bTest) {
+    	    try {
+    	    	outputFile_.close();
+    	    }catch (IOException ex) {
+      			log.info("close exception:  {}", ex);
+    	    }
+		} else {
+    	    try {
+    	        in_.close();
+    	        out_.close();
+    	    }    
+    	    catch (Exception err) {
+    	        err.printStackTrace();
+    	    }
+		}
 	}
 }
