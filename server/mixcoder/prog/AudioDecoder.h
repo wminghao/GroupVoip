@@ -16,7 +16,7 @@ class AudioDecoder
 {
  public:
     //speex settings is always, 16khz, mono, 16bits audio
-    AudioDecoder(){
+    AudioDecoder(int streamId){
         setting_.acid = kSpeex;
         setting_.at = kSndMono;
         setting_.ar = k16kHz;
@@ -34,6 +34,7 @@ class AudioDecoder
         outputFrame_ = (short*)malloc(sizeof(short)*sampleSize_);
 
         hasFirstFrameDecoded_ = false;
+        streamId_ = streamId;
     }
     ~AudioDecoder();
     //send it to the decoder
@@ -54,5 +55,7 @@ class AudioDecoder
     AudioStreamSetting setting_;
 
     bool hasFirstFrameDecoded_;
+
+    int streamId_;
 };
 #endif

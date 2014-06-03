@@ -47,8 +47,8 @@ MixCoder::MixCoder(int vBitrate, int width, int height,
         audioMixer_[i] = new AudioMixer();
     }
     for( u32 i = 0; i < MAX_XCODING_INSTANCES; i++ ) {
-        audioDecoder_[i] = new AudioDecoder();
-        videoDecoder_[i] = new VideoDecoder();
+        audioDecoder_[i] = new AudioDecoder(i);
+        videoDecoder_[i] = new VideoDecoder(i);
     }
     flvSegOutput_ = new FLVSegmentOutput( &vOutputSetting, &aOutputSetting );
 }
