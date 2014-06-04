@@ -18,13 +18,14 @@ import org.red5.server.api.Red5;
 import org.slf4j.Logger;
 
 public class ProcessPipe implements Runnable, SegmentParser.Delegate{
-	private boolean bTest = true; //read from a file instead
+	private boolean bLoadFromDisc = false; //read from a file instead
+	private boolean bSaveToDisc = false; //log input file to a disc
 	private static Logger log = Red5LoggerFactory.getLogger(Red5.class);
 	private boolean bIsPipeStarted = false;
 	
 	//test only
-	private final String INPUT_FILE_NAME = "/Users/wminghao/Develop/red5-server/red5-readonly/testvideos/fourflvtest.seg";
-	private final String OUTPUT_FILE_NAME = "/Users/wminghao/Develop/red5-server/red5-readonly/testvideos/realface.seg";
+	private String inputFilePath;
+	private String outputFilePath;
 	private OutputStream outputFile_ = null;
 	
 	//non-test
@@ -39,62 +40,67 @@ public class ProcessPipe implements Runnable, SegmentParser.Delegate{
 	
 	private SegmentParser.Delegate delegate;
 	
-	public ProcessPipe(SegmentParser.Delegate delegate)
+	public ProcessPipe(SegmentParser.Delegate delegate, boolean bSaveToDisc, String outputFilePath, boolean bLoadFromDisc, String inputFilePath)
 	{
 		this.delegate = delegate;
+		this.bSaveToDisc = bSaveToDisc;
+		this.outputFilePath = outputFilePath;
+		this.bLoadFromDisc = bLoadFromDisc;
+		this.inputFilePath = inputFilePath;
+	    log.info("======>GroupMixer configuration, bSaveToDisc={}, outPath= {}, bLoadFromDisc={}, inPath={}.", bSaveToDisc, outputFilePath, bLoadFromDisc, inputFilePath);
 	}
 	
 	public void handleSegInput(ByteBuffer seg, int totalLen)
 	{
-		if(bTest) {
-			//start the thread here
-        	if( !bIsPipeStarted ) {
-        		bIsPipeStarted = true;
-        		Thread thread = new Thread(this, "MixerPipe");
-        		thread.start();
-        	    try {
-        	    	outputFile_ = new BufferedOutputStream(new FileOutputStream(OUTPUT_FILE_NAME));
-        	    }catch(Exception e) {
-        	    	log.info("Output file cannot be opened");
-        	    }
-        	}	
+		//start the thread here
+    	if( !bIsPipeStarted ) {
+    		bIsPipeStarted = true;
+    		Thread thread = new Thread(this, "MixerPipe");
+    		thread.start();
+    	}
+
+		if(bSaveToDisc) {
     	    try {
     	    	//log.info("=====>Writing binary file... totalLen={} size={}", totalLen, seg.limit());
+    	    	if( outputFile_ == null ) {
+        	    	outputFile_ = new BufferedOutputStream(new FileOutputStream(this.outputFilePath));
+    	    	}
     	    	if( outputFile_ != null ) {
         	    	//log.info("=====>array totalLen={} size={}", totalLen, seg.array().length);
     	    		outputFile_.write(seg.array(), 0, totalLen);
     	    	}
     	    }
     	    catch(FileNotFoundException ex){
-    		    log.info("File not found.");
+    		    log.info("======>Output File not found.");
     	    }
     	    catch(IOException ex){
-    		    log.info("IO exception.");
+    		    log.info("======>IO exception.");
     	    }
-		} else {
-			try {
-				if ( in_==null || out_==null ) {
+		} 
+		if ( !bLoadFromDisc ) {
+    		try {
+    			if ( in_==null || out_==null ) {
     		        Process p = Runtime.getRuntime().exec(MIXCODER_PROCESS_NAME);
     
     		        in_ = new DataInputStream( p.getInputStream() );
     		        out_ = new DataOutputStream( p.getOutputStream() );
     	    		log.info("Opening process: {}", MIXCODER_PROCESS_NAME);
-				}
-				out_.write(seg.array(), 0, totalLen);
-		    }
-		    catch (Exception err) {
-		        err.printStackTrace();
-		    }
+    			}
+    			out_.write(seg.array(), 0, totalLen);
+    	    }
+    	    catch (Exception err) {
+    	        err.printStackTrace();
+    	    }
 		}
 	}
 
 	@Override
 	public void run() {
 		log.info("Thread is started");
-		if(bTest) {
+		if( bLoadFromDisc ) {
 			//read a segment file and send it over
-    		log.info("Reading in binary file named : {}", INPUT_FILE_NAME);
-    	    File file = new File(INPUT_FILE_NAME);
+    		log.info("Reading in binary file named : {}", inputFilePath);
+    	    File file = new File(inputFilePath);
     	    log.info("File size: {}", file.length());
     	    byte[] result = new byte[4096];
     	    try {
@@ -153,7 +159,7 @@ public class ProcessPipe implements Runnable, SegmentParser.Delegate{
             		log.info("Total bytes read:  {}", bytesTotal);
     	        }
     	    } catch (IOException ex) {
-      			log.info("Other exception:  {}", ex);
+      			log.info("=====>Process IO other exception:  {}", ex);
     	    }
     	}
 	}
@@ -163,15 +169,17 @@ public class ProcessPipe implements Runnable, SegmentParser.Delegate{
 		this.delegate.onFrameParsed(mixerId, frame, len);		
 	}	
 	
-	private void close()
+	public void close()
 	{
-		if(bTest) {
+		if( bSaveToDisc ) {
     	    try {
     	    	outputFile_.close();
     	    }catch (IOException ex) {
       			log.info("close exception:  {}", ex);
     	    }
-		} else {
+		}
+
+		if ( !bLoadFromDisc ) {
     	    try {
     	        in_.close();
     	        out_.close();

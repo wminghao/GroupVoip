@@ -44,7 +44,7 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
 		public int	  streamId; //streamId used in RTMP protocol
 	}
 	private Map<String,GroupMappingTableEntry> groupMappingTable=new HashMap<String,GroupMappingTableEntry>();
-	private ProcessPipe mixerPipe_ = new ProcessPipe(this);
+	private ProcessPipe mixerPipe_ = null;
 	
 	/**
 	 * Reserved stream ids. Stream id's directly relate to individual NetStream instances.
@@ -121,9 +121,12 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
         return instance_;
     }
     
-    public void tryToCreateAllInOneConn(IRTMPHandler handler)
+    public void tryToCreateAllInOneConn(IRTMPHandler handler, boolean bSaveToDisc, String outputFilePath, boolean bLoadFromDisc, String inputFilePath)
     {
     	if( allInOneSessionId_ == null ) {
+    		//starts process pipe
+    		mixerPipe_ = new ProcessPipe(this, bSaveToDisc, outputFilePath, bLoadFromDisc, inputFilePath);
+    		
     		// create a connection
     		RTMPMinaConnection connAllInOne = (RTMPMinaConnection) RTMPConnManager.getInstance().createConnection(RTMPMinaConnection.class, false);
     		// add session to the connection
@@ -247,6 +250,7 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
     private void handleShutdown()
     {
     	//TODO close all-in-one RTMPConnections and all its associated assets
+    	mixerPipe_.close();
     }
 
     private void handleInputFlvFrame(String streamName, ByteBuffer flvFrame, int flvFrameLen)
