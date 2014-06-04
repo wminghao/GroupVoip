@@ -554,7 +554,7 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
     private void addEvent(int eventId, String paramStr, ByteBuffer flvFrame, int len) {
         try {
             GroupMixerAsyncEvent event = new GroupMixerAsyncEvent(eventId, paramStr, flvFrame, len);
-            log.info("GroupMixer addEvent ="+event.getName());
+            //log.info("GroupMixer addEvent ="+event.getName());
             asyncEventQueue.put(event);
         } catch (InterruptedException iex) {
         	log.error("GroupMixer addEvent Interrupted error: "+iex.toString());

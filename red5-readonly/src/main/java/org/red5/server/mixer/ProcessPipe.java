@@ -134,25 +134,25 @@ public class ProcessPipe implements Runnable, SegmentParser.Delegate{
     	    }
     	} else {
     		log.info("Reading in binary from process: {}", MIXCODER_PROCESS_NAME);
-    	    byte[] result = new byte[4096];
+    		final int BUFFER_MAX_SIZE = 4096;
+    	    byte[] result = new byte[BUFFER_MAX_SIZE];
     	    try {
     	    	int bytesTotal = 0;
-    	        while( true ) { //TODO wait until pipe is down
-    		        int bytesToRead = 0;
-        	        while(bytesToRead < result.length){
-        	        	int bytesRemaining = result.length - bytesToRead;
-        	        	//input.read() returns -1, 0, or more :
-        	        	int bytesRead = in_.read(result, bytesToRead, bytesRemaining); 
-        	        	if (bytesRead > 0){
-        	        		bytesToRead += bytesRead;
-        	        	}
-        	        }
-        	        segParser_.readData(result, bytesToRead); //send to segment parser
-        	        bytesTotal += bytesToRead;
-
+    	    	boolean bShouldContinue = true;
+    	        while( bShouldContinue ) { //TODO wait until pipe is down
+        	        //input.read() returns -1, 0, or more :
+        	       	int bytesRead = in_.read(result, 0, BUFFER_MAX_SIZE); 
+        	       	if (bytesRead > 0){
+                        segParser_.readData(result, bytesRead); //send to segment parser
+            	        bytesTotal += bytesRead;
+        	       	} else if (bytesRead < 0){
+        	       		bShouldContinue = false;
+        	       	} else {
+                		log.info("===============read 0 bytes???=======");
+        	       	}
             		log.info("Total bytes read:  {}", bytesTotal);
     	        }
-    	    }catch (IOException ex) {
+    	    } catch (IOException ex) {
       			log.info("Other exception:  {}", ex);
     	    }
     	}
