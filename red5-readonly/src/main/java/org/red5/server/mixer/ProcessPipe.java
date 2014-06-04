@@ -29,7 +29,7 @@ public class ProcessPipe implements Runnable, SegmentParser.Delegate{
 	private OutputStream outputFile_ = null;
 	
 	//non-test
-	private final String MIXCODER_PROCESS_NAME = "/usr/bin/mixcoder";
+	private final String MIXCODER_PROCESS_NAME = "/usr/bin/mix_coder";
 	private DataInputStream in_ = null;
 	private DataOutputStream out_ = null;
 	
