@@ -136,7 +136,7 @@ public class ProcessPipe implements Runnable, SegmentParser.Delegate{
     	    byte[] result = new byte[BUFFER_MAX_SIZE];
     	    try {
     	    	Process p = Runtime.getRuntime().exec(MIXCODER_PROCESS_NAME);
-		        in_ = new DataInputStream( new BufferedInputStream(p.getInputStream()) );
+		        in_ = new DataInputStream( p.getInputStream() );
 		        out_ = new DataOutputStream( new BufferedOutputStream(p.getOutputStream()) );
 	    		log.info("Opening process: {}", MIXCODER_PROCESS_NAME);
 	    		
@@ -153,7 +153,7 @@ public class ProcessPipe implements Runnable, SegmentParser.Delegate{
         	       	} else {
                 		log.info("===============read 0 bytes???=======");
         	       	}
-            		log.info("====>curBytesRead {} TotalBytesRead:  {}", bytesRead, bytesTotal);
+            		//log.info("====>curBytesRead {} TotalBytesRead:  {}", bytesRead, bytesTotal);
     	        }
     	    } catch (IOException ex) {
       			log.info("=====>Process IO other exception:  {}", ex);
