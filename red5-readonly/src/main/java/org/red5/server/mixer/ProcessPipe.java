@@ -132,7 +132,7 @@ public class ProcessPipe implements Runnable, SegmentParser.Delegate{
     	    }
     	} else {
     		log.info("Reading in binary from process: {}", MIXCODER_PROCESS_NAME);
-    		final int BUFFER_MAX_SIZE = 4096;
+    		final int BUFFER_MAX_SIZE = 256;
     	    byte[] result = new byte[BUFFER_MAX_SIZE];
     	    try {
     	    	Process p = Runtime.getRuntime().exec(MIXCODER_PROCESS_NAME);
@@ -144,7 +144,7 @@ public class ProcessPipe implements Runnable, SegmentParser.Delegate{
     	    	boolean bShouldContinue = true;
     	        while( bShouldContinue ) { //TODO wait until pipe is down
         	        //input.read() returns -1, 0, or more :
-    	        	int bytesRead = in_.read(result, 0, BUFFER_MAX_SIZE); 
+    	        	int bytesRead = in_.read(result); 
         	       	if (bytesRead > 0){
                         segParser_.readData(result, bytesRead); //send to segment parser
             	        bytesTotal += bytesRead;
