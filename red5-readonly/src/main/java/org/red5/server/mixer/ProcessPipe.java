@@ -30,6 +30,7 @@ public class ProcessPipe implements Runnable, SegmentParser.Delegate{
 	
 	//non-test
 	private final String MIXCODER_PROCESS_NAME = "/usr/bin/mix_coder";
+	private Process process_ = null;
 	private DataInputStream in_ = null;
 	private DataOutputStream out_ = null;
 	
@@ -79,6 +80,7 @@ public class ProcessPipe implements Runnable, SegmentParser.Delegate{
 		if ( !bLoadFromDisc ) {
     		try {
     			out_.write(seg.array(), 0, totalLen);
+    			out_.flush();
     	    }
     	    catch (Exception err) {
     	        err.printStackTrace();
@@ -135,9 +137,9 @@ public class ProcessPipe implements Runnable, SegmentParser.Delegate{
     		final int BUFFER_MAX_SIZE = 256;
     	    byte[] result = new byte[BUFFER_MAX_SIZE];
     	    try {
-    	    	Process p = Runtime.getRuntime().exec(MIXCODER_PROCESS_NAME);
-		        in_ = new DataInputStream( p.getInputStream() );
-		        out_ = new DataOutputStream( new BufferedOutputStream(p.getOutputStream()) );
+    	    	process_ = Runtime.getRuntime().exec(MIXCODER_PROCESS_NAME);
+		        in_ = new DataInputStream( new BufferedInputStream(process_.getInputStream()));
+		        out_ = new DataOutputStream( new BufferedOutputStream(process_.getOutputStream()) );
 	    		log.info("Opening process: {}", MIXCODER_PROCESS_NAME);
 	    		
     	    	int bytesTotal = 0;
@@ -178,8 +180,15 @@ public class ProcessPipe implements Runnable, SegmentParser.Delegate{
 
 		if ( !bLoadFromDisc ) {
     	    try {
-    	        in_.close();
-    	        out_.close();
+    	    	if( in_ != null ) {
+    	    		in_.close();
+    	    	}
+    	    	if( out_ != null ) {
+    	    		out_.close();
+    	    	}
+    	    	if( process_ != null ) {
+    	    		process_.destroy();
+    	    	}
     	    }    
     	    catch (Exception err) {
     	        err.printStackTrace();
