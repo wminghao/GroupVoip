@@ -47,18 +47,17 @@ public class ProcessPipe implements Runnable, SegmentParser.Delegate{
 		this.outputFilePath = outputFilePath;
 		this.bLoadFromDisc = bLoadFromDisc;
 		this.inputFilePath = inputFilePath;
-	    log.info("======>GroupMixer configuration, bSaveToDisc={}, outPath= {}, bLoadFromDisc={}, inPath={}.", bSaveToDisc, outputFilePath, bLoadFromDisc, inputFilePath);
-	}
-	
-	public void handleSegInput(ByteBuffer seg, int totalLen)
-	{
 		//start the thread here
     	if( !bIsPipeStarted ) {
     		bIsPipeStarted = true;
     		Thread thread = new Thread(this, "MixerPipe");
     		thread.start();
     	}
-
+	    log.info("======>GroupMixer configuration, bSaveToDisc={}, outPath={}, bLoadFromDisc={}, inPath={}.", bSaveToDisc, outputFilePath, bLoadFromDisc, inputFilePath);
+	}
+	
+	public void handleSegInput(ByteBuffer seg, int totalLen)
+	{
 		if(bSaveToDisc) {
     	    try {
     	    	//log.info("=====>Writing binary file... totalLen={} size={}", totalLen, seg.limit());
@@ -79,13 +78,6 @@ public class ProcessPipe implements Runnable, SegmentParser.Delegate{
 		} 
 		if ( !bLoadFromDisc ) {
     		try {
-    			if ( in_==null || out_==null ) {
-    		        Process p = Runtime.getRuntime().exec(MIXCODER_PROCESS_NAME);
-    
-    		        in_ = new DataInputStream( p.getInputStream() );
-    		        out_ = new DataOutputStream( p.getOutputStream() );
-    	    		log.info("Opening process: {}", MIXCODER_PROCESS_NAME);
-    			}
     			out_.write(seg.array(), 0, totalLen);
     	    }
     	    catch (Exception err) {
@@ -143,11 +135,16 @@ public class ProcessPipe implements Runnable, SegmentParser.Delegate{
     		final int BUFFER_MAX_SIZE = 4096;
     	    byte[] result = new byte[BUFFER_MAX_SIZE];
     	    try {
+    	    	Process p = Runtime.getRuntime().exec(MIXCODER_PROCESS_NAME);
+		        in_ = new DataInputStream( new BufferedInputStream(p.getInputStream()) );
+		        out_ = new DataOutputStream( new BufferedOutputStream(p.getOutputStream()) );
+	    		log.info("Opening process: {}", MIXCODER_PROCESS_NAME);
+	    		
     	    	int bytesTotal = 0;
     	    	boolean bShouldContinue = true;
     	        while( bShouldContinue ) { //TODO wait until pipe is down
         	        //input.read() returns -1, 0, or more :
-        	       	int bytesRead = in_.read(result, 0, BUFFER_MAX_SIZE); 
+    	        	int bytesRead = in_.read(result, 0, BUFFER_MAX_SIZE); 
         	       	if (bytesRead > 0){
                         segParser_.readData(result, bytesRead); //send to segment parser
             	        bytesTotal += bytesRead;
@@ -156,7 +153,7 @@ public class ProcessPipe implements Runnable, SegmentParser.Delegate{
         	       	} else {
                 		log.info("===============read 0 bytes???=======");
         	       	}
-            		log.info("Total bytes read:  {}", bytesTotal);
+            		log.info("====>curBytesRead {} TotalBytesRead:  {}", bytesRead, bytesTotal);
     	        }
     	    } catch (IOException ex) {
       			log.info("=====>Process IO other exception:  {}", ex);
