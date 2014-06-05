@@ -44,7 +44,7 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
 		public int	  streamId; //streamId used in RTMP protocol
 	}
 	private Map<String,GroupMappingTableEntry> groupMappingTable=new HashMap<String,GroupMappingTableEntry>();
-	private ProcessPipe mixerPipe_ = new ProcessPipe(this);
+	private ProcessPipe mixerPipe_ = null;
 	
 	/**
 	 * Reserved stream ids. Stream id's directly relate to individual NetStream instances.
@@ -121,9 +121,12 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
         return instance_;
     }
     
-    public void tryToCreateAllInOneConn(IRTMPHandler handler)
+    public void tryToCreateAllInOneConn(IRTMPHandler handler, boolean bSaveToDisc, String outputFilePath, boolean bLoadFromDisc, String inputFilePath)
     {
     	if( allInOneSessionId_ == null ) {
+    		//starts process pipe
+    		mixerPipe_ = new ProcessPipe(this, bSaveToDisc, outputFilePath, bLoadFromDisc, inputFilePath);
+    		
     		// create a connection
     		RTMPMinaConnection connAllInOne = (RTMPMinaConnection) RTMPConnManager.getInstance().createConnection(RTMPMinaConnection.class, false);
     		// add session to the connection
@@ -212,7 +215,7 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
     		flvFrame.putInt(0);//prevSize, ignore
             addEvent(GroupMixerAsyncEvent.MESSAGEINPUT_REQ, streamName, flvFrame, flvFrameLen);
         	
-            log.info("=====>input message from {} type {} ts {} len {} on thread: {}", streamName, (msgType==0x09)?"video":"audio", eventTime, dataLen, Thread.currentThread().getName());
+            //log.info("=====>in message from {} type {} ts {} len {} on thread: {}", streamName, (msgType==0x09)?"video":"audio", eventTime, dataLen, Thread.currentThread().getName());
         }
     }
 
@@ -247,6 +250,7 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
     private void handleShutdown()
     {
     	//TODO close all-in-one RTMPConnections and all its associated assets
+    	mixerPipe_.close();
     }
 
     private void handleInputFlvFrame(String streamName, ByteBuffer flvFrame, int flvFrameLen)
@@ -279,7 +283,7 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
     		}
     		flvSegment.flip();
         	mixerPipe_.handleSegInput(flvSegment, totalLen);
-        	log.info("=====>handleInputFlvFrame message from {} flvFrameLen {}, totalLen{}", streamName, flvFrameLen, totalLen);
+        	log.info("=====>in message from {} flvFrameLen {}, totalLen{}", streamName, flvFrameLen, totalLen);
     	}
     }
     private void handleOutputFlvFrame(String streamName, ByteBuffer flvFrameBuffer, int flvFrameLen)
@@ -554,7 +558,7 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
     private void addEvent(int eventId, String paramStr, ByteBuffer flvFrame, int len) {
         try {
             GroupMixerAsyncEvent event = new GroupMixerAsyncEvent(eventId, paramStr, flvFrame, len);
-            log.info("GroupMixer addEvent ="+event.getName());
+            //log.info("GroupMixer addEvent ="+event.getName());
             asyncEventQueue.put(event);
         } catch (InterruptedException iex) {
         	log.error("GroupMixer addEvent Interrupted error: "+iex.toString());
@@ -654,7 +658,7 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
 				result <<= 1;
 			}
 		}
-        log.info("======>getMixerMask value={}", result);
+        //log.info("======>getMixerMask value={}", result);
 		return result;
 	}
 
