@@ -59,6 +59,7 @@ int main( int argc, char** argv ) {
             totalOutput+=output->dataLength();
             //LOG("------totalOutput=%d\n", totalOutput);
             write( 1, output->data(), output->dataLength() );
+            fflush(stdout);
         } 
     }
     LOG("------final totalOutput=%d\n", totalOutput);
