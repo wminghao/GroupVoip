@@ -37,7 +37,8 @@ public class ProcessPipe implements SegmentParser.Delegate{
 	private Vector<ByteBuffer> outBuffers_ = new Vector<ByteBuffer>(100); //vector is threadsafe
 	private ProcessReaderThread procReader_ = null;
 	private ProcessWriterThread procWriter_ = null;
-	private Object synchronizeObject_ = new Object();
+	private volatile boolean bShouldContWriterThread_ = true;
+	private Object writerThreadSyncObject_ = new Object();
 	
 	//Howard: tried 2 use select() to do process IO, but failed, b/c Java does not supports it. 
 	//Have to use 2 threads to do select, which is lame.
@@ -78,16 +79,7 @@ public class ProcessPipe implements SegmentParser.Delegate{
      	    } catch (Exception ex) {
        			log.info("=====>Process other exception:  {}", ex);
      	    }
-		} else {
-			try {
-    			//start the thread here
-    			discReaderThread_ = new DiscReaderThread();
-    			Thread thread = new Thread(discReaderThread_, "DiscReader");
-    			thread.start();
-			} catch (Exception ex) {
-       			log.info("=====>Disc IO other exception:  {}", ex);
-     	    }
-		}
+		} 
 	    log.info("======>GroupMixer configuration, bSaveToDisc={}, outPath={}, bLoadFromDisc={}, inPath={}.", bSaveToDisc, outputFilePath, bLoadFromDisc, inputFilePath);
 	}
 	
@@ -111,36 +103,47 @@ public class ProcessPipe implements SegmentParser.Delegate{
     		    log.info("======>IO exception.");
     	    }
 		} 
-		if ( !bLoadFromDisc ) {
-			synchronized(synchronizeObject_) {
-				outBuffers_.add(seg);
-				synchronizeObject_.notify();
+		if ( bLoadFromDisc ) {
+			try {
+				if ( discReaderThread_ == null ) {
+        			//start the thread here
+        			discReaderThread_ = new DiscReaderThread();
+        			Thread thread = new Thread(discReaderThread_, "DiscReader");
+        			thread.start();
+				}
+			} catch (Exception ex) {
+       			log.info("=====>Disc IO other exception:  {}", ex);
+     	    }			
+		} else {
+			outBuffers_.add(seg);
+			synchronized(writerThreadSyncObject_) {
+				writerThreadSyncObject_.notify();
 			}
+			//log.info("====>outBuffers_ queue size {}", outBuffers_.size());
 		}
 	}
 	
 	private void tryToWrite() {
-		boolean isNoErr = true;
-		while( isNoErr ) {
-    		while( outBuffers_.size() > 0 && isNoErr) {
+		while( bShouldContWriterThread_ ) {
+    		while( outBuffers_.size() > 0 && bShouldContWriterThread_) {
         		try {
         			ByteBuffer seg = outBuffers_.remove(0);
         			out_.write(seg.array()); //blocking call
         			out_.flush();
         	    }
         	    catch (Exception err) {
-        	    	isNoErr = false;
+        	    	bShouldContWriterThread_ = false;
             		log.info("===============Process Writer IO failed {}=======", err);
         	    }
     		}
     		try {
-    			synchronized( synchronizeObject_ ) {
-    				while (outBuffers_.isEmpty() && isNoErr) {
-    					synchronizeObject_.wait(); //wait until something is added to the outBuffers_
-    				}
-    			}
+				while (outBuffers_.isEmpty() && bShouldContWriterThread_) {
+					synchronized(writerThreadSyncObject_) {
+						writerThreadSyncObject_.wait(); //wait until something is added to the outBuffers_
+					}
+				}
     		} catch(Exception err) {
-    			isNoErr = false;
+    			bShouldContWriterThread_ = false;
         		log.info("===============Process Writer wait failed {}=======", err);
     		}
 		}
@@ -199,12 +202,14 @@ public class ProcessPipe implements SegmentParser.Delegate{
             	        }
             	        segParser_.readData(result, bytesToRead); //send to segment parser
             	        bytesTotal += bytesToRead;
-            	        Thread.sleep(10);
+            	        Thread.sleep(20);
     
                 		log.info("Total bytes read:  {}, len {}", bytesTotal, fileLen);
         	        }
         	    } catch (InterruptedException ex) {
               		log.info("InterruptedException:  {}", ex);
+        	    } catch (Exception ex) {
+              		log.info("General exception:  {}", ex);
         	    } finally {
         	     	log.info("Closing input stream.");
         	   	  	input.close();
@@ -248,6 +253,10 @@ public class ProcessPipe implements SegmentParser.Delegate{
 		}
 
 		if ( !bLoadFromDisc ) {
+			bShouldContWriterThread_ = false;
+			synchronized(writerThreadSyncObject_) {
+				writerThreadSyncObject_.notify();
+			}
     	    try {
     	    	if( in_ != null ) {
     	    		in_.close();

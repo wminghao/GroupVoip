@@ -283,7 +283,7 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
     		}
     		flvSegment.flip();
         	mixerPipe_.handleSegInput(flvSegment);
-        	log.info("=====>in message from {} flvFrameLen {}, totalLen{}", streamName, flvFrameLen, totalLen);
+        	log.info("=====>in message from {} id {} flvFrameLen {}, totalLen {}", streamName, entry.streamId, flvFrameLen, totalLen);
     	}
     }
     private void handleOutputFlvFrame(String streamName, ByteBuffer flvFrameBuffer, int flvFrameLen)
@@ -559,9 +559,9 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
         try {
             GroupMixerAsyncEvent event = new GroupMixerAsyncEvent(eventId, paramStr, flvFrame, len);
             //log.info("GroupMixer addEvent ="+event.getName());
-            asyncEventQueue.put(event);
-        } catch (InterruptedException iex) {
-        	log.error("GroupMixer addEvent Interrupted error: "+iex.toString());
+            asyncEventQueue.add(event);
+        } catch (IllegalStateException iex) {
+        	log.error("GroupMixer addEvent illegal error: "+iex.toString());
         } catch (Exception ex) {
         	log.error("GroupMixer addEvent Generic error: "+ex.toString());
         }
