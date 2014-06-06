@@ -282,7 +282,7 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
     			}
     		}
     		flvSegment.flip();
-        	mixerPipe_.handleSegInput(flvSegment, totalLen);
+        	mixerPipe_.handleSegInput(flvSegment);
         	log.info("=====>in message from {} flvFrameLen {}, totalLen{}", streamName, flvFrameLen, totalLen);
     	}
     }
