@@ -25,11 +25,11 @@
         <property name="waitForTasksToCompleteOnShutdown" value="true"/>
         <property name="daemon" value="true"/>
 	</bean>        
-	        
+	<!-- According to thread, it's not necessary to set the queueCapacity https://groups.google.com/forum/#!msg/red5interest/dbqYLh1IDjg/-5f1XN1cZVEJ -->
 	<bean id="messageExecutor" scope="prototype" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">  
 	  <property name="corePoolSize" value="1" />  
 	  <property name="maxPoolSize" value="1" />  
-	  <property name="queueCapacity" value="16" /> 
+	  <!-- <property name="queueCapacity" value="16" /> -->
 	  <property name="waitForTasksToCompleteOnShutdown" value="true"/>
 	  <property name="daemon" value="true"/>
 	</bean>     
