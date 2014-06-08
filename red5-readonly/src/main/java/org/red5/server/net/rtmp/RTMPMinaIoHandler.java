@@ -50,6 +50,12 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 
 	protected ProtocolCodecFactory codecFactory;
 
+	//TODO move it out to GroupMixer
+	private boolean bLoadFromDisc; //read from a file instead
+	private boolean bSaveToDisc; //log input file to a disc
+	private String outputFilePath;
+	private String inputFilePath;	
+
 	/** {@inheritDoc} */
 	@Override
 	public void sessionCreated(IoSession session) throws Exception {
@@ -70,7 +76,7 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 		session.setAttribute(RTMPConnection.RTMP_HANDSHAKE, new InboundHandshake());
 		
 		//next creates the all-in-one RTMPMinaConnection
-		GroupMixer.getInstance().tryToCreateAllInOneConn(handler);
+		GroupMixer.getInstance().tryToCreateAllInOneConn(handler, bSaveToDisc, outputFilePath, bLoadFromDisc, inputFilePath);
 	}
 
 	/** {@inheritDoc} */
@@ -276,5 +282,38 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 
 	protected RTMPMinaConnection createRTMPMinaConnection() {
 		return (RTMPMinaConnection) RTMPConnManager.getInstance().createConnection(RTMPMinaConnection.class);
+	}
+	
+	/**
+	 * Setter for bLoadFromDisc.
+	 *
+	 * @param tells GroupMixer's process Pipe if load output from disc or not
+	 */
+	public void setbLoadFromDisc(boolean bLoadFromDisc) {
+		this.bLoadFromDisc = bLoadFromDisc;
+	}
+	/**
+	 * Setter for bSaveToDisc.
+	 *
+	 * @param tells GroupMixer's process Pipe if save input to disc or not
+	 */
+	public void setbSaveToDisc(boolean bSaveToDisc) {
+		this.bSaveToDisc = bSaveToDisc;
+	}	
+	/**
+	 * Setter for inputFilePath.
+	 *
+	 * @param tells GroupMixer's process Pipe input file path
+	 */
+	public void setinputFilePath(String inputFilePath) {
+		this.inputFilePath = inputFilePath;
+	}
+	/**
+	 * Setter for outputFilePath.
+	 *
+	 * @param tells GroupMixer's process Pipe output file path
+	 */
+	public void setoutputFilePath(String outputFilePath) {
+		this.outputFilePath = outputFilePath;
 	}
 }

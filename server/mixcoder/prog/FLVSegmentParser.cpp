@@ -36,28 +36,31 @@ bool FLVSegmentParser::isNextVideoStreamReady(u32& videoTimestamp, u32 audioTime
 
     bool hasAnyStreamStartedAndReady = false;
     bool hasSpsPps = false;
+    u32  spsPpsTimestamp = 0;
     for(u32 i = 0; i < MAX_XCODING_INSTANCES; i++ ) {
         if ( videoStreamStatus_[i] == kStreamOnlineStarted ) {
             if( videoQueue_[i].size() > 0 ) {
-                if (isNextVideoFrameSpsPps(i)) {
+                bool recordFrameTimestamp = true;
+                if (isNextVideoFrameSpsPps(i, spsPpsTimestamp)) {
                     hasSpsPps = true;
+                    //LOG( "---next is spspps, ts=%d\r\n", spsPpsTimestamp);
                 } else {
                     hasAnyStreamStartedAndReady = true;
-                    bool recordFrameTimestamp = true;
                     if( hasStarted_ ) {
                         //if it's over the limit, don't record
                         if( videoQueue_[i].front()->pts > nextLimitTimestamp ) {
                             recordFrameTimestamp = false;
                         }
                     }
-                    if( recordFrameTimestamp ) {
-                        if( frameTimestamp ==  0xffffffff ) {
-                            frameTimestamp = videoQueue_[i].front()->pts;
-                        } else {
-                            frameTimestamp = MAX(videoQueue_[i].front()->pts, frameTimestamp);
-                        }
+                }
+                if( recordFrameTimestamp ) {
+                    if( frameTimestamp ==  0xffffffff ) {
+                        frameTimestamp = videoQueue_[i].front()->pts;
+                    } else {
+                        frameTimestamp = MAX(videoQueue_[i].front()->pts, frameTimestamp);
                     }
                 }
+                //LOG( "---streamMask online available index=%d, next ts=%d, frameTimestamp=%d\r\n", i, videoQueue_[i].front()->pts, frameTimestamp);
             } else {
                 //LOG( "---streamMask online unavailable index=%d, numStreams=%d\r\n", i, numStreams_);
             }
@@ -72,13 +75,12 @@ bool FLVSegmentParser::isNextVideoStreamReady(u32& videoTimestamp, u32 audioTime
                     //video has accumulated some data and audio has already catch up
                     videoTimestamp = lastBucketTimestamp_ = nextBucketTimestamp; //strictly follow
                     isReady = true;
-                    /*
-                    LOG( "===follow up video timstamp=%d, hasAnyStreamStartedAndReady=%d, audioBucketTimestamp=%d nextBucketTimestamp=%d, lastBucketTimestamp_=%d\r\n", 
-                            videoTimestamp, hasAnyStreamStartedAndReady, (u32)audioBucketTimestamp, (u32)nextBucketTimestamp, (u32)lastBucketTimestamp_);
-                    */
+                    //LOG( "===follow up video timstamp=%d, hasAnyStreamStartedAndReady=%d, audioBucketTimestamp=%d nextBucketTimestamp=%d, lastBucketTimestamp_=%d\r\n", 
+                    //   videoTimestamp, hasAnyStreamStartedAndReady, (u32)audioBucketTimestamp, (u32)nextBucketTimestamp, (u32)lastBucketTimestamp_);
                 } else {
                     //wait for the nextBucketTimestamp, since audio is not ready yet
                     //not ready yet
+                    //LOG( "--not ready. audioBucketTimestamp=%.2f, nextBucketTimestamp=%.2f, audioTimestamp=%d\r\n", audioBucketTimestamp, nextBucketTimestamp, audioTimestamp);
                     isReady = false;
                 }
             } else { 
@@ -86,15 +88,15 @@ bool FLVSegmentParser::isNextVideoStreamReady(u32& videoTimestamp, u32 audioTime
                 assert( audioBucketTimestamp > nextBucketTimestamp );
                 //if audio is already ahead, pop that frame out
                 videoTimestamp = lastBucketTimestamp_ = audioBucketTimestamp;
-                /*
-                  LOG( "===follow up 2 video timstamp=%d, hasAnyStreamStartedAndReady=%d, audioBucketTimestamp=%d nextBucketTimestamp=%d, lastBucketTimestamp_=%d\r\n", 
-                        videoTimestamp, hasAnyStreamStartedAndReady, (u32)audioBucketTimestamp, (u32)nextBucketTimestamp, (u32)lastBucketTimestamp_);
-                */
+                //LOG( "===follow up 2 video timstamp=%d, hasAnyStreamStartedAndReady=%d, audioBucketTimestamp=%d nextBucketTimestamp=%d, lastBucketTimestamp_=%d\r\n", 
+                //videoTimestamp, hasAnyStreamStartedAndReady, (u32)audioBucketTimestamp, (u32)nextBucketTimestamp, (u32)lastBucketTimestamp_);
+                
                 isReady = true;
             }
         } else {
             //no data available
             //wait for the nextBucketTimestamp
+            //LOG( "--no data available. audioBucketTimestamp=%.2f, nextBucketTimestamp=%.2f, audioTimestamp=%d\r\n", audioBucketTimestamp, nextBucketTimestamp, audioTimestamp);
             isReady = false;
         }
     } else {
@@ -103,15 +105,16 @@ bool FLVSegmentParser::isNextVideoStreamReady(u32& videoTimestamp, u32 audioTime
             hasStarted_ = true;
             lastBucketTimestamp_ = frameTimestamp;
             videoTimestamp = frameTimestamp;
-            LOG( "===first video timstamp=%d\r\n", (u32)lastBucketTimestamp_);
+            //LOG( "===first video timstamp=%d\r\n", (u32)lastBucketTimestamp_);
             isReady = true;
         } else if( hasSpsPps ) {
             //if there is no frame ready, only sps/pps pop out it immediately
-            //LOG( "---found sps pps. but no other frames\r\n");
+            //LOG( "===found sps pps. but no other frames\r\n");
+            lastBucketTimestamp_ = audioBucketTimestamp;
+            videoTimestamp = spsPpsTimestamp;            
             isReady = true;
         }
     }
-    
     return isReady;
 }
 
@@ -162,6 +165,7 @@ void FLVSegmentParser::onFLVFrameParsed( SmartPtr<AccessUnit> au, int index )
     } else if ( au->st == kAudioStreamType ) {
         audioQueue_[index].push( au );
         audioStreamStatus_[index] = kStreamOnlineStarted;
+        globalAudioTimestamp_ = au->pts; //global audio timestamp updated here
     } else {
         //do nothing
     }
@@ -306,13 +310,14 @@ bool FLVSegmentParser::readData(SmartPtr<SmartBuffer> input)
     return true;
 }
 
-bool FLVSegmentParser::isNextVideoFrameSpsPps(u32 index)
+bool FLVSegmentParser::isNextVideoFrameSpsPps(u32 index, u32& timestamp)
 {
     bool bIsSpsPps = false;
     if ( videoQueue_[index].size() > 0 ) {
         SmartPtr<AccessUnit> au = videoQueue_[index].front();
         if ( au && au->sp == kSpsPps ) {
             bIsSpsPps = true;
+            timestamp = au->pts;
         }
     }
     return bIsSpsPps;

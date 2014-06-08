@@ -92,6 +92,7 @@ bool VideoDecoder::newAccessUnit( SmartPtr<AccessUnit> au, SmartPtr<SmartBuffer>
             int rval;
             if( ( rval = avcodec_decode_video2( codecCtx_, frame_, &gotPic, &pkt ) ) > 0) {
                 if( gotPic ) {
+                    //LOG("Video decoded width=%d, height=%d\n", frame_->width, frame_->height);
                     assert(inWidth_ == frame_->width);
                     assert(inHeight_ == frame_->height);
 
@@ -108,7 +109,7 @@ bool VideoDecoder::newAccessUnit( SmartPtr<AccessUnit> au, SmartPtr<SmartBuffer>
                     bIsValidFrame = true;
                     bHasFirstFrameStarted = true;
                     
-                    LOG( "video decoded pkt size=%d size=640*480 ts=%d\n", pkt.size, au->pts);
+                    //LOG( "video decoded pkt size=%d size=640*480 ts=%d, streamId=%d\n", pkt.size, au->pts, streamId_);
                     /*
                     LOG( "video decoded pkt size=%d stride0=%d, stride1=%d, stride2=%d, width=%d, height=%d, ts=%d\n", pkt.size, 
                              frame_->linesize[0], frame_->linesize[1], frame_->linesize[2],

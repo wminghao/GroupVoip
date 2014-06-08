@@ -8,6 +8,7 @@
 class FLVSegmentParserDelegate
 {
  public:
+    virtual u32 getGlobalAudioTimestamp() = 0;
     virtual void onFLVFrameParsed( SmartPtr<AccessUnit> au, int index ) = 0;
 };
 #endif

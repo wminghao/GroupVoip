@@ -25,9 +25,9 @@ void Logger::log( const char * fmt, ... )
 
     if ( mode == kSyslog ) {
         vsyslog( LOG_DEBUG, fmt, args );
-    } 
-    vfprintf(stderr, fmt, args);
-    
+    } else {
+        vfprintf(stderr, fmt, args);
+    }
     va_end(args);
 }
 

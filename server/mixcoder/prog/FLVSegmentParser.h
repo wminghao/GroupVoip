@@ -46,7 +46,7 @@ class FLVSegmentParser:public FLVSegmentParserDelegate
     FLVSegmentParser(u32 targetVideoFrameRate): parsingState_(SEARCHING_SEGHEADER),
         curSegTagSize_(0), curStreamId_(0), curStreamLen_(0), curStreamCnt_(0),
         numStreams_(0), targetVideoFrameRate_(targetVideoFrameRate), 
-        hasStarted_(0), lastBucketTimestamp_(0)
+        hasStarted_(0), lastBucketTimestamp_(0), globalAudioTimestamp_(0)
         {
             memset(audioStreamStatus_, 0, sizeof(StreamStatus)*MAX_XCODING_INSTANCES);
             memset(videoStreamStatus_, 0, sizeof(StreamStatus)*MAX_XCODING_INSTANCES);
@@ -75,8 +75,11 @@ class FLVSegmentParser:public FLVSegmentParserDelegate
     SmartPtr<AccessUnit> getNextVideoFrame(u32 index, u32 timestamp); // can return more than 1 frames
 
  private:
-    bool isNextVideoFrameSpsPps(u32 index);
+    bool isNextVideoFrameSpsPps(u32 index, u32& timestamp);
+
+    //inherited from delegate functions
     virtual void onFLVFrameParsed( SmartPtr<AccessUnit> au, int index );
+    virtual u32 getGlobalAudioTimestamp() { return globalAudioTimestamp_;}
     
  private:
     typedef enum StreamStatus
@@ -115,5 +118,7 @@ class FLVSegmentParser:public FLVSegmentParserDelegate
     //video timestamp adjustment. output is always 30fps
     u32 hasStarted_;       //1st time video stream starts
     double lastBucketTimestamp_;      //1st video frame timestamp
+
+    u32 globalAudioTimestamp_; //global audio timestamp used for avsync between different video streams
 };
 #endif
