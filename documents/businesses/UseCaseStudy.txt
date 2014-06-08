@@ -1,0 +1,64 @@
+################################################################################
+# Use cases considered:
+################################################################################
+
+1. video chat
+2. self media
+3. tele education
+4. Club
+5. On-line Karaoke
+6. shopping platform similar to TV shopping network
+7. on-line concernts with interactions
+8. meetings:
+
+* Many of the cases are inter-related
+
+################################################################################
+# video chat
+################################################################################
+
+* As a social media
+* tied to we chat, or weibo
+
+################################################################################
+# Meetings 
+################################################################################
+
+* Examples:
+  - Teacher-Parant Meetings
+  - Company Meetings
+  - on-line disicussions among friends
+
+* The club case can also be considred as one of this
+
+* The major advantage is also interactivity
+
+################################################################################
+# Self-Media 
+################################################################################
+
+* (Again) The major advantage is interactivity
+
+################################################################################
+# Shopping Networks 
+################################################################################
+
+o The product marketer and buyer talking, while all other protential buyer 
+  watching
+  - better the existing TV shopping network where only marketer is talking
+
+################################################################################
+# On-line Karaoke 
+################################################################################
+
+o Advantages:
+  - no additional HW needed, can be done at the convinience of home with
+    existing Pads, or smart TVs
+  - all the songs in the whole world is available to the users at incremental
+    costs
+
+o Additional technology hurdles exist:
+  - Audo is mono-channel
+  * effect is not as good
+
+ 
