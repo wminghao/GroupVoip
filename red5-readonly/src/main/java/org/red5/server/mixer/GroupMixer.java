@@ -6,7 +6,6 @@ import java.util.Map;
 import org.apache.mina.core.buffer.IoBuffer;
 import org.red5.logging.Red5LoggerFactory;
 import org.red5.server.api.Red5;
-import org.red5.server.mixer.IdLookup.GroupMappingTableEntry;
 import org.red5.server.net.rtmp.IRTMPHandler;
 import org.red5.server.net.rtmp.RTMPConnManager;
 import org.red5.server.net.rtmp.RTMPMinaConnection;
@@ -21,13 +20,9 @@ import org.red5.server.net.rtmp.message.Packet;
 import org.red5.server.service.PendingCall;
 import org.slf4j.Logger;
 
-import java.util.BitSet;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
-public class GroupMixer implements Runnable, SegmentParser.Delegate {
+public class GroupMixer implements SegmentParser.Delegate {
 
 	public static final String MIXED_STREAM_PREFIX = "__mixed__";
 	public static final String ALL_IN_ONE_STREAM_NAME = "allinone";
@@ -40,63 +35,6 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
 	private IdLookup idLookupTable = new IdLookup();
 	
 	private ProcessPipe mixerPipe_ = null;
-	
-	//n events in the blocking queue                                                                                                                                                                     
-	private class GroupMixerAsyncEvent{
-
-        public GroupMixerAsyncEvent(int eventId, String paramStr, ByteBuffer flvFrame, int len) {
-            this.eventId  = eventId;
-            this.paramStr = paramStr;
-            this.flvFrame = flvFrame;
-            this.flvFrameLen = len;
-        }
-
-        public String getName() {
-            String eventName = "";
-            switch(eventId) {
-            	case GroupMixerAsyncEvent.MESSAGEINPUT_REQ:
-                {
-                    eventName = "Input message to processpipe";
-                    break;
-                }
-            	case GroupMixerAsyncEvent.MESSAGEOUTPUT_REQ:
-                {
-                    eventName = "Output message to processpipe";
-                    break;
-                }
-                case GroupMixerAsyncEvent.CREATESTREAM_REQ:
-                {
-                    eventName = "Stream is created";
-                    break;
-                }
-                case GroupMixerAsyncEvent.DELETESTREAM_REQ:
-                {
-                    eventName = "Stream is deleted";
-                    break;
-                }
-                case GroupMixerAsyncEvent.SHUTDOWN_REQ:
-                {
-                    eventName = "Everything is shutdown";
-                    break;
-                }
-            }
-            return "event is " + eventName + " param1=" + paramStr + " param2=" + flvFrameLen;
-        }
-
-        private int eventId;
-        private String paramStr; //either it's the streamName or streamId (!= streamId in mixcoder from 0-MAX_STREAM_COUNT)
-        private ByteBuffer flvFrame; //FLVFrame raw data
-        private int flvFrameLen; //frame len
-
-        public static final int CREATESTREAM_REQ      	= 0;
-        public static final int DELETESTREAM_REQ      	= 1;
-        public static final int MESSAGEINPUT_REQ 	  	= 2;
-        public static final int MESSAGEOUTPUT_REQ      	= 3;
-        public static final int SHUTDOWN_REQ 		   	= 100;
-    }
-    
-    private BlockingQueue<GroupMixerAsyncEvent> asyncEventQueue = new ArrayBlockingQueue<GroupMixerAsyncEvent>(100);
-    
 	private GroupMixer() {
 	}
 	
@@ -129,11 +67,6 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
     
     		//handle connect, createStream and publish events
     		handleConnectEvent(connAllInOne);
-            
-
-    		//start the thread immediately
-        	Thread t = new Thread(this, "GroupMixerThread");
-        	t.start();
         	
         	//kick off createStream event
         	createMixedStream(ALL_IN_ONE_STREAM_NAME);
@@ -144,134 +77,33 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
     
     public void createMixedStream(String streamName)
     {
-    	addEvent(GroupMixerAsyncEvent.CREATESTREAM_REQ, streamName, null, 0);
+    	RTMPMinaConnection conn = getAllInOneConn();
+    	int newStreamId = idLookupTable.createNewEntry(streamName);
+    	handleCreatePublishEvents(conn, MIXED_STREAM_PREFIX+streamName, newStreamId);
     }    
+    
     public void deleteMixedStream(String streamName)
     {
-    	addEvent(GroupMixerAsyncEvent.DELETESTREAM_REQ, streamName, null, 0);
+    	int streamId = idLookupTable.deleteEntry(streamName);
+    	if ( streamId != -1 ) {        	
+        	RTMPMinaConnection conn = getAllInOneConn();
+        	handleDeleteEvent(conn, streamId);
+    	}
     }
-    /*
-     * 	public final static int put(IoBuffer out, IoBuffer in, int numBytesMax) {
-		if (log.isTraceEnabled()) {
-			log.trace("Put\nout buffer: {}\nin buffer: {}\nmax bytes: {}", new Object[] { out, in, numBytesMax });
-		}
-		int numBytesRead = 0;
-		if (in != null) {
-			int limit = Math.min(in.limit(), numBytesMax);
-			byte[] inBuf = new byte[limit];
-			log.trace("Bulk get size: {}", limit);
-			in.get(inBuf);
-			byte[] outBuf = consumeBytes(inBuf, numBytesMax);
-			out.put(outBuf);
-			numBytesRead = outBuf.length;
-			log.trace("In pos: {}", in.position());
-		}
-		log.trace("Bytes put: {}", numBytesRead);
-		return numBytesRead;
-	}
-     */
+    
     public void pushInputMessage(String streamName, int msgType, IoBuffer buf, int eventTime)
     {	
-		int dataLen = buf.limit();
-		if( dataLen > 0 ) {
-    		int flvFrameLen = 11 + dataLen + 4;
-    		
-    		ByteBuffer flvFrame;
-    		flvFrame = ByteBuffer.allocate(flvFrameLen);
-            
-    		flvFrame.order(ByteOrder.LITTLE_ENDIAN);  // to use little endian
-    		flvFrame.put((byte)msgType); //audio type
-    		flvFrame.put((byte)((dataLen>>16)&0xff));//datalen
-    		flvFrame.put((byte)((dataLen>>8)&0xff));//datalen
-    		flvFrame.put((byte)( dataLen&0xff));//datalen
-    
-    		flvFrame.put((byte)((eventTime>>16)&0xff));//ts
-    		flvFrame.put((byte)((eventTime>>8)&0xff));//ts
-    		flvFrame.put((byte)( eventTime&0xff));//ts
-    		flvFrame.put((byte)((eventTime>>24)&0xff));//ts
-    
-    		flvFrame.put((byte)0x0); //streamId, ignore
-    		flvFrame.put((byte)0x0); //streamId, ignore
-    		flvFrame.put((byte)0x0); //streamId, ignore
-
-    	    //see example from BufferUtils.class
-    		byte[] inBuf = new byte[dataLen];
-			buf.get(inBuf);
-    		flvFrame.put(inBuf, 0, dataLen);
-    		flvFrame.putInt(0);//prevSize, ignore
-            addEvent(GroupMixerAsyncEvent.MESSAGEINPUT_REQ, streamName, flvFrame, flvFrameLen);
-        	
-            log.info("=====>in message from {} type {} ts {} len {} on thread: {}", streamName, (msgType==0x09)?"video":"audio", eventTime, dataLen, Thread.currentThread().getName());
-        }
+    	if( buf.limit() > 0 ) {
+    		mixerPipe_.handleSegInput(idLookupTable, streamName, msgType, buf, eventTime);
+    	}
     }
 
-    public void onFrameParsed(int mixerId, ByteBuffer frame, int len)
+    public void onFrameParsed(int mixerId, ByteBuffer frame, int flvFrameLen)
     {
-    	String streamName = idLookupTable.lookupStreamId(mixerId);
+    	int streamId = idLookupTable.lookupStreamId(mixerId);
     	//log.info("=====>onFrameParsed mixerId {} len {} streamName {}", mixerId, len, streamName );
-    	if ( streamName != null ) {
-    		ByteBuffer flvFrame = ByteBuffer.allocate(len);
-    		flvFrame.order(ByteOrder.LITTLE_ENDIAN);  // to use little endian
-
-    	    final ByteBuffer readOnlyCopy = frame.asReadOnlyBuffer();
-    	    readOnlyCopy.flip();
-    	    readOnlyCopy.limit(len);
-    		flvFrame.put(readOnlyCopy);
-    		flvFrame.flip();
-    		addEvent(GroupMixerAsyncEvent.MESSAGEOUTPUT_REQ, streamName, flvFrame, len);
-    	}
-    }
-    
-    public void shutdown() 
-    {
-    	addEvent(GroupMixerAsyncEvent.SHUTDOWN_REQ, null, null, 0);
-    }
-    
-    private void handleShutdown()
-    {
-    	//TODO close all-in-one RTMPConnections and all its associated assets
-    	mixerPipe_.close();
-    }
-
-    private void handleInputFlvFrame(String streamName, ByteBuffer flvFrame, int flvFrameLen)
-    {
-    	int result[] = new int[2];
-    	int mixerId = idLookupTable.lookupMixerIdAndMask(streamName, result);
-    	if ( mixerId != -1 ) {        	
-    		int segHeaderLen = 8 + 6*(result[1]-1); //additional headers, excluding all-in-one message
-    		int totalLen = flvFrameLen+segHeaderLen;
-    		ByteBuffer flvSegment = ByteBuffer.allocate(totalLen); //TODO direct?
-    		flvSegment.order(ByteOrder.LITTLE_ENDIAN);  // to use little endian
-    		flvSegment.put((byte)'S');
-    		flvSegment.put((byte)'G');
-    		flvSegment.put((byte)'I');
-    		flvSegment.put((byte)0); //even layout
-    		flvSegment.putInt(result[0]); //calc mask here
-    		
-			flvSegment.put((byte)((mixerId<<3) | 0x02));// TODO assume all mobile channels
-			flvSegment.put((byte)0); //ignore for now
-			flvSegment.putInt(flvFrameLen);
-			flvSegment.put(flvFrame.array(), 0, flvFrameLen); //TODO optimization here
-    		
-    		for (int i = 0; i < IdLookup.MAX_STREAM_COUNT; i++) {
-    			int iMaskedVal = 1<<i;
-    			if (i != mixerId && ( (result[0] & iMaskedVal) == iMaskedVal )) {
-    				byte idtype = (byte)((i<<3) | 0x02);// TODO assume all mobile channels
-    				flvSegment.put(idtype);
-    				flvSegment.put((byte)0); //ignore for now
-    				flvSegment.putInt(0); //no data for this stream
-    			}
-    		}
-    		flvSegment.flip();
-        	mixerPipe_.handleSegInput(flvSegment);
-        	log.info("=====>in message handled from {} mixerid {} flvFrameLen {}, totalLen {}", streamName, mixerId, flvFrameLen, totalLen);
-    	}
-    }
-    private void handleOutputFlvFrame(String streamName, ByteBuffer flvFrameBuffer, int flvFrameLen)
-    {
-    	int streamId = idLookupTable.lookupStreamId(streamName);
-    	if( streamId != -1 ) {    		
-    		byte[] flvFrame = flvFrameBuffer.array();
+    	if ( streamId != -1 ) {
+    		byte[] flvFrame = frame.array();
     		int curIndex = 0;
         	if(flvFrame[0] =='F' && flvFrame[1]=='L' && flvFrame[2] == 'V') {
         		curIndex+=13;
@@ -280,7 +112,7 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
         		int msgType = flvFrame[curIndex];
             	int msgSize = ((((int)flvFrame[curIndex+1])&0xff)<<16) | ((((int)flvFrame[curIndex+2])&0xff)<<8) | ((int)(flvFrame[curIndex+3])&0xff);
             	int msgTimestamp = ((((int)flvFrame[curIndex+4])&0xff)<<16) | ((((int)flvFrame[curIndex+5])&0xff)<<8) | ((int)(flvFrame[curIndex+6])&0xff) | ((((int)flvFrame[curIndex+7])&0xff)<<24);
-        		log.info("=====>out message from {} curIndex {} msgType {} msgSize {} ts {} streamId {} on thread: {}", streamName, curIndex, msgType, msgSize, msgTimestamp, streamId, Thread.currentThread().getName());
+        		log.info("=====>out message from {} curIndex {} msgType {} msgSize {} ts {} on thread: {}", streamId, curIndex, msgType, msgSize, msgTimestamp, Thread.currentThread().getName());
             	
         		curIndex += 11;
         		
@@ -338,22 +170,13 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
             	}
             	curIndex += (msgSize+4); //4 bytes unused
     		}
-		}
-    }
-    private void handleCreateMixedStream(String streamName)
-    {
-    	RTMPMinaConnection conn = getAllInOneConn();
-    	int newStreamId = idLookupTable.createNewEntry(streamName);
-    	handleCreatePublishEvents(conn, MIXED_STREAM_PREFIX+streamName, newStreamId);
+    	}
     }
     
-    private void handleDeleteMixedStream(String streamName)
+    private void shutdown()
     {
-    	int streamId = idLookupTable.deleteEntry(streamName);
-    	if ( streamId != -1 ) {        	
-        	RTMPMinaConnection conn = getAllInOneConn();
-        	handleDeleteEvent(conn, streamId);
-    	}
+    	//TODO close all-in-one RTMPConnections and all its associated assets
+    	mixerPipe_.close();
     }
     
     public RTMPMinaConnection getAllInOneConn()
@@ -519,62 +342,5 @@ public class GroupMixer implements Runnable, SegmentParser.Delegate {
 		conn.handleMessageReceived(deleteStreamMsg);
 
 		log.info("A old stream with id {} is deleted on thread: {}", streamId, Thread.currentThread().getName());
-    }
-    
-    private void addEvent(int eventId, String paramStr, ByteBuffer flvFrame, int len) {
-        try {
-            GroupMixerAsyncEvent event = new GroupMixerAsyncEvent(eventId, paramStr, flvFrame, len);
-            //log.info("GroupMixer addEvent ="+event.getName());
-            asyncEventQueue.add(event);
-        } catch (IllegalStateException iex) {
-        	log.error("GroupMixer addEvent illegal error: "+iex.toString());
-        } catch (Exception ex) {
-        	log.error("GroupMixer addEvent Generic error: "+ex.toString());
-        }
-    }
-
-    @Override
-	public void run() {
-        log.info("GroupMix thread enters");
-        try {
-        	GroupMixerAsyncEvent event;
-            while ((event = asyncEventQueue.take()).eventId != GroupMixerAsyncEvent.SHUTDOWN_REQ) {
-
-                //log.info("GroupMix processEvent ="+event.getName());
-                
-                switch(event.eventId) {
-                    case GroupMixerAsyncEvent.CREATESTREAM_REQ:
-                    {
-                    	//handle create stream event
-                    	handleCreateMixedStream(event.paramStr);
-                        break;
-                    }
-                    case GroupMixerAsyncEvent.DELETESTREAM_REQ:
-                    {
-                    	//handle delete stream event
-                    	handleDeleteMixedStream(event.paramStr);
-                        break;
-                    }
-                    case GroupMixerAsyncEvent.MESSAGEINPUT_REQ:
-                    {
-                    	handleInputFlvFrame(event.paramStr, event.flvFrame, event.flvFrameLen);
-                        break;
-                    }
-                    case GroupMixerAsyncEvent.MESSAGEOUTPUT_REQ:
-                    {
-                    	handleOutputFlvFrame(event.paramStr, event.flvFrame, event.flvFrameLen);
-                        break;
-                    }
-                }
-            }
-            if( event.eventId == GroupMixerAsyncEvent.SHUTDOWN_REQ ) {
-            	//handle shutdown here
-            	handleShutdown();
-            }
-            
-        } catch (Exception ex) {
-        	log.error("GroupMixer run Generic error: "+ex.toString());
-        }
-        log.info("GroupMix thread exits");
     }
 }

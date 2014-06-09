@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.red5.logging.Red5LoggerFactory;
 import org.red5.server.api.Red5;
-import org.red5.server.net.rtmp.RTMPMinaConnection;
 import org.slf4j.Logger;
 
 public class IdLookup {
@@ -29,6 +28,8 @@ public class IdLookup {
 	private volatile BitSet mixerStreams = new BitSet();
 
 	private static Logger log = Red5LoggerFactory.getLogger(Red5.class);
+	
+	private Object syncObj = new Object();
     
     //map streamId to the actual streamId in StreamService class
     private int reserveStreamId() {
@@ -86,56 +87,56 @@ public class IdLookup {
 		}
 	}
 	
-	public String lookupStreamId(int mixerId) {
-		String streamName = null;
-		for(String key : groupMappingTable.keySet()) {
-    		GroupMappingTableEntry value = groupMappingTable.get(key);
-    		if(value.mixerId == mixerId) {
-    			streamName = key;
-    		}
-        }
-		return streamName;
+	public int lookupStreamId(int mixerId) {
+		int streamId = -1;
+		synchronized( syncObj) {
+    		for(String key : groupMappingTable.keySet()) {
+        		GroupMappingTableEntry value = groupMappingTable.get(key);
+        		if(value.mixerId == mixerId) {
+        			streamId = value.streamId;
+        		}
+            }
+		}
+		return streamId;
 	}
 	public int lookupMixerIdAndMask(String streamName, int [] result) {
 		int mixerId = -1;
-    	GroupMappingTableEntry entry = groupMappingTable.get(streamName);
-    	if ( entry != null ) {     
-    		mixerId = entry.mixerId;
-    		result[0] = getMixerMask();
-    		result[1] = totalInputStreams;
-    	}
+		synchronized( syncObj) {
+        	GroupMappingTableEntry entry = groupMappingTable.get(streamName);
+        	if ( entry != null ) {     
+        		mixerId = entry.mixerId;
+        		result[0] = getMixerMask();
+        		result[1] = totalInputStreams;
+        	}
+		}
 		return mixerId;
-	}
-	public int lookupStreamId(String streamName) {
-		int streamId = -1;
-    	GroupMappingTableEntry entry = groupMappingTable.get(streamName);
-    	if ( entry != null ) {     
-    		streamId = entry.streamId;
-    	}
-		return streamId;
 	}
 	
 	public int createNewEntry(String streamName) {
 		GroupMappingTableEntry entry = new GroupMappingTableEntry();
-    	entry.mixerId = reserveMixerId(streamName);
-    	entry.streamId = reserveStreamId();
-    	groupMappingTable.put(streamName, entry);
-    	totalInputStreams++;
+		synchronized( syncObj) {
+        	entry.mixerId = reserveMixerId(streamName);
+        	entry.streamId = reserveStreamId();
+        	groupMappingTable.put(streamName, entry);
+        	totalInputStreams++;
+		}
 		log.info("A new stream id: {}, mixer id: {} name: {} is created on thread: {}", entry.streamId, entry.mixerId, streamName, Thread.currentThread().getName());
     	return entry.streamId;
 	}
 	
 	public int deleteEntry(String streamName) {
 		int streamId = -1;
-    	GroupMappingTableEntry entry = groupMappingTable.get(streamName);
-    	if ( entry != null ) {
-        	unreserveStreamId(entry.streamId);
-        	unreserveMixerId(entry.mixerId);
-        	groupMappingTable.remove(streamName);
-        	streamId = entry.streamId;
-        	totalInputStreams--;
-    		log.info("A old stream id: {}, mixer id: {} is deleted on thread: {}", entry.streamId, entry.mixerId, Thread.currentThread().getName());
-    	}
+		synchronized( syncObj) {
+        	GroupMappingTableEntry entry = groupMappingTable.get(streamName);
+        	if ( entry != null ) {
+            	unreserveStreamId(entry.streamId);
+            	unreserveMixerId(entry.mixerId);
+            	groupMappingTable.remove(streamName);
+            	streamId = entry.streamId;
+            	totalInputStreams--;
+        		log.info("A old stream id: {}, mixer id: {} is deleted on thread: {}", entry.streamId, entry.mixerId, Thread.currentThread().getName());
+        	}
+		}
     	return streamId;
 	}
 }
