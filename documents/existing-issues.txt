@@ -5,5 +5,11 @@ May 18, 2014
 2. unable to build 1.0.2 on AWS
 3. Unknown event: NetStream.Play.UnpublishNotify
    - (Howard) only need to remove the debug message
- 
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~ Fixed Issues
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+* (June 8)Updated system so SSH cients won't get timed out due to inactivity.
 

@@ -31,7 +31,7 @@
     
     _mediaplayer.media = nil;
     
-    self.ipAddr = @"192.168.2.104";
+    self.ipAddr = @"54.186.122.59";
     self.ipAddrTextField.text = self.ipAddr;
     self.ipAddrTextField.delegate = self;
     [self.ipAddrTextField addTarget:self
