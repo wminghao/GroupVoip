@@ -159,7 +159,7 @@ public class ProcessPipe implements SegmentParser.Delegate{
 	}
 	
 	private void tryToRead() {
-		byte[] inResult = new byte[256];
+		byte[] inResult = new byte[1<<20]; //1M results
 		int inBytesTotal = 0;
 		boolean isEOF = true;
 		while( isEOF ) {
