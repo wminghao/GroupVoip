@@ -43,8 +43,8 @@ void AudioMixer::mixTwoStreams(SmartPtr<SmartBuffer> buffer[],
     int b = twoIndex[1];
     short* aData = (short*)buffer[a]->data();
     short* bData = (short*)buffer[b]->data();
-    
-    for ( int i = sampleSize; i; i-- ) {
+    //    fprintf(stderr, "--------two index=%d %d\r\n", twoIndex[0], twoIndex[1]);
+    for ( int i = sampleSize-1; i>=0; i-- ) {
         int val = aData[i] + bData[i];
         valShort[i] = CLIP(val, 32767, -32768);
     }
@@ -61,7 +61,7 @@ void AudioMixer::mixThreeStreams(SmartPtr<SmartBuffer> buffer[],
     short* aData = (short*)buffer[a]->data();
     short* bData = (short*)buffer[b]->data();
     short* cData = (short*)buffer[c]->data();
-    for ( int i = sampleSize; i; i-- ) {
+    for ( int i = sampleSize-1 ; i>=0; i-- ) {
         int val = aData[i] + bData[i] + cData[i];
         valShort[i] = CLIP(val, 32767, -32768);
     }
@@ -80,7 +80,7 @@ void AudioMixer::mixFourStreams(SmartPtr<SmartBuffer> buffer[],
     short* bData = (short*)buffer[b]->data();
     short* cData = (short*)buffer[c]->data();
     short* dData = (short*)buffer[d]->data();
-    for ( int i = sampleSize; i; i-- ) {
+    for ( int i = sampleSize-1; i>=0; i-- ) {
         int val = aData[i] + bData[i] + cData[i] + dData[i];
         valShort[i] = CLIP(val, 32767, -32768);
     }
@@ -110,8 +110,19 @@ SmartPtr<SmartBuffer> AudioMixer::mixStreams(SmartPtr<SmartBuffer> buffer[],
         short valShort[sampleSize];
         switch ( totalStreams ) {
             case 1: {
-                //if nothing is mixed, i.e., one stream only voip, use white noise
-                genWhiteNoise(valShort, sampleSize);
+                if( excludeStreamId != 0xffffffff ) {
+                    //if nothing is mixed, i.e., one stream only voip, use white noise
+                    genWhiteNoise(valShort, sampleSize);
+                } else {
+                    int a = 0;
+                    for(u32 j=0; j<MAX_XCODING_INSTANCES; j++) {
+                        if( settings[j].bIsValid && j != excludeStreamId ) { 
+                            a = j;
+                            break;
+                        }
+                    }
+                    memcpy((u8*)valShort, buffer[a]->data(), sampleSize*sizeof(short));
+                }
                 break;
             }
             case 2: {
