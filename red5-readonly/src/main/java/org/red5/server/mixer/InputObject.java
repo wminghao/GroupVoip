@@ -16,6 +16,9 @@ public class InputObject {
 	public ByteBuffer flvSegment;
 	public int eventTime;
 	private static Logger log = Red5LoggerFactory.getLogger(Red5.class);
+
+	private static final int kDesktopStreamSource = 1; //desktop don't need a separate audio mixing
+	private static final int kMobileStreamSource = 2; //mobile stream needs a separate audio mixing
 	
 	public InputObject(IdLookup idLookupTable, String streamName, int msgType, IoBuffer buf, int eventTime, int dataLen) {
 		this.idLookupTable = idLookupTable;
@@ -53,7 +56,7 @@ public class InputObject {
         		flvSegment.put((byte)0); //even layout
         		flvSegment.putInt(result[0]); //calc mask here
         		
-    			flvSegment.put((byte)((mixerId<<3) | 0x02));// TODO assume all mobile channels
+    			flvSegment.put((byte)((mixerId<<3) | kDesktopStreamSource));// TODO assume all desktop channels
     			flvSegment.put((byte)0); //ignore for now
     			flvSegment.putInt(flvFrameLen);
     
@@ -79,7 +82,7 @@ public class InputObject {
         		for (int i = 0; i < IdLookup.MAX_STREAM_COUNT; i++) {
         			int iMaskedVal = 1<<i;
         			if (i != mixerId && ( (result[0] & iMaskedVal) == iMaskedVal )) {
-        				byte idtype = (byte)((i<<3) | 0x02);// TODO assume all mobile channels
+        				byte idtype = (byte)((i<<3) | kDesktopStreamSource); // TODO assume all desktop channels
         				flvSegment.put(idtype);
         				flvSegment.put((byte)0); //ignore for now
         				flvSegment.putInt(0); //no data for this stream
