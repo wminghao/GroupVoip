@@ -22,6 +22,26 @@ class AudioMixer
                                      int totalStreams,
                                      u32 excludeStreamId);
 
+ private:
+    void mixTwoStreams(SmartPtr<SmartBuffer> buffer[], 
+                       int* twoIndex,
+                       short* valShort,
+                       int sampleSize);
+
+    void mixThreeStreams(SmartPtr<SmartBuffer> buffer[], 
+                       int* threeIndex,
+                       short* valShort,
+                       int sampleSize);
+
+    void mixFourStreams(SmartPtr<SmartBuffer> buffer[], 
+                       int* fourIndex,
+                       short* valShort,
+                       int sampleSize);
+
+    void findIndexes(AudioStreamSetting settings[],
+                     u32 excludeStreamId,
+                     int* indexArr);
+
 };
 
 
