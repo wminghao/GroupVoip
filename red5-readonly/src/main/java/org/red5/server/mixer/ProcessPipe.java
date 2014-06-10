@@ -98,8 +98,10 @@ public class ProcessPipe implements SegmentParser.Delegate{
         	    	}
         	    	if( outputFile_ != null ) {
         	    		ByteBuffer seg = inputObject.toByteBuffer();
-            	    	//log.info("=====>array totalLen={} size={}", totalLen, seg.array().length);
-        	    		outputFile_.write(seg.array(), 0, seg.array().length);
+        	    		if( seg != null ) {
+        	    			//log.info("=====>array totalLen={} size={}", totalLen, seg.array().length);
+        	    			outputFile_.write(seg.array(), 0, seg.array().length);
+        	    		}
         	    	}
         	    }
         	    catch(FileNotFoundException ex){
@@ -136,8 +138,10 @@ public class ProcessPipe implements SegmentParser.Delegate{
         		try {
         			InputObject obj = outBuffers_.remove(0);
         			ByteBuffer seg = obj.toByteBuffer();
-        			out_.write(seg.array()); //blocking call
-        			out_.flush();
+        			if( seg != null ) {
+        				out_.write(seg.array()); //blocking call
+        				out_.flush();
+        			}
         	    }
         	    catch (Exception err) {
         	    	bShouldContWriterThread_ = false;
