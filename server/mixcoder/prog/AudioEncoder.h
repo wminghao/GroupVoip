@@ -16,7 +16,7 @@ class AudioEncoder
         memcpy(&inputSetting_, inputSetting, sizeof(AudioStreamSetting));
         memcpy(&outputSetting_, outputSetting, sizeof(AudioStreamSetting));
     }
-    ~AudioEncoder(){}
+    virtual ~AudioEncoder(){}
     virtual SmartPtr<SmartBuffer> encodeAFrame(SmartPtr<SmartBuffer> input) = 0;
  protected:
     //input settings

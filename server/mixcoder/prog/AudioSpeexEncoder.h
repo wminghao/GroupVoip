@@ -10,8 +10,8 @@ class AudioSpeexEncoder:public AudioEncoder
  public:
     //always encode in speex or mp3
     AudioSpeexEncoder(AudioStreamSetting* inputSetting, AudioStreamSetting* outputSetting, int aBitrate);
-    ~AudioSpeexEncoder();
-    SmartPtr<SmartBuffer> encodeAFrame(SmartPtr<SmartBuffer> input) ;
+    virtual ~AudioSpeexEncoder();
+    virtual SmartPtr<SmartBuffer> encodeAFrame(SmartPtr<SmartBuffer> input) ;
  private:
     SpeexBits bits_;
 };
