@@ -2,18 +2,7 @@
 #include <stdlib.h>     /* srand, rand */
 #include <time.h>
 
-inline int CLIP(int val, int max, int min)
-{
-    int ret;
-    if( val >  max) {
-        ret = max;
-    } else if ( val < min ) {
-        ret = min;
-    } else {
-        ret = val;
-    }
-    return ret;
-}
+#define CLIP( val, max, min ) ( val >  max ) ? max: ( ( val < min ) ? min: val)
 
 int randInRange(int max)
 {
