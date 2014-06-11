@@ -13,7 +13,7 @@ using namespace std;
 class FLVParser
 {
  public:
- FLVParser(FLVSegmentParserDelegate* delegate, int index):delegate_(delegate), index_(index), scanState_ (SCAN_HEADER_TYPE_LEN), curFlvTagSize_(0), curStreamType_(kUnknownStreamType), relTimeStampOffset_(MAX_U32), prevVideoPts_(0)
+ FLVParser(FLVSegmentParserDelegate* delegate, int index):delegate_(delegate), index_(index), scanState_ (SCAN_HEADER_TYPE_LEN), curFlvTagSize_(0), curStreamType_(kUnknownStreamType), relTimeStampOffset_(MAX_U32), prevVideoAdjPts_(0), prevAudioOrigPts_(0)
     {
         startEpocTime_ = getEpocTime();
     }
@@ -38,7 +38,8 @@ class FLVParser
     u64 startEpocTime_;
     u32 relTimeStampOffset_;
 
-    u32 prevVideoPts_;
+    u32 prevVideoAdjPts_; //adjusted ts
+    u32 prevAudioOrigPts_; //original ts
     string curSpsPps_;
 };
 

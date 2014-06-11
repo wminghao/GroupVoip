@@ -1,3 +1,6 @@
+cd ../../
+scons type=debug
+cd mixcoder/test
 mkfifo foo
 cat slow.seg > foo &
-valgrind --leak-check=yes ../../build/Linux-x86_64/mixcoder/prog/mix_coder < foo > slow_output.seg
+valgrind --leak-check=yes --tool=memcheck ../../build/Linux-x86_64/mixcoder/prog/mix_coder < foo > slow_output.seg

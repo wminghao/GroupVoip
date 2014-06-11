@@ -257,17 +257,26 @@ void FLVParser::parseNextFLVFrame( string& strFlvTag )
             //assert( curEpocTime > startEpocTime_ );
             //relTimeStampOffset_ = ( curEpocTime - startEpocTime_ ) - tsUnion.timestamp;
             relTimeStampOffset_ = delegate_->getGlobalAudioTimestamp() - tsUnion.timestamp;
+        } else {
+            //if the drift is bigger than 1 second, that means the current stream is catching up to the current time by re-adjusting its own clock.
+            //that's the case when 2 publishers, a second publisher initially sends a frame with low ts, and jumps to a high ts immediately afterwards
+            if( accessUnit->st == kAudioStreamType && tsUnion.timestamp > prevAudioOrigPts_ + 100 ) {
+                relTimeStampOffset_ = delegate_->getGlobalAudioTimestamp() - tsUnion.timestamp;
+                LOG( "==========================Adjusted relTimestampOffset_=%d===========\r\n", relTimeStampOffset_);
+            }
         }
         if ( accessUnit->sp == kSpsPps ) {
             //reset the spspps timestamp to be next ts
-            accessUnit->pts = accessUnit->dts = prevVideoPts_+1;
+            accessUnit->pts = accessUnit->dts = prevVideoAdjPts_+1;
         } else {
             accessUnit->pts = accessUnit->dts = tsUnion.timestamp + ((relTimeStampOffset_ == MAX_U32)?0:relTimeStampOffset_);
         }
-        if( accessUnit->st == kVideoStreamType ) {
-            prevVideoPts_ = accessUnit->pts;
-        }
 
+        if( accessUnit->st == kVideoStreamType ) {
+            prevVideoAdjPts_ = accessUnit->pts;
+        } else if( accessUnit->st == kAudioStreamType ) {
+            prevAudioOrigPts_ = tsUnion.timestamp;
+        }
         LOG( "---index=%d, ready=%d, streamType=%d, flvTagSize=%d, oPts=%d,  relTsOffset_=%d, npts=%d\r\n", index_, frameReady, curStreamType_, curFlvTagSize_, tsUnion.timestamp, relTimeStampOffset_, (u32)accessUnit->pts );
 
         if( frameReady ) {
