@@ -19,6 +19,8 @@
 
 * As a social media
 * tied to we chat, or weibo
+* one possibility -- provide a video chat plug-in for wechat, or wechat
+  alternative
 
 ################################################################################
 # Meetings 
@@ -54,11 +56,26 @@ o The product marketer and buyer talking, while all other protential buyer
 o Advantages:
   - no additional HW needed, can be done at the convinience of home with
     existing Pads, or smart TVs
-  - all the songs in the whole world is available to the users at incremental
-    costs
+  - all the songs in the whole world is available to the users at minimal
+    incremental costs
 
 o Additional technology hurdles exist:
   - Audo is mono-channel
-  * effect is not as good
+  * effect is not as good as in commercial KTV
+
+================================================================================
+= Questions to consider
+================================================================================
+
+1. Public use case or private use case?
+
+   Public case is more effective way for generating profits one cost incurring 
+   stream with more potential viewers for ads revenue
+   At the same time, the space may be more competitive.
+
+2. Tool or Fund?
+
+   (Howard) Social apps are for fun, emotion built in. 
+    Tool apps are for efficiency, effective communication.
 
  
