@@ -1,3 +1,9 @@
+
+June 15, 2014
+
+* Provide a high-evel list over advantages of our advantages.
+  (Pending decision from Howard over whether or not we want to do that).
+
 June 8, 2014
 
 1. (Howard) investigate the the performance issue
