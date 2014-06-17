@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2F34E001194FBC9E0038797F /* ffmpeg in Resources */ = {isa = PBXBuildFile; fileRef = 2F34E000194FBC9E0038797F /* ffmpeg */; };
 		2FAA81F918F46D880052EA1A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2FAA81F818F46D880052EA1A /* Foundation.framework */; };
 		2FAA81FB18F46D880052EA1A /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2FAA81FA18F46D880052EA1A /* CoreGraphics.framework */; };
 		2FAA81FD18F46D880052EA1A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2FAA81FC18F46D880052EA1A /* UIKit.framework */; };
@@ -43,6 +44,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		2F34E000194FBC9E0038797F /* ffmpeg */ = {isa = PBXFileReference; lastKnownFileType = folder; name = ffmpeg; path = "../../../vlc-iOS/VLCKit/MobileVLCKit/ImportedSources/vlc/contrib/iPhoneSimulator-x86_64/ffmpeg"; sourceTree = "<group>"; };
 		2FAA81F518F46D880052EA1A /* GroupVoIp.iOSClient.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GroupVoIp.iOSClient.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2FAA81F818F46D880052EA1A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		2FAA81FA18F46D880052EA1A /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -180,6 +182,7 @@
 		2FAA824E18F4D1A80052EA1A /* vlc-source */ = {
 			isa = PBXGroup;
 			children = (
+				2F34E000194FBC9E0038797F /* ffmpeg */,
 				2FAA824F18F4D1CA0052EA1A /* vlc */,
 			);
 			name = "vlc-source";
@@ -226,7 +229,7 @@
 				LastUpgradeCheck = 0510;
 				ORGANIZATIONNAME = "Howard Wang";
 			};
-			buildConfigurationList = 2FAA81F018F46D880052EA1A /* Build configuration list for PBXProject "GroupVoIp.iOSClient" */;
+			buildConfigurationList = 2FAA81F018F46D880052EA1A /* Build configuration list for PBXProject "GroupVoIp.iOSClient-VLC" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -266,6 +269,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2FAA825518F4D2DA0052EA1A /* lib in Resources */,
+				2F34E001194FBC9E0038797F /* ffmpeg in Resources */,
 				2FAA820F18F46D880052EA1A /* Main_iPad.storyboard in Resources */,
 				2FAA821418F46D880052EA1A /* Images.xcassets in Resources */,
 				2FAA825718F4D2DA0052EA1A /* src in Resources */,
@@ -406,7 +410,13 @@
 				);
 				INFOPLIST_FILE = "GroupVoIp.iOSClient/GroupVoIp.iOSClient-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"/Users/wminghao/Develop/vlc-iOS/VLCKit/MobileVLCKit/ImportedSources/vlc/contrib/iPhoneSimulator-x86_64/ffmpeg/libavcodec",
+					"/Users/wminghao/Develop/vlc-iOS/VLCKit/MobileVLCKit/ImportedSources/vlc/contrib/iPhoneSimulator-x86_64/ffmpeg/libavformat",
+					"/Users/wminghao/Develop/vlc-iOS/VLCKit/MobileVLCKit/ImportedSources/vlc/contrib/iPhoneSimulator-x86_64/ffmpeg/libavutil",
+					"/Users/wminghao/Develop/vlc-iOS/VLCKit/MobileVLCKit/ImportedSources/vlc/contrib/iPhoneSimulator-x86_64/ffmpeg/libswscale",
+				);
 				"OTHER_LDFLAGS[sdk=iphoneos*]" = "../vlclibs/Debug-iphoneos/libMobileVLCKit.a";
 				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = "../vlclibs/Debug-iphonesimulator/libMobileVLCKit.a";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -430,7 +440,13 @@
 				);
 				INFOPLIST_FILE = "GroupVoIp.iOSClient/GroupVoIp.iOSClient-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"/Users/wminghao/Develop/vlc-iOS/VLCKit/MobileVLCKit/ImportedSources/vlc/contrib/iPhoneSimulator-x86_64/ffmpeg/libavcodec",
+					"/Users/wminghao/Develop/vlc-iOS/VLCKit/MobileVLCKit/ImportedSources/vlc/contrib/iPhoneSimulator-x86_64/ffmpeg/libavformat",
+					"/Users/wminghao/Develop/vlc-iOS/VLCKit/MobileVLCKit/ImportedSources/vlc/contrib/iPhoneSimulator-x86_64/ffmpeg/libavutil",
+					"/Users/wminghao/Develop/vlc-iOS/VLCKit/MobileVLCKit/ImportedSources/vlc/contrib/iPhoneSimulator-x86_64/ffmpeg/libswscale",
+				);
 				"OTHER_LDFLAGS[sdk=iphoneos*]" = "../vlclibs/Release-iphoneos/libMobileVLCKit.a";
 				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = "../vlclibs/Release-iphonesimulator/libMobileVLCKit.a";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -442,7 +458,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		2FAA81F018F46D880052EA1A /* Build configuration list for PBXProject "GroupVoIp.iOSClient" */ = {
+		2FAA81F018F46D880052EA1A /* Build configuration list for PBXProject "GroupVoIp.iOSClient-VLC" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2FAA822818F46D880052EA1A /* Debug */,
