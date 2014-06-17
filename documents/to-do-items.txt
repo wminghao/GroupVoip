@@ -1,10 +1,18 @@
+June 8, 2014
+
+1. (Howard) investigate the the performance issue
+   * Are there bugs leading to the issues?
+   * What we can do to opimitzed?
+2. (Raymond) update the business plan
 
 
 May 18, 2014
 
 1. (Raymond) try building 1.0.1 using eclipse
+   - No need as we can build 1.0.2. on AWS now.
 
 2. (Raymond) try building 1.0.2 o AWS
+   - Working.
   
 3. (Howard) to copy RTMP for Raymond
 

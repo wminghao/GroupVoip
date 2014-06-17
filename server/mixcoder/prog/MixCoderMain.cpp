@@ -22,7 +22,7 @@ void handlesig( int signum )
 }
 
 //big enough buffer
-const int MAX_BUF_SIZE = 100;
+const int MAX_BUF_SIZE = 4096;
 
 int main( int argc, char** argv ) {
 

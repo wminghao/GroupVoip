@@ -14,6 +14,7 @@ import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.util.Vector;
 
+import org.apache.mina.core.buffer.IoBuffer;
 import org.red5.logging.Red5LoggerFactory;
 import org.red5.server.api.Red5;
 import org.slf4j.Logger;
@@ -34,11 +35,12 @@ public class ProcessPipe implements SegmentParser.Delegate{
 	private Process process_ = null;
 	private DataInputStream in_ = null;
 	private DataOutputStream out_ = null;
-	private Vector<ByteBuffer> outBuffers_ = new Vector<ByteBuffer>(100); //vector is threadsafe
+	private Vector<InputObject> outBuffers_ = new Vector<InputObject>(100); //vector is threadsafe
 	private ProcessReaderThread procReader_ = null;
 	private ProcessWriterThread procWriter_ = null;
 	private volatile boolean bShouldContWriterThread_ = true;
 	private Object writerThreadSyncObject_ = new Object();
+	
 	
 	//Howard: tried 2 use select() to do process IO, but failed, b/c Java does not supports it. 
 	//Have to use 2 threads to do select, which is lame.
@@ -83,43 +85,50 @@ public class ProcessPipe implements SegmentParser.Delegate{
 	    log.info("======>GroupMixer configuration, bSaveToDisc={}, outPath={}, bLoadFromDisc={}, inPath={}.", bSaveToDisc, outputFilePath, bLoadFromDisc, inputFilePath);
 	}
 	
-	public void handleSegInput(ByteBuffer seg)
+	public void handleSegInput(IdLookup idLookupTable, String streamName, int msgType, IoBuffer buf, int eventTime)
 	{
-		if(bSaveToDisc) {
-    	    try {
-    	    	//log.info("=====>Writing binary file... totalLen={} size={}", totalLen, seg.limit());
-    	    	if( outputFile_ == null ) {
-        	    	outputFile_ = new BufferedOutputStream(new FileOutputStream(this.outputFilePath));
-    	    	}
-    	    	if( outputFile_ != null ) {
-        	    	//log.info("=====>array totalLen={} size={}", totalLen, seg.array().length);
-    	    		outputFile_.write(seg.array(), 0, seg.array().length);
-    	    	}
-    	    }
-    	    catch(FileNotFoundException ex){
-    		    log.info("======>Output File not found.");
-    	    }
-    	    catch(IOException ex){
-    		    log.info("======>IO exception.");
-    	    }
-		} 
-		if ( bLoadFromDisc ) {
-			try {
-				if ( discReaderThread_ == null ) {
-        			//start the thread here
-        			discReaderThread_ = new DiscReaderThread();
-        			Thread thread = new Thread(discReaderThread_, "DiscReader");
-        			thread.start();
-				}
-			} catch (Exception ex) {
-       			log.info("=====>Disc IO other exception:  {}", ex);
-     	    }			
-		} else {
-			outBuffers_.add(seg);
-			synchronized(writerThreadSyncObject_) {
-				writerThreadSyncObject_.notify();
-			}
-			//log.info("====>outBuffers_ queue size {}", outBuffers_.size());
+		int dataLen = buf.limit();
+		if( dataLen > 0 ) {
+    		InputObject inputObject = new InputObject(idLookupTable, streamName, msgType, buf, eventTime, dataLen);
+    		if(bSaveToDisc) {
+        	    try {
+        	    	//log.info("=====>Writing binary file... totalLen={} size={}", totalLen, seg.limit());
+        	    	if( outputFile_ == null ) {
+            	    	outputFile_ = new BufferedOutputStream(new FileOutputStream(this.outputFilePath));
+        	    	}
+        	    	if( outputFile_ != null ) {
+        	    		ByteBuffer seg = inputObject.toByteBuffer();
+        	    		if( seg != null ) {
+        	    			//log.info("=====>array totalLen={} size={}", totalLen, seg.array().length);
+        	    			outputFile_.write(seg.array(), 0, seg.array().length);
+        	    		}
+        	    	}
+        	    }
+        	    catch(FileNotFoundException ex){
+        		    log.info("======>Output File not found.");
+        	    }
+        	    catch(IOException ex){
+        		    log.info("======>IO exception.");
+        	    }
+    		} 
+    		if ( bLoadFromDisc ) {
+    			try {
+    				if ( discReaderThread_ == null ) {
+            			//start the thread here
+            			discReaderThread_ = new DiscReaderThread();
+            			Thread thread = new Thread(discReaderThread_, "DiscReader");
+            			thread.start();
+    				}
+    			} catch (Exception ex) {
+           			log.info("=====>Disc IO other exception:  {}", ex);
+         	    }			
+    		} else {
+    			outBuffers_.add(inputObject);
+    			synchronized(writerThreadSyncObject_) {
+    				writerThreadSyncObject_.notify();
+    			}
+    			//log.info("====>outBuffers_ queue size {}", outBuffers_.size());
+    		}
 		}
 	}
 	
@@ -127,9 +136,12 @@ public class ProcessPipe implements SegmentParser.Delegate{
 		while( bShouldContWriterThread_ ) {
     		while( outBuffers_.size() > 0 && bShouldContWriterThread_) {
         		try {
-        			ByteBuffer seg = outBuffers_.remove(0);
-        			out_.write(seg.array()); //blocking call
-        			out_.flush();
+        			InputObject obj = outBuffers_.remove(0);
+        			ByteBuffer seg = obj.toByteBuffer();
+        			if( seg != null ) {
+        				out_.write(seg.array()); //blocking call
+        				out_.flush();
+        			}
         	    }
         	    catch (Exception err) {
         	    	bShouldContWriterThread_ = false;
@@ -151,7 +163,7 @@ public class ProcessPipe implements SegmentParser.Delegate{
 	}
 	
 	private void tryToRead() {
-		byte[] inResult = new byte[256];
+		byte[] inResult = new byte[1<<20]; //1M results
 		int inBytesTotal = 0;
 		boolean isEOF = true;
 		while( isEOF ) {

@@ -178,6 +178,8 @@ VideoEncoder::VideoEncoder( VideoStreamSetting* setting, int vBaseLayerBitrate )
 
 VideoEncoder::~VideoEncoder()
 {
+    vpx_img_free(&raw_);
+    
     if (vpx_codec_destroy(&codec_)) {
         LOG( "Failed to destroy codec");
     }
