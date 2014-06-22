@@ -110,6 +110,10 @@ public class GroupMixer implements SegmentParser.Delegate, KaraokeGenerator.Dele
     	if( buf.limit() > 0 && mixerPipe_ != null ) {
     		mixerPipe_.handleSegInput(idLookupTable, streamName, msgType, buf, eventTime);
     	}
+    	if( karaokeGen_!= null ) {
+    		//start the karaoke thread
+    		karaokeGen_.tryToStart();
+    	}
     }
 
     public void onFrameParsed(int mixerId, ByteBuffer frame, int flvFrameLen)
