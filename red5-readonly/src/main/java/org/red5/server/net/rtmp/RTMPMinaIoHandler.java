@@ -51,10 +51,13 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 	protected ProtocolCodecFactory codecFactory;
 
 	//TODO move it out to GroupMixer
+	private boolean bShouldMix;
 	private boolean bLoadFromDisc; //read from a file instead
 	private boolean bSaveToDisc; //log input file to a disc
+	private boolean bGenKaraoke; //should use karaoke
 	private String outputFilePath;
 	private String inputFilePath;	
+	private String karaokeFilePath;
 
 	/** {@inheritDoc} */
 	@Override
@@ -76,7 +79,10 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 		session.setAttribute(RTMPConnection.RTMP_HANDSHAKE, new InboundHandshake());
 		
 		//next creates the all-in-one RTMPMinaConnection
-		GroupMixer.getInstance().tryToCreateAllInOneConn(handler, bSaveToDisc, outputFilePath, bLoadFromDisc, inputFilePath);
+		GroupMixer.getInstance().tryToCreateAllInOneConn(handler, bShouldMix, 
+														 bSaveToDisc, outputFilePath, 
+														 bLoadFromDisc, inputFilePath,
+														 bGenKaraoke, karaokeFilePath);
 	}
 
 	/** {@inheritDoc} */
@@ -285,6 +291,14 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 	}
 	
 	/**
+	 * Setter for bShouldMix.
+	 *
+	 * @param tells GroupMixer's whether to mix or not
+	 */
+	public void setbShouldMix(boolean bShouldMix) {
+		this.bShouldMix = bShouldMix;
+	}	
+	/**
 	 * Setter for bLoadFromDisc.
 	 *
 	 * @param tells GroupMixer's process Pipe if load output from disc or not
@@ -301,6 +315,14 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 		this.bSaveToDisc = bSaveToDisc;
 	}	
 	/**
+	 * Setter for bGenKaraoke.
+	 *
+	 * @param tells GroupMixer's whether to gen karaoke or not
+	 */
+	public void setbGenKaraoke(boolean bGenKaraoke) {
+		this.bGenKaraoke = bGenKaraoke;
+	}	
+	/**
 	 * Setter for inputFilePath.
 	 *
 	 * @param tells GroupMixer's process Pipe input file path
@@ -315,5 +337,13 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 	 */
 	public void setoutputFilePath(String outputFilePath) {
 		this.outputFilePath = outputFilePath;
+	}
+	/**
+	 * Setter for karaokePath.
+	 *
+	 * @param tells GroupMixer's where is karaoke
+	 */
+	public void setkaraokeFilePath(String karaokeFilePath) {
+		this.karaokeFilePath = karaokeFilePath;
 	}
 }

@@ -22,10 +22,11 @@ import org.slf4j.Logger;
 
 import java.nio.ByteBuffer;
 
-public class GroupMixer implements SegmentParser.Delegate {
+public class GroupMixer implements SegmentParser.Delegate, KaraokeGenerator.Delegate {
 
 	public static final String MIXED_STREAM_PREFIX = "__mixed__";
 	public static final String ALL_IN_ONE_STREAM_NAME = "allinone";
+	public static final String KARAOKE_STREAM_NAME = "karaoke"; //test name
 	private static final String AppName = "myRed5App";//TODO appName change to a room or something
 	private static final String ipAddr = "localhost"; //TODO change to something else in the future
 	private static GroupMixer instance_;
@@ -35,6 +36,8 @@ public class GroupMixer implements SegmentParser.Delegate {
 	private IdLookup idLookupTable = new IdLookup();
 	
 	private ProcessPipe mixerPipe_ = null;
+	private KaraokeGenerator karaokeGen_ = null;
+	
 	private GroupMixer() {
 	}
 	
@@ -45,12 +48,17 @@ public class GroupMixer implements SegmentParser.Delegate {
         return instance_;
     }
     
-    public void tryToCreateAllInOneConn(IRTMPHandler handler, boolean bSaveToDisc, String outputFilePath, boolean bLoadFromDisc, String inputFilePath)
+    public void tryToCreateAllInOneConn(IRTMPHandler handler, 
+    									boolean bShouldMix, 
+    									boolean bSaveToDisc, String outputFilePath,
+    									boolean bLoadFromDisc, String inputFilePath,
+    									boolean bGenKaraoke, String karaokeFilePath)
     {
     	if( allInOneSessionId_ == null ) {
     		//starts process pipe
-    		mixerPipe_ = new ProcessPipe(this, bSaveToDisc, outputFilePath, bLoadFromDisc, inputFilePath);
-    		
+    		if( bShouldMix ) {
+    			mixerPipe_ = new ProcessPipe(this, bSaveToDisc, outputFilePath, bLoadFromDisc, inputFilePath);
+    		}
     		// create a connection
     		RTMPMinaConnection connAllInOne = (RTMPMinaConnection) RTMPConnManager.getInstance().createConnection(RTMPMinaConnection.class, false);
     		// add session to the connection
@@ -70,6 +78,12 @@ public class GroupMixer implements SegmentParser.Delegate {
         	
         	//kick off createStream event
         	createMixedStream(ALL_IN_ONE_STREAM_NAME);
+        	
+        	//kick off karaoke 
+        	if( bGenKaraoke ) {
+        		karaokeGen_ = new KaraokeGenerator(this, karaokeFilePath);
+            	createMixedStream(KARAOKE_STREAM_NAME);
+        	}
         	
     		log.info("Created all In One connection with sessionId {} on thread: {}", allInOneSessionId_, Thread.currentThread().getName());
     	}
@@ -93,7 +107,7 @@ public class GroupMixer implements SegmentParser.Delegate {
     
     public void pushInputMessage(String streamName, int msgType, IoBuffer buf, int eventTime)
     {	
-    	if( buf.limit() > 0 ) {
+    	if( buf.limit() > 0 && mixerPipe_ != null ) {
     		mixerPipe_.handleSegInput(idLookupTable, streamName, msgType, buf, eventTime);
     	}
     }
@@ -101,6 +115,10 @@ public class GroupMixer implements SegmentParser.Delegate {
     public void onFrameParsed(int mixerId, ByteBuffer frame, int flvFrameLen)
     {
     	int streamId = idLookupTable.lookupStreamId(mixerId);
+    	onFrameGenerated( streamId, frame, flvFrameLen );
+    }
+    
+    private void onFrameGenerated( int streamId, ByteBuffer frame, int flvFrameLen) {	
     	//log.info("=====>onFrameParsed mixerId {} len {} streamName {}", mixerId, len, streamName );
     	if ( streamId != -1 ) {
     		byte[] flvFrame = frame.array();
@@ -176,7 +194,9 @@ public class GroupMixer implements SegmentParser.Delegate {
     private void shutdown()
     {
     	//TODO close all-in-one RTMPConnections and all its associated assets
-    	mixerPipe_.close();
+    	if( mixerPipe_ != null ) {
+    		mixerPipe_.close();
+    	}
     }
     
     public RTMPMinaConnection getAllInOneConn()
@@ -343,4 +363,10 @@ public class GroupMixer implements SegmentParser.Delegate {
 
 		log.info("A old stream with id {} is deleted on thread: {}", streamId, Thread.currentThread().getName());
     }
+
+	@Override
+	public void onKaraokeFrameParsed(ByteBuffer frame, int len) {
+		int streamId = idLookupTable.lookupStreamId(KARAOKE_STREAM_NAME);
+		onFrameGenerated(streamId, frame, len);
+	}
 }
