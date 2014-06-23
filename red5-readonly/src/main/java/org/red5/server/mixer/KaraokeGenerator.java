@@ -84,13 +84,17 @@ public class KaraokeGenerator implements Runnable, FLVParser.Delegate {
 	        			delegate_.onKaraokeFrameParsed(curFrame.frame, curFrame.len);
 	            		log.info("---->Popped a frame timestamp:  {}, len {}", curFrame.timestamp, curFrame.len);
 	        		}
-    	        	//read data
-    	        	int bytesRead = readBuf(result, input, bytesTotal, fileLen);
-        	        flvParser_.readData(result, bytesRead); //send to segment parser
-        	        bytesTotal += bytesRead;
-        	        
-        	        Thread.sleep(1);
-            		log.info("Total bytes read:  {}, len {}", bytesTotal, fileLen);
+
+    	        	if( flvFrameQueue_.size() < 10) {
+    	        		//read data
+    	        		int bytesRead = readBuf(result, input, bytesTotal, fileLen);
+    	        		flvParser_.readData(result, bytesRead); //send to segment parser
+    	        		bytesTotal += bytesRead;
+                		log.info("Total bytes read:  {}, len {}", bytesTotal, fileLen);
+            	        Thread.sleep(1);
+    	        	} else {
+            	        Thread.sleep(10);
+    	        	}
     	        }
     	    } catch (InterruptedException ex) {
           		log.info("InterruptedException:  {}", ex);
