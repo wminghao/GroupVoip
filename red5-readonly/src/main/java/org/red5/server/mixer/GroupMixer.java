@@ -119,11 +119,11 @@ public class GroupMixer implements SegmentParser.Delegate, KaraokeGenerator.Dele
     public void onFrameParsed(int mixerId, ByteBuffer frame, int flvFrameLen)
     {
     	int streamId = idLookupTable.lookupStreamId(mixerId);
+    	//log.info("=====>onFrameParsed mixerId {} len {} streamName {}", mixerId, len, streamName );
     	onFrameGenerated( streamId, frame, flvFrameLen );
     }
     
     private void onFrameGenerated( int streamId, ByteBuffer frame, int flvFrameLen) {	
-    	//log.info("=====>onFrameParsed mixerId {} len {} streamName {}", mixerId, len, streamName );
     	if ( streamId != -1 ) {
     		byte[] flvFrame = frame.array();
     		int curIndex = 0;
@@ -333,7 +333,7 @@ public class GroupMixer implements SegmentParser.Delegate, KaraokeGenerator.Dele
         Packet chunkSizeMsg = new Packet(chunkSizeMsgHeader, chunkSizeMsgEvent);
         conn.handleMessageReceived(chunkSizeMsg);
         
-		log.info("A new stream with id {} is created on thread: {}", streamId, Thread.currentThread().getName());
+		log.info("A new stream with id {} name {} is created on thread: {}", streamId, streamName, Thread.currentThread().getName());
     }
 
     private void handleDeleteEvent(RTMPMinaConnection conn, int streamId)

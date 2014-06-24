@@ -25,11 +25,11 @@ public class KaraokeGenerator implements Runnable, FLVParser.Delegate {
     private class FLVFrameObject
     {
     	public ByteBuffer frame;
-    	public int len;
     	public int timestamp;
     	public FLVFrameObject(ByteBuffer frame, int len, int timestamp) {
-    		this.frame = frame;
-    		this.len = len;
+    		this.frame = ByteBuffer.allocate(len);
+    		this.frame.put(frame.array(), 0, len);
+    		this.frame.flip();
     		this.timestamp = timestamp;
     	}
     }
@@ -64,11 +64,12 @@ public class KaraokeGenerator implements Runnable, FLVParser.Delegate {
     	    	int bytesTotal = 0;
     	    	byte[] result = new byte[4096];
     	        input = new BufferedInputStream(new FileInputStream(file));
-    	        int fileLen = (int) file.length();
+    	        int fileLen = (int) file.length() - 13;
     	        //skip 13 bytes header
-    	        readBuf(result, input, 13, fileLen);
+    	        byte[] header = new byte[13];
+    	        input.read(header);
     	        long startTime = System.currentTimeMillis();
-        		log.info("---->Start timestamp:  {}", startTime);
+        		//log.info("---->Start timestamp:  {}", startTime);
     	        //read frame by frame
     	        while( bytesTotal < fileLen ) {
     	        	if( flvFrameQueue_.size() > 0) {
@@ -81,8 +82,8 @@ public class KaraokeGenerator implements Runnable, FLVParser.Delegate {
         	        		}
         	        	}
     	        		FLVFrameObject curFrame = flvFrameQueue_.remove();
-	        			delegate_.onKaraokeFrameParsed(curFrame.frame, curFrame.len);
-	            		log.info("---->Popped a frame timestamp:  {}, len {}", curFrame.timestamp, curFrame.len);
+	        			delegate_.onKaraokeFrameParsed(curFrame.frame, curFrame.frame.capacity());
+	            		log.info("---->Popped a frame timestamp:  {}, len {}", curFrame.timestamp, curFrame.frame.capacity());
 	        		}
     	        	//read data
     	        	int bytesRead = readBuf(result, input, bytesTotal, fileLen);
@@ -90,7 +91,7 @@ public class KaraokeGenerator implements Runnable, FLVParser.Delegate {
         	        bytesTotal += bytesRead;
         	        
         	        Thread.sleep(1);
-            		log.info("Total bytes read:  {}, len {}", bytesTotal, fileLen);
+            		//log.info("---->Total bytes read:  {}, len {}", bytesTotal, fileLen);
     	        }
     	    } catch (InterruptedException ex) {
           		log.info("InterruptedException:  {}", ex);
