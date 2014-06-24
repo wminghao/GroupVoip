@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600"
+			   creationComplete="onCreationComplete(event)">
+	<s:layout>
+		<s:VerticalLayout/>
+	</s:layout>
+	<fx:Declarations>
+		<!--  -->
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.core.UIComponent;
+			import mx.events.FlexEvent;
+			
+			import spark.events.IndexChangeEvent;
+			
+			private var streamPub:NetStream; //must declare outside, otherwise, gc will recycle it.
+			private var connectionPub:NetConnection;			
+			private var connectionSub:NetConnection;
+			private var container:UIComponent;
+			
+			[Bindable]
+			private var dataSet:ArrayCollection = new ArrayCollection(
+				[   
+					{value:"testliveA", code:"testliveA"},
+					{value:"testliveB", code:"testliveB"}			
+				]
+			);
+			private var publishDest:String = "testliveA";
+			
+			private var videoWidth:int = 320;
+			private var videoHeight:int = 240;
+			private var positionArray:Array = [ [0, 0], [videoWidth, 0]];
+			
+			public function onCreationComplete(event:FlexEvent) : void {
+			}
+			
+			public function onPublishButtonClick() : void {
+				var videoPath:String = "rtmp://"+serverIp.text+"/myRed5App/";
+				// setup connection code
+				connectionPub = new NetConnection();
+				connectionPub.connect(videoPath);
+				connectionPub.addEventListener(NetStatusEvent.NET_STATUS, onConnectionANetStatus);
+				connectionPub.addEventListener(SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler);
+				connectionPub.client = this;	
+			}
+			
+			public function onConnectionANetStatus(event:NetStatusEvent) : void {
+				// did we successfully connect
+				if(event.info.code == "NetConnection.Connect.Success") {
+					publishStreamA();
+				} else {
+					Alert.show("Unsuccessful Connection", "Information");
+				}
+			}
+			
+			private function onCameraStatus( evt:StatusEvent ):void {
+				if (evt.code == "Camera.Muted"){
+					Alert.show("Camera Access Has Been Denied!", "Information");
+				}
+				if (evt.code == "Camera.Unmuted"){
+					//Alert.show("Camera Access Has Been Granted", "Information");
+				}
+			}
+			private function onMicStatus(evt:StatusEvent):void {
+				switch (evt.code) {
+					case "Microphone.Unmuted":
+						//Alert.show("Camera Access Has Been Granted!", "Information");
+						break;
+					case "Microphone.Muted":
+						Alert.show("Camera Access Has Been Denied!", "Information");
+						break;
+				}
+			}
+			private function publishStreamA():void {
+				var camera:Camera = Camera.getCamera() ;
+				var mic:Microphone = Microphone.getMicrophone();
+				camera.addEventListener(StatusEvent.STATUS, onCameraStatus) ;
+				mic.addEventListener(StatusEvent.STATUS, onMicStatus);
+				if (camera == null) {
+					Security.showSettings(SecurityPanel.CAMERA) ;
+				} else{
+					camera.setMode(videoWidth*2, videoHeight*2, 30); //640*480 30 fps
+					camera.setQuality(0,50); //50% quality, no bw limitation
+					
+					// container ( IVisualElement ) for DisplayObjects
+					container = new UIComponent();
+					container.width = stage.width/2;
+					container.height = stage.height/2;
+					addElement( container );
+					
+					streamPub = new NetStream(connectionPub);
+					var h264settings:H264VideoStreamSettings = new H264VideoStreamSettings(); 
+					h264settings.setProfileLevel(H264Profile.BASELINE, H264Level.LEVEL_1_2);
+					streamPub.videoStreamSettings = h264settings; 
+					streamPub.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
+					streamPub.addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrorHandler);
+					streamPub.attachCamera(camera);
+					streamPub.publish(publishDest, "live");
+					
+					var video:Video = new Video();
+					video.attachCamera(camera) ;
+					container.addChild(video);
+					video.width = videoWidth;
+					video.height = videoHeight;
+					video.x = video.y = 0;
+					video.visible = true;
+					
+					mic.rate = 8;
+					mic.codec = SoundCodec.SPEEX; 
+					mic.framesPerPacket = 1; //20ms per frame, instead of 40ms per frame
+					mic.setSilenceLevel(0,200);
+					var soundTrans:SoundTransform = new SoundTransform();
+					soundTrans.volume = 6;
+					mic.soundTransform = soundTrans;
+					streamPub.attachAudio(mic);
+					//Alert.show("camera width="+camera.width);
+				}
+			}
+			private function netStatusHandler(event:NetStatusEvent):void {
+				switch (event.info.code) {
+					case "NetStream.Play.StreamNotFound":
+						Alert.show("Unable to locate video: " + publishDest, "Information");
+						break;
+					case "NetStream.Publish.Start":
+						//Alert.show("Publisher starts here");
+						subscribeStreams();
+						break;
+					case "NetStream.Play.Start":
+					case "NetStream.Play.Reset":
+					case "NetStream.Video.DimensionChange":
+						break;
+					default:
+						Alert.show("Unknown event: " + event.info.code, "Information");
+						break;
+				}
+			}
+			
+			private function securityErrorHandler(event:SecurityErrorEvent):void {
+				Alert.show("securityErrorHandler: " + event, "Information");
+			}
+			
+			private function asyncErrorHandler(event:AsyncErrorEvent):void {
+				// ignore AsyncErrorEvent events.
+			}
+			public function subscribeStreams():void {
+				var videoPath:String = "rtmp://"+serverIp.text+"/myRed5App/";
+				// setup connection code
+				connectionSub = new NetConnection();
+				connectionSub.connect(videoPath);  //subscribe to live video
+				//connection.connect("rtmp://localhost/vod/"); existing flv file/mp4 files
+				connectionSub.addEventListener(NetStatusEvent.NET_STATUS, onConnectionBNetStatus);
+				connectionSub.addEventListener(SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler);
+				connectionSub.client = this;
+			}
+			public function onConnectionBNetStatus(event:NetStatusEvent) : void {
+				// did we successfully connect
+				if(event.info.code == "NetConnection.Connect.Success") {
+					connectStreams();
+				} else {
+					Alert.show("Unsuccessful Connection", "Information");
+					disconnectStreams();
+				}
+			}
+			
+			private function disconnectStreams():void {
+				//TODO
+			}	
+			
+			private function connectStreams():void {
+				var posIndex:int = 1;
+				for each(var item:Object in dataSet){
+					if( item.value != publishDest ) {
+						var stream:NetStream = new NetStream(connectionSub);
+						connectStream(stream, item.value, positionArray[posIndex][0], positionArray[posIndex][1], videoWidth, videoHeight);
+						posIndex++;
+					}
+				}
+				// next is karaoke
+				var stream:NetStream = new NetStream(connectionSub);
+				connectStream(stream, "__mixed__karaoke", 0, videoHeight, videoWidth*2, videoHeight*2 );
+				
+				/*
+				for (var i:int = 0; i < container.numChildren; i++)
+				{
+				var obj:Video = container.getChildAt(i) as Video;
+				Alert.show(obj.x + " "+ obj.y + " "+obj.width + " "+obj.height + " "+ publishDest);
+				}
+				*/
+			}
+			
+			private function connectStream(stream:NetStream, url:String, x:int, y:int, width:int, height:int):void {
+				stream.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
+				stream.addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrorHandler);
+				stream.play(url);
+				
+				var video:Video = new Video();
+				video.attachNetStream(stream);
+				container.addChild(video);
+				//video.opaqueBackground = 0x000000;
+				video.width = width;
+				video.height = height;
+				video.x = x;
+				video.y = y;
+				video.visible = true;
+			}
+			protected function dropDownList_changeHandler(event:IndexChangeEvent):void	
+			{
+				publishDest=dropDownList.selectedItem.value;				
+			}
+		]]>
+	</fx:Script>
+	<s:Group>
+		<s:layout>
+			<s:HorizontalLayout/>
+		</s:layout>
+		<s:TextInput id="serverIp" width="100" text="127.0.0.1"/>
+		<s:Button id="button1" 
+				  label="Publish!" 
+				  width="200" 
+				  fontSize="16"
+				  click="onPublishButtonClick();"/>
+		<s:DropDownList  id="dropDownList" dataProvider="{dataSet}" 
+						 width="150" change="dropDownList_changeHandler(event)"
+						 selectedIndex="0" labelField="value"/>
+	</s:Group>
+</s:Application>
