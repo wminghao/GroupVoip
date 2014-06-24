@@ -183,7 +183,7 @@
 				}
 				// next is karaoke
 				var stream:NetStream = new NetStream(connectionSub);
-				connectStream(stream, "__mixer__karaoke", 0, videoHeight, videoWidth*2, videoHeight*2 );
+				connectStream(stream, "__mixed__karaoke", 0, videoHeight, videoWidth*2, videoHeight*2 );
 				
 				/*
 				for (var i:int = 0; i < container.numChildren; i++)
