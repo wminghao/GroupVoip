@@ -35,7 +35,7 @@
 			
 			private var videoWidth:int = 320;
 			private var videoHeight:int = 240;
-			private var positionArray:Array = [ [0, 0], [videoWidth, 0]];
+			private var positionArray:Array = [ [0, 0], [0, videoHeight]];
 			
 			public function onCreationComplete(event:FlexEvent) : void {
 			}
@@ -111,7 +111,8 @@
 					video.x = video.y = 0;
 					video.visible = true;
 					
-					mic.rate = 8;
+					//mic.rate = 8;
+					mic.encodeQuality = 10; //best quality
 					mic.codec = SoundCodec.SPEEX; 
 					mic.framesPerPacket = 1; //20ms per frame, instead of 40ms per frame
 					mic.setSilenceLevel(0,200);
@@ -183,7 +184,7 @@
 				}
 				// next is karaoke
 				var stream:NetStream = new NetStream(connectionSub);
-				connectStream(stream, "__mixed__karaoke", 0, videoHeight, videoWidth*2, videoHeight*2 );
+				connectStream(stream, "__mixed__karaoke", videoWidth, 0, videoWidth*2, videoHeight*2 );
 				
 				/*
 				for (var i:int = 0; i < container.numChildren; i++)
