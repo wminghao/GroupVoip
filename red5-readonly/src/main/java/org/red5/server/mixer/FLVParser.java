@@ -66,7 +66,7 @@ public class FLVParser {
                     	//read the actual buffer
                         if( curFlvTagSize_ > 0 ) {
                         	curBuf_.flip();                      	
-                            delegate_.onKaraokeFrameParsed( curBuf_, curFlvTagSize_-4+11, curFlvTagTimestamp_ );
+                            delegate_.onKaraokeFrameParsed( curBuf_, curFlvTagSize_+11, curFlvTagTimestamp_ );
                         }
 	                    curBuf_.clear();
 	                    curLen_ = 0;

@@ -83,7 +83,7 @@ public class KaraokeGenerator implements Runnable, FLVParser.Delegate {
         	        	}
     	        		FLVFrameObject curFrame = flvFrameQueue_.remove();
 	        			delegate_.onKaraokeFrameParsed(curFrame.frame, curFrame.frame.capacity());
-	            		log.info("---->Popped a frame timestamp:  {}, len {}", curFrame.timestamp, curFrame.frame.capacity());
+	            		//log.info("---->Popped a frame timestamp:  {}, len {}", curFrame.timestamp, curFrame.frame.capacity());
 	        		}
 
     	        	if( flvFrameQueue_.size() < 10) {
@@ -91,7 +91,7 @@ public class KaraokeGenerator implements Runnable, FLVParser.Delegate {
     	        		int bytesRead = readBuf(result, input, bytesTotal, fileLen);
     	        		flvParser_.readData(result, bytesRead); //send to segment parser
     	        		bytesTotal += bytesRead;
-                		log.info("Total bytes read:  {}, len {}", bytesTotal, fileLen);
+                		//log.info("Total bytes read:  {}, len {}", bytesTotal, fileLen);
             	        Thread.sleep(1);
     	        	} else {
             	        Thread.sleep(10);
@@ -120,7 +120,7 @@ public class KaraokeGenerator implements Runnable, FLVParser.Delegate {
 			//send the first frame immediately
 			firstPTS_ = timestamp;
 			delegate_.onKaraokeFrameParsed(frame, len);
-    		log.info("---->First frame timestamp: {} len: {}", firstPTS_, len);
+    		//log.info("---->First frame timestamp: {} len: {}", firstPTS_, len);
 		} else {
 			//for the rest, put into the queue first
 			flvFrameQueue_.add( new FLVFrameObject(frame, len, timestamp) );

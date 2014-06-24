@@ -111,6 +111,8 @@ public class VideoFrameDropper implements IFrameDropper {
 					break;
 				default:
 			}
+
+			//log.info("=======>video type:{}, state:{} result:{} on thread: {}", type, state, result, Thread.currentThread().getName());
 		}
 		return result;
 	}

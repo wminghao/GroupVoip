@@ -134,7 +134,7 @@ public class GroupMixer implements SegmentParser.Delegate, KaraokeGenerator.Dele
         		int msgType = flvFrame[curIndex];
             	int msgSize = ((((int)flvFrame[curIndex+1])&0xff)<<16) | ((((int)flvFrame[curIndex+2])&0xff)<<8) | ((int)(flvFrame[curIndex+3])&0xff);
             	int msgTimestamp = ((((int)flvFrame[curIndex+4])&0xff)<<16) | ((((int)flvFrame[curIndex+5])&0xff)<<8) | ((int)(flvFrame[curIndex+6])&0xff) | ((((int)flvFrame[curIndex+7])&0xff)<<24);
-        		log.info("=====>out message from {} curIndex {} msgType {} msgSize {} ts {} on thread: {}", streamId, curIndex, msgType, msgSize, msgTimestamp, Thread.currentThread().getName());
+        		log.info("=====>out message from {} 1stByte {} msgType {} msgSize {} ts {} on thread: {}", streamId, flvFrame[curIndex+11], msgType, msgSize, msgTimestamp, Thread.currentThread().getName());
             	
         		curIndex += 11;
         		
