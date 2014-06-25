@@ -86,7 +86,7 @@
 					Security.showSettings(SecurityPanel.CAMERA) ;
 				} else{
 					camera.setMode(videoWidth*2, videoHeight*2, 30); //640*480 30 fps
-					camera.setQuality(0,50); //50% quality, no bw limitation
+					camera.setQuality(16384,0); //0% quality, 16kBytes/sec bw limitation
 					
 					// container ( IVisualElement ) for DisplayObjects
 					container = new UIComponent();
@@ -134,6 +134,8 @@
 						break;
 					case "NetStream.Play.Start":
 					case "NetStream.Play.Reset":
+					case "Netstream.Play.PublishNotify":
+					case "Netstream.Play.UnpublishNotify":
 					case "NetStream.Video.DimensionChange":
 						break;
 					default:
@@ -220,7 +222,7 @@
 		<s:layout>
 			<s:HorizontalLayout/>
 		</s:layout>
-		<s:TextInput id="serverIp" width="100" text="127.0.0.1"/>
+		<s:TextInput id="serverIp" width="100" text="192.168.2.103"/>
 		<s:Button id="button1" 
 				  label="Publish!" 
 				  width="200" 
