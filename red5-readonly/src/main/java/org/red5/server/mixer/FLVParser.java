@@ -14,15 +14,18 @@ public class FLVParser {
     private int curFlvTagSize_;
     private int curFlvTagTimestamp_;
     private int curLen_ = 0;
+    private int adjustPTS_ = 0;
 	private static Logger log = Red5LoggerFactory.getLogger(Red5.class);
 	
 	Delegate delegate_;
     public interface Delegate {
         public void onKaraokeFrameParsed(ByteBuffer frame, int len, int timestamp);
     }
-    public FLVParser(FLVParser.Delegate delegate) {
+    public FLVParser(FLVParser.Delegate delegate, int adjustPTS) {
     	this.delegate_ = delegate;
+    	adjustPTS_ = adjustPTS;
     }
+    
 	public void readData(byte[] src, int srcLen) {
     	int srcIndex = 0; //index into data byte array
 	    while( srcLen > 0 ) {
@@ -45,6 +48,12 @@ public class FLVParser {
 	                    curFlvTagTimestamp_ = (curBuf_.array()[4] & 0xFF) << 16 |
                        		 				  (curBuf_.array()[5] & 0xFF) << 8  |
                        		 				  (curBuf_.array()[6] & 0xFF);
+
+	                    //adjust the timestamp and write it back
+	                    curFlvTagTimestamp_ += adjustPTS_;
+	                    curBuf_.array()[4] = (byte)((curFlvTagTimestamp_ >> 16) & 0xff);
+	                    curBuf_.array()[5] = (byte)((curFlvTagTimestamp_ >> 8) & 0xff);
+	                    curBuf_.array()[6] = (byte)( curFlvTagTimestamp_ & 0xff);
 	                    
 	                    scanState_ = SCAN_REMAINING_TAG;
                     	//log.info("---got the frame info: first byte={} curFlvTagTimestamp_={} curFlvTagSize_={}", curBuf_.array()[0], curFlvTagTimestamp_, curFlvTagSize_);
