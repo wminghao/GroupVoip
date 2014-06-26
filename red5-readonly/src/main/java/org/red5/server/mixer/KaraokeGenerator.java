@@ -16,10 +16,11 @@ import org.slf4j.Logger;
 public class KaraokeGenerator implements Runnable, FLVParser.Delegate {
 	private Delegate delegate_;
 	private String karaokeFilePath_;
-	private FLVParser flvParser_ = new FLVParser(this);
+	private FLVParser flvParser_ = null;
 	private static Logger log = Red5LoggerFactory.getLogger(Red5.class);
     private LinkedList<FLVFrameObject> flvFrameQueue_ = new LinkedList<FLVFrameObject>();
-    private long firstPTS_ = 0xffffffff;
+    private int firstPTS_ = 0xffffffff;
+    private int lastTimestamp_ = 0;
     private boolean bStarted_ = false;
     
     private class FLVFrameObject
@@ -50,15 +51,13 @@ public class KaraokeGenerator implements Runnable, FLVParser.Delegate {
 			thread.start();
 		}
 	}
-		
-	@Override
-	public void run() {
-		log.info("Karaoke thread is started");
-    	//read a segment file and send it over
-    	log.info("Reading in karaoke file named : {}", karaokeFilePath_);
-        File file = new File(karaokeFilePath_);
+	
+	private void loadASong(String fileName) {
+        firstPTS_ = 0xffffffff;
+		File file = new File(fileName);
         log.info("File size: {}", file.length());
         try {
+        	flvParser_ = new FLVParser(this, lastTimestamp_);
         	InputStream input = null;
         	try {
     	    	int bytesTotal = 0;
@@ -71,7 +70,7 @@ public class KaraokeGenerator implements Runnable, FLVParser.Delegate {
     	        long startTime = System.currentTimeMillis();
         		//log.info("---->Start timestamp:  {}", startTime);
     	        //read frame by frame
-    	        while( bytesTotal < fileLen ) {
+    	        while( bytesTotal < fileLen || flvFrameQueue_.size() > 0) {
     	        	if( flvFrameQueue_.size() > 0) {
         	        	while ( true ) {
             	        	FLVFrameObject curFrame = flvFrameQueue_.peek();
@@ -112,6 +111,18 @@ public class KaraokeGenerator implements Runnable, FLVParser.Delegate {
         catch (IOException ex) {
     			log.info("Other exception:  {}", ex);
         }
+        lastTimestamp_ +=33; //advance a little bit
+	}
+		
+	@Override
+	public void run() {
+		log.info("Karaoke thread is started");
+    	//read a segment file and send it over
+    	log.info("Reading in karaoke file named : {}", karaokeFilePath_);
+    	//TODO demo only, play 5 songs in a roll.
+    	for(int i = 0; i< 5; i++ ) {
+    		loadASong(karaokeFilePath_+i+".flv");
+    	}
 	}
 
 	@Override
@@ -125,6 +136,7 @@ public class KaraokeGenerator implements Runnable, FLVParser.Delegate {
 			//for the rest, put into the queue first
 			flvFrameQueue_.add( new FLVFrameObject(frame, len, timestamp) );
 		}
+		lastTimestamp_ = timestamp;
 	}
 	
 	private int readBuf(byte[] result, InputStream input, int bytesTotal, int fileLen) throws IOException {
