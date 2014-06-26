@@ -1,0 +1,10 @@
+Advantages of GroupVideoChat(TM) technologies: 
+
+1) Adaptivity. Our solution works at a wide range of the bandwidth conditions between publishers and viewers. Our solution also works under changing network conditions. Bandwidth supported are between 64Kbps to 800Kbps currently.
+
+2) Cross platforms. Our client code can be easily ported to different platforms, namely, Mac, Windows, Linux, iOS, Android etc.
+
+3) Light-weight clients. Video/audio processing and mixing are put on the servers. It allows low-end devices such as google glass and iWatch to be used.
+
+4) Scalable, high-quality video chat services. VGA 640*480. 32 people conferencing per session with unlimited number f viewing streams.
+
