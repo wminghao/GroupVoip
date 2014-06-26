@@ -78,7 +78,7 @@
 				}
 			}
 			private function publishStreamA():void {
-				var camera:Camera = Camera.getCamera() ;
+				var camera:Camera = Camera.getCamera();	     
 				var mic:Microphone = Microphone.getMicrophone();
 				camera.addEventListener(StatusEvent.STATUS, onCameraStatus) ;
 				mic.addEventListener(StatusEvent.STATUS, onMicStatus);
@@ -112,6 +112,7 @@
 					video.visible = true;
 					
 					//mic.rate = 8;
+					mic.setLoopBack(true);
 					mic.encodeQuality = 10; //best quality
 					mic.codec = SoundCodec.SPEEX; 
 					mic.framesPerPacket = 1; //20ms per frame, instead of 40ms per frame
