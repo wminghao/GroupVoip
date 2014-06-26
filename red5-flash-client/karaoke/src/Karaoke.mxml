@@ -35,7 +35,7 @@
 			
 			private var videoWidth:int = 320;
 			private var videoHeight:int = 240;
-			private var positionArray:Array = [ [0, 0], [videoWidth, 0]];
+			private var positionArray:Array = [ [0, 0], [0, videoHeight]];
 			
 			public function onCreationComplete(event:FlexEvent) : void {
 			}
@@ -78,7 +78,7 @@
 				}
 			}
 			private function publishStreamA():void {
-				var camera:Camera = Camera.getCamera() ;
+				var camera:Camera = Camera.getCamera();	     
 				var mic:Microphone = Microphone.getMicrophone();
 				camera.addEventListener(StatusEvent.STATUS, onCameraStatus) ;
 				mic.addEventListener(StatusEvent.STATUS, onMicStatus);
@@ -86,7 +86,7 @@
 					Security.showSettings(SecurityPanel.CAMERA) ;
 				} else{
 					camera.setMode(videoWidth*2, videoHeight*2, 30); //640*480 30 fps
-					camera.setQuality(0,50); //50% quality, no bw limitation
+					camera.setQuality(16384,0); //0% quality, 16kBytes/sec bw limitation
 					
 					// container ( IVisualElement ) for DisplayObjects
 					container = new UIComponent();
@@ -111,7 +111,9 @@
 					video.x = video.y = 0;
 					video.visible = true;
 					
-					mic.rate = 8;
+					//mic.rate = 8;
+					mic.setLoopBack(true);
+					mic.encodeQuality = 10; //best quality
 					mic.codec = SoundCodec.SPEEX; 
 					mic.framesPerPacket = 1; //20ms per frame, instead of 40ms per frame
 					mic.setSilenceLevel(0,200);
@@ -133,6 +135,8 @@
 						break;
 					case "NetStream.Play.Start":
 					case "NetStream.Play.Reset":
+					case "Netstream.Play.PublishNotify":
+					case "Netstream.Play.UnpublishNotify":
 					case "NetStream.Video.DimensionChange":
 						break;
 					default:
@@ -183,7 +187,7 @@
 				}
 				// next is karaoke
 				var stream:NetStream = new NetStream(connectionSub);
-				connectStream(stream, "__mixed__karaoke", 0, videoHeight, videoWidth*2, videoHeight*2 );
+				connectStream(stream, "__mixed__karaoke", videoWidth, 0, videoWidth*2, videoHeight*2 );
 				
 				/*
 				for (var i:int = 0; i < container.numChildren; i++)
@@ -219,7 +223,7 @@
 		<s:layout>
 			<s:HorizontalLayout/>
 		</s:layout>
-		<s:TextInput id="serverIp" width="100" text="127.0.0.1"/>
+		<s:TextInput id="serverIp" width="100" text="192.168.2.103"/>
 		<s:Button id="button1" 
 				  label="Publish!" 
 				  width="200" 

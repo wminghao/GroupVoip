@@ -1,0 +1,6 @@
+HongDou, 279Kbps, 263 seconds
+Frank, 275Kbps, 215 seconds
+Top, 255Kbps, 180 seconds
+Friends, 277kbps, 128 seconds
+
+ffmpeg -i Friends.flv -vcodec libx264 -b:v 150k -s 640*480 Friends_200k.flv
