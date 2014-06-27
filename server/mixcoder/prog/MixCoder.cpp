@@ -11,6 +11,7 @@
 #include "AudioSpeexEncoder.h"
 #include "AudioMp3Encoder.h"
 #include "AudioDecoder.h"
+#include "AudioDecoderFactory.h"
 #include "VideoEncoder.h"
 #include "VideoDecoder.h"
 #include "AudioMixer.h"
@@ -29,8 +30,9 @@ MixCoder::MixCoder(int vBitrate, int width, int height,
     flvSegParser_ = new FLVSegmentParser( 30 ); //end result 30 fps
     
     VideoStreamSetting vOutputSetting = { kVP8VideoPacket, vWidth_, vHeight_ }; 
-    AudioStreamSetting aOutputSetting = { kMP316kHz, kSndMono, getAudioRate(16000), kSnd16Bit, 0 };
-    AudioStreamSetting aInputSetting = { kSpeex, kSndMono, getAudioRate(16000), kSnd16Bit, 0 };
+    AudioStreamSetting aOutputSetting = { kMP316kHz, getAudioRate(16000), kSndMono, kSnd16Bit, 0 };
+    AudioStreamSetting aInputSetting = { kSpeex, getAudioRate(16000), kSndMono, kSnd16Bit, 0 };
+                                         
     videoEncoder_ = new VideoEncoder( &vOutputSetting, vBitrate_ );
     videoMixer_ = new VideoMixer(&vOutputSetting);
 
@@ -42,12 +44,13 @@ MixCoder::MixCoder(int vBitrate, int width, int height,
         if( bUseSpeex_ ) {
             audioEncoder_[i] = new AudioSpeexEncoder( &aInputSetting, &aOutputSetting, aBitrate_ );
         } else {
+            //TODO aInputSetting and aOutputSettings are wrong
             audioEncoder_[i] = new AudioMp3Encoder( &aInputSetting, &aOutputSetting, aBitrate_ );
         }
         audioMixer_[i] = new AudioMixer();
     }
     for( u32 i = 0; i < MAX_XCODING_INSTANCES; i++ ) {
-        audioDecoder_[i] = new AudioDecoder(i);
+        audioDecoder_[i] = NULL; //initialize it later
         videoDecoder_[i] = new VideoDecoder(i);
     }
     flvSegOutput_ = new FLVSegmentOutput( &vOutputSetting, &aOutputSetting );
@@ -163,12 +166,15 @@ SmartPtr<SmartBuffer> MixCoder::getOutput()
                 if( bIsStreamStarted ) {
                     SmartPtr<AccessUnit> au = flvSegParser_->getNextAudioFrame(i);
                     if ( au ) {
+                        if(!audioDecoder_[i]) {
+                            audioDecoder_[i] = AudioDecoderFactory::CreateAudioDecoder(au, i);
+                        }
                         rawAudioFrame_[i] = audioDecoder_[i]->newAccessUnit(au, &rawAudioSettings_[i]);
                         bIsValidFrame = true;
                     } else {
                         //if no frame generated, and never has any frames generated before, do nothing, 
                         //else use the cached audio frame 
-                        if( audioDecoder_[i]->hasFirstFrameDecoded()) {
+                        if( audioDecoder_[i] && audioDecoder_[i]->hasFirstFrameDecoded()) {
                             bIsValidFrame = true; //use the cached frame
                         } 
                     }

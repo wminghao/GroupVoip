@@ -112,8 +112,8 @@ typedef enum
 typedef struct AudioStreamSetting
 {
     AudioCodecId acid;
-    AudioType at;
     AudioRate ar;
+    AudioType at;
     AudioSize as;
     int ap; //aac or something else, audio property
     StreamSource ss; //mobile or desktop
