@@ -1,16 +1,16 @@
-#include "AudioDecoder.h"
+#include "AudioSpeexDecoder.h"
 #include "fwk/log.h"
 #include <assert.h>
 #include <stdio.h>
 
-AudioDecoder::~AudioDecoder()
+AudioSpeexDecoder::~AudioSpeexDecoder()
 {
     speex_bits_destroy(&bits_);
     speex_decoder_destroy(decoder_); 
     free(outputFrame_);
 }
 
-SmartPtr<SmartBuffer> AudioDecoder::newAccessUnit( SmartPtr<AccessUnit> au , AudioStreamSetting* aInputSetting)
+SmartPtr<SmartBuffer> AudioSpeexDecoder::newAccessUnit( SmartPtr<AccessUnit> au , AudioStreamSetting* aInputSetting)
 {
     assert(au->st == kAudioStreamType);
     SmartPtr<SmartBuffer> result;;
