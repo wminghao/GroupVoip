@@ -23,7 +23,7 @@ AudioMp3Encoder::AudioMp3Encoder(AudioStreamSetting* inputSetting, AudioStreamSe
         lame_set_brate(lgf_, aBitrate);
         lame_set_VBR(lgf_, vbr_off);
         lame_set_mode(lgf_,MONO);//mono
-        lame_set_quality(lgf_,7);   /* 2=high  5 = medium  7=low 9=worst */
+        lame_set_quality(lgf_,2);   /* 2=high  5 = medium  7=low 9=worst */
         lame_set_no_short_blocks(lgf_, 0); //no short block
         //lame_set_preset( m_gfp, 56); //voice quality
         //lame_set_lowpassfreq(m_gfp, -1);
@@ -57,10 +57,10 @@ SmartPtr<SmartBuffer> AudioMp3Encoder::encodeAFrame(SmartPtr<SmartBuffer> input)
             int paddingSize = lame_encode_flush_nogap(lgf_, (u8*)encodedBits_+encodedSize, MAX_WB_BYTES-encodedSize);
             encodedSize += paddingSize;
         
-            //LOG("AudioMp3Encoder lame encoded pkt size=%d sample size=%d\n", encodedSize, sampleSize); 
+            LOG("AudioMp3Encoder lame encoded pkt size=%d sample size=%d\n", encodedSize, sampleSize); 
             result = new SmartBuffer( encodedSize, encodedBits_);
         } else {
-            //LOG("*** nothing encoded AudioMp3Encoder lame encoded pkt size=%d sample size=%d\n", encodedSize, sampleSize); 
+            LOG("*** nothing encoded AudioMp3Encoder lame encoded pkt size=%d sample size=%d\n", encodedSize, sampleSize); 
         }
     }
     return result;

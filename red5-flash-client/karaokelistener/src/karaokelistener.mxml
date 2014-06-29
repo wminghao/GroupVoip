@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600"
+			   creationComplete="onCreationComplete(event)">
+	<s:layout>
+		<s:VerticalLayout/>
+	</s:layout>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.core.UIComponent;
+			import mx.events.FlexEvent;
+			
+			private var videoURLA:String = "testliveA"//"red5"//"mp4:timbo";
+			private var videoURLB:String = "testliveB"//"red5"//"mp4:timbo";
+			private var videoKaraoke:String = "__mixed__karaoke_delayed";
+			private var connection:NetConnection;
+			private var videoWidth:int = 320;
+			private var videoHeight:int = 240;
+			
+			public function onCreationComplete(event:FlexEvent) : void {
+			}
+			
+			public function onSubscribeButtonClick():void {
+				var videoPath:String = "rtmp://"+serverIp.text+"/myRed5App/";
+				// setup connection code
+				connection = new NetConnection();
+				connection.connect(videoPath);  //subscribe to live video
+				//connection.connect("rtmp://localhost/vod/"); existing flv file/mp4 files
+				connection.addEventListener(NetStatusEvent.NET_STATUS, onConnectionNetStatus);
+				connection.addEventListener(SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler);
+				connection.client = this;	
+			}
+			
+			public function onConnectionNetStatus(event:NetStatusEvent) : void {
+				// did we successfully connect
+				if(event.info.code == "NetConnection.Connect.Success") {
+					//Alert.show("Successful Connection", "Information");
+					connectStreams();
+				} else {
+					Alert.show("Unsuccessful Connection", "Information");
+					disconnectStreams();
+				}
+			}
+			
+			private function disconnectStreams():void {
+				//TODO
+			}	
+			
+			private function connectStreams():void {
+				// container ( IVisualElement ) for DisplayObjects
+				var container:UIComponent = new UIComponent();
+				container.width = stage.width/2;
+				container.height = stage.height/2;
+				addElement( container );
+				
+				var streamA:NetStream  = new NetStream(connection);
+				playStream(streamA, videoURLA, container, 0, 0, videoWidth, videoHeight);
+				
+				var streamB:NetStream  = new NetStream(connection);
+				playStream(streamB, videoURLB, container, 0, videoHeight, videoWidth, videoHeight);
+				
+				// next is karaoke
+				var stream:NetStream = new NetStream(connection);
+				playStream(stream, videoKaraoke, container, videoWidth, 0, videoWidth*2, videoHeight*2 );
+			}
+			
+			private function playStream(stream:NetStream, url:String, container:UIComponent, x:int, y:int, width:int, height:int):void {
+				
+				stream.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
+				stream.addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrorHandler);
+				stream.play(url);
+				
+				var video:Video = new Video();
+				video.attachNetStream(stream);
+				container.addChild(video);
+				video.width = width;
+				video.height = height;
+				video.x = x;
+				video.y = y;
+				video.visible = true;
+			}
+			
+			private function netStatusHandler(event:NetStatusEvent):void {
+				switch (event.info.code) {
+					case "NetStream.Play.StreamNotFound":
+						Alert.show("Unable to locate video!", "Information");
+						break;
+					case "NetStream.Play.Start":
+					case "NetStream.Play.Reset":
+					case "NetStream.Video.DimensionChange":
+						break;
+					default:
+						Alert.show("Unknown event: " + event.info.code, "Information");
+						break;
+				}
+			}
+			
+			private function securityErrorHandler(event:SecurityErrorEvent):void {
+				Alert.show("securityErrorHandler: " + event, "Information");
+			}
+			
+			private function asyncErrorHandler(event:AsyncErrorEvent):void {
+				// ignore AsyncErrorEvent events.
+			}
+		]]>
+	</fx:Script>
+	
+	<s:Group>
+		<s:layout>
+			<s:HorizontalLayout/>
+		</s:layout>
+		<s:TextInput id="serverIp" width="100" text="192.168.2.103"/>
+		<s:Button id="button1" 
+				  label="View Karaoke!" 
+				  width="200" 
+				  fontSize="16"
+				  click="onSubscribeButtonClick();"/>
+	</s:Group>
+</s:Application>
