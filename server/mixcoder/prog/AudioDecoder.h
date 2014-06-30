@@ -1,10 +1,8 @@
 #ifndef __AUDIODECODER_H
 #define __AUDIODECODER_H
 
-extern "C" {
-#include <speex/speex.h>
-}
-
+#include "fwk/Units.h"
+#include "CodecInfo.h"
 #include "fwk/SmartBuffer.h"
 #include <queue>
 #include <stdlib.h>
@@ -15,47 +13,30 @@ extern "C" {
 class AudioDecoder
 {
  public:
-    //speex settings is always, 16khz, mono, 16bits audio
-    AudioDecoder(int streamId){
-        setting_.acid = kSpeex;
-        setting_.at = kSndMono;
-        setting_.ar = k16kHz;
-        setting_.as = kSnd16Bit;
+    AudioDecoder(int streamId, AudioCodecId codecType, AudioRate audioRate, AudioSize audioSize, AudioType audioType) {
+        setting_.acid = codecType;
+        setting_.ar = audioRate;
+        setting_.as = audioSize;
+        setting_.at = audioType;
         setting_.ap = 0;
         
-        /*codec structure*/
-        speex_bits_init(&bits_);
-        /*Create a new decoder state in wideband mode, 16khz*/
-        decoder_ = speex_decoder_init(&speex_wb_mode);
-        int tmp=1;
-        speex_decoder_ctl(decoder_, SPEEX_SET_ENH, &tmp);
-
-        speex_decoder_ctl(decoder_, SPEEX_GET_FRAME_SIZE, &sampleSize_);  
-        outputFrame_ = (short*)malloc(sizeof(short)*sampleSize_);
-
         hasFirstFrameDecoded_ = false;
         streamId_ = streamId;
     }
-    ~AudioDecoder();
+    virtual ~AudioDecoder() {}
     //send it to the decoder
-    virtual SmartPtr<SmartBuffer>  newAccessUnit( SmartPtr<AccessUnit> au, AudioStreamSetting* aInputSetting);
+    virtual SmartPtr<SmartBuffer>  newAccessUnit( SmartPtr<AccessUnit> au, AudioStreamSetting* aInputSetting) = 0;
 
     bool hasFirstFrameDecoded(){ return hasFirstFrameDecoded_; }
     
     int getSampleSize() { return sampleSize_; }
     
- private:
-    /*Holds the state of the decoder*/
-    void *decoder_;
-    SpeexBits bits_;
-    
-    short* outputFrame_;
-    int sampleSize_;
-
+ protected:
     AudioStreamSetting setting_;
 
     bool hasFirstFrameDecoded_;
 
     int streamId_;
+    int sampleSize_;
 };
 #endif

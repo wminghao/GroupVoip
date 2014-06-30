@@ -106,13 +106,12 @@ public class VideoData extends BaseEvent implements IoConstants, IStreamData<Vid
 	public IoBuffer getData() {
 		return data;
 	}
-
-	public void setData(IoBuffer data) {
-		this.data = data;
-		if (data != null && data.limit() > 0) {
-			data.mark();
-			int firstByte = (data.get(0)) & 0xff;
-			data.reset();
+	
+	private void markFrameType() {
+		if (this.data != null && this.data.limit() > 0) {
+			this.data.mark();
+			int firstByte = (this.data.get(0)) & 0xff;
+			this.data.reset();
 			int frameType = (firstByte & MASK_VIDEO_FRAMETYPE) >> 4;
 			if (frameType == FLAG_FRAMETYPE_KEYFRAME) {
 				this.frameType = FrameType.KEYFRAME;
@@ -126,6 +125,11 @@ public class VideoData extends BaseEvent implements IoConstants, IStreamData<Vid
 		}
 	}
 
+	public void setData(IoBuffer data) {
+		this.data = data;
+		markFrameType();
+	}
+
 	public void setData(byte[] data) {
 		this.data = IoBuffer.allocate(data.length);
 		this.data.put(data).flip();
@@ -135,6 +139,7 @@ public class VideoData extends BaseEvent implements IoConstants, IStreamData<Vid
 	public void setDataRemaining(byte[] data, int index, int len) {
 		this.data = IoBuffer.allocate(len);
 		this.data.put(data, index, len).flip();
+		markFrameType();
 	}
 	/**
 	 * Getter for frame type

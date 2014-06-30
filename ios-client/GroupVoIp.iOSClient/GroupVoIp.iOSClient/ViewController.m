@@ -44,13 +44,14 @@
     //http test
     //[NSString stringWithFormat:@"http://%@/~wminghao/groupvoip/abc_32.flv", self.ipAddr]
     //rtmp vod test
-    //[NSString stringWithFormat:@"rtmp://%@/oflaDemo/abc_32", self.ipAddr]]
+    //[NSString stringWithFormat:@"rtmp://%@/vod/abc_32", self.ipAddr]]
     //rtmp voip test
-    //rtmp://%@/myRed5App/testliveA
+    //[NSString stringWithFormat:@"rtmp://%@/myRed5App/testliveA", self.ipAddr]]];
+    //[NSString stringWithFormat:@"rtmp://%@/myRed5App/__mixed__allinone", self.ipAddr]]];
     
     if( _mediaplayer.media == nil ) {
         /* create a media object and give it to the player */
-        _mediaplayer.media = [VLCMedia mediaWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"rtmp://%@/myRed5App/__mixed__allinone", self.ipAddr]]];
+        _mediaplayer.media = [VLCMedia mediaWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"rtmp://%@/vod/abc_32", self.ipAddr]]];
     }
     
     if (_mediaplayer.isPlaying) {

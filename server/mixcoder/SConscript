@@ -7,7 +7,9 @@ mixCoderCflags.append( '-Wno-unused' )
 
 loggerObj = env.Object('prog/fwk/log.cpp', CCFLAGS=mixCoderCflags )
 mixCoderObj = env.Object('prog/MixCoder.cpp', CCFLAGS=mixCoderCflags )
-audioDecoderObj = env.Object('prog/AudioDecoder.cpp', CCFLAGS=mixCoderCflags )
+audioDecoderFactoryObj = env.Object('prog/AudioDecoderFactory.cpp', CCFLAGS=mixCoderCflags )
+audioSpeexDecoderObj = env.Object('prog/AudioSpeexDecoder.cpp', CCFLAGS=mixCoderCflags )
+#audioFfmpegDecoderObj = env.Object('prog/AudioFfmpegDecoder.cpp', CCFLAGS=mixCoderCflags )
 videoDecoderObj = env.Object('prog/VideoDecoder.cpp', CCFLAGS=mixCoderCflags )
 audioSpeexEncoderObj = env.Object('prog/AudioSpeexEncoder.cpp', CCFLAGS=mixCoderCflags )
 audioMp3EncoderObj = env.Object('prog/AudioMp3Encoder.cpp', CCFLAGS=mixCoderCflags )
@@ -29,7 +31,8 @@ progs.append( mixCoderProg )
 env.Program( mixCoderProg,
 	     [ loggerObj,
 	        mixCoderObj,
-	       audioDecoderObj,
+		audioDecoderFactoryObj,
+	       audioSpeexDecoderObj,
 	       videoDecoderObj,
 	       audioSpeexEncoderObj,
                audioMp3EncoderObj,
