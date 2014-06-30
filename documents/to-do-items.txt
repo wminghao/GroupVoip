@@ -11,6 +11,8 @@ Jun3 29, 2014
 
 4. (Raymond) To come up with the initial version of the business plan for on-line Karaoke.
 
+5. (Raymond) To check the options for upgrading AWS instance. 
+   
 
 June 15, 2014
 
