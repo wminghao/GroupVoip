@@ -1,8 +1,22 @@
 
+Jun3 29, 2014
+
+1. (Howard) Fix the pop-up error message during viewing.
+   A logging text window should work better.
+
+2. (Howard) Check the possibility of mix ony a percentage of the loopback stream.
+    Compare it with not including the loopback, and including 100% of the loopback stream.
+
+3. (Raymond) To follow up with Yantao, the Quanshi CTO.
+
+4. (Raymond) To come up with the initial version of the business plan for on-line Karaoke.
+
+
 June 15, 2014
 
 * Provide a high-evel list over advantages of our advantages.
   (Pending decision from Howard over whether or not we want to do that).
+  (Done and sent to Yantao on Jun 27, 2014)
 
 June 8, 2014
 
