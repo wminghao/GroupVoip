@@ -27,6 +27,7 @@ public class GroupMixer implements SegmentParser.Delegate, KaraokeGenerator.Dele
 	public static final String MIXED_STREAM_PREFIX = "__mixed__";
 	public static final String ALL_IN_ONE_STREAM_NAME = "allinone";
 	public static final String KARAOKE_STREAM_NAME = "karaoke"; //test name
+	public static final String KARAOKE_DELAYED_STREAM_NAME = "karaoke_delayed"; //test name
 	private static final String AppName = "myRed5App";//TODO appName change to a room or something
 	private static final String ipAddr = "localhost"; //TODO change to something else in the future
 	private static GroupMixer instance_;
@@ -83,6 +84,7 @@ public class GroupMixer implements SegmentParser.Delegate, KaraokeGenerator.Dele
         	if( bGenKaraoke ) {
         		karaokeGen_ = new KaraokeGenerator(this, karaokeFilePath);
             	createMixedStream(KARAOKE_STREAM_NAME);
+            	createMixedStream(KARAOKE_DELAYED_STREAM_NAME);
         	}
         	
     		log.info("Created all In One connection with sessionId {} on thread: {}", allInOneSessionId_, Thread.currentThread().getName());
@@ -134,7 +136,7 @@ public class GroupMixer implements SegmentParser.Delegate, KaraokeGenerator.Dele
         		int msgType = flvFrame[curIndex];
             	int msgSize = ((((int)flvFrame[curIndex+1])&0xff)<<16) | ((((int)flvFrame[curIndex+2])&0xff)<<8) | ((int)(flvFrame[curIndex+3])&0xff);
             	int msgTimestamp = ((((int)flvFrame[curIndex+4])&0xff)<<16) | ((((int)flvFrame[curIndex+5])&0xff)<<8) | ((int)(flvFrame[curIndex+6])&0xff) | ((((int)flvFrame[curIndex+7])&0xff)<<24);
-        		log.info("=====>out message from {} 1stByte {} msgType {} msgSize {} ts {} on thread: {}", streamId, flvFrame[curIndex+11], msgType, msgSize, msgTimestamp, Thread.currentThread().getName());
+        		//log.info("=====>out message from {} 1stByte {} msgType {} msgSize {} ts {} on thread: {}", streamId, flvFrame[curIndex+11], msgType, msgSize, msgTimestamp, Thread.currentThread().getName());
             	
         		curIndex += 11;
         		
@@ -369,8 +371,13 @@ public class GroupMixer implements SegmentParser.Delegate, KaraokeGenerator.Dele
     }
 
 	@Override
-	public void onKaraokeFrameParsed(ByteBuffer frame, int len) {
-		int streamId = idLookupTable.lookupStreamId(KARAOKE_STREAM_NAME);
+	public void onKaraokeFrameParsed(ByteBuffer frame, int len, boolean bIsDelayed) {
+		//either send it to the original stream or delayed stream.
+		int streamId = idLookupTable.lookupStreamId(bIsDelayed?KARAOKE_DELAYED_STREAM_NAME:KARAOKE_STREAM_NAME);
 		onFrameGenerated(streamId, frame, len);
+	}
+
+	public void selectSong(String songName) {
+		
 	}
 }

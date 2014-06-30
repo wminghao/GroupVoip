@@ -79,7 +79,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
-
 import org.red5.server.mixer.GroupMixer;
 
 /**
@@ -1405,5 +1404,9 @@ public abstract class RTMPConnection extends BaseConnection implements IStreamCa
 		}
 
 	}
-
+	
+	//from flash client to select a song.
+	public void selectSong(String songName) {
+		GroupMixer.getInstance().selectSong(songName);
+	}
 }
