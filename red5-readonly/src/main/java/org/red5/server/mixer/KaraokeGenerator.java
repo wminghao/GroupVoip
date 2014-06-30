@@ -7,7 +7,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
+import java.util.Properties;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.red5.logging.Red5LoggerFactory;
 import org.red5.server.api.Red5;
@@ -24,6 +29,11 @@ public class KaraokeGenerator implements Runnable, FLVParser.Delegate {
     private int firstPTS_ = 0xffffffff;
     private int lastTimestamp_ = 0;
     private boolean bStarted_ = false;
+    
+    //key is fileName, value is song name
+    Map<String,String> songMappingTable_ = new HashMap<String, String>();
+    String curSong_ = "";
+    private AtomicBoolean bCancelCurrentSong = new AtomicBoolean(false);;
     
     private class DelayObject 
     {
@@ -56,6 +66,7 @@ public class KaraokeGenerator implements Runnable, FLVParser.Delegate {
 	public KaraokeGenerator(KaraokeGenerator.Delegate delegate, String karaokeFilePath){
 		this.delegate_ = delegate;
 		this.karaokeFilePath_ = karaokeFilePath;
+		readSongMappingTable();
 	}
 	
 	public void tryToStart() {
@@ -84,7 +95,7 @@ public class KaraokeGenerator implements Runnable, FLVParser.Delegate {
     	        long startTime = System.currentTimeMillis();
         		//log.info("---->Start timestamp:  {}", startTime);
     	        //read frame by frame
-    	        while( bytesTotal < fileLen || flvFrameQueue_.size() > 0) {
+    	        while( (bytesTotal < fileLen || flvFrameQueue_.size() > 0 ) && !bCancelCurrentSong.get()) {
     	        	if( flvFrameQueue_.size() > 0) {
         	        	while ( true ) {
             	        	FLVFrameObject curFrame = flvFrameQueue_.peek();
@@ -123,12 +134,13 @@ public class KaraokeGenerator implements Runnable, FLVParser.Delegate {
     	    }
         	long duration = emptyDelayObjectQueue();
             lastTimestamp_ += duration; //advance a little bit
+			bCancelCurrentSong.compareAndSet(true, false); //set it back to false;
         }
         catch (FileNotFoundException ex) {
-    			log.info("File not found:  {}", ex);
+    		log.info("File not found:  {}", ex);
         }
         catch (IOException ex) {
-    			log.info("Other exception:  {}", ex);
+    		log.info("Other exception:  {}", ex);
         }
         catch (Exception ex) {
       		log.info("General exception:  {}", ex);
@@ -139,12 +151,9 @@ public class KaraokeGenerator implements Runnable, FLVParser.Delegate {
 	public void run() {
 		log.info("Karaoke thread is started");
     	//read a segment file and send it over
-    	log.info("Reading in karaoke file named : {}", karaokeFilePath_);
-    	//TODO demo only, play 5 songs in a roll.
+    	log.info("Reading in karaoke filePath: {}", karaokeFilePath_);
     	while(true) {
-        	for(int i = 0; i< 5; i++ ) {
-        		loadASong(karaokeFilePath_+i+".flv");
-        	}
+        	loadASong(curSong_);
     	}
 	}
 
@@ -200,5 +209,38 @@ public class KaraokeGenerator implements Runnable, FLVParser.Delegate {
       		log.info("General exception:  {}", ex);
 	    } 
 		return (System.currentTimeMillis()-startTime);
+	}
+	
+	private void readSongMappingTable() {
+		Properties prop = new Properties();
+        InputStream in;
+		try {
+			in = new FileInputStream(karaokeFilePath_ + "/karaoke.properties");
+	        prop.load(in);
+	        Enumeration<?> e = prop.propertyNames();
+			while (e.hasMoreElements()) {
+				String fileName = (String) e.nextElement();
+				String songName = prop.getProperty(fileName);
+				songMappingTable_.put(songName, fileName);
+				curSong_ = karaokeFilePath_+"/"+fileName+".flv";
+				System.out.println("-------Reading property file: Key : " + fileName + ", Value : " + songName);
+			}
+	        in.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public void selectSong(String songName) {
+		String fileName = songMappingTable_.get(songName);
+		if(fileName != null ) {
+			curSong_ = karaokeFilePath_+"/"+fileName+".flv";
+			bCancelCurrentSong.set(true);
+			System.out.println("-------A song is selected: Key : " + fileName + ", Value : " + songName);
+		}
 	}
 }

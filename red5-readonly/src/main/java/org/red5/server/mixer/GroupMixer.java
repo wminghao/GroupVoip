@@ -378,6 +378,6 @@ public class GroupMixer implements SegmentParser.Delegate, KaraokeGenerator.Dele
 	}
 
 	public void selectSong(String songName) {
-		
+		karaokeGen_.selectSong(songName);
 	}
 }
