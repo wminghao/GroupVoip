@@ -376,4 +376,8 @@ public class GroupMixer implements SegmentParser.Delegate, KaraokeGenerator.Dele
 		int streamId = idLookupTable.lookupStreamId(bIsDelayed?KARAOKE_DELAYED_STREAM_NAME:KARAOKE_STREAM_NAME);
 		onFrameGenerated(streamId, frame, len);
 	}
+
+	public void selectSong(String songName) {
+		
+	}
 }
