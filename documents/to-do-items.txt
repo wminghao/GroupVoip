@@ -1,4 +1,14 @@
 
+Early July
+1) Try the test among ourselves, and our relatives to get more feedback.
+2) Improve the demo.
+3) Start a business plan.
+
+Mid July - Late July
+4) Find people we can trust for initial funding. Roughly we need to have an idea of how much is needed in order to support both of us for at most 1 year. We must prepare ourselves for a pay cut. If I starts early, how soon can you start? Or should we both start at the same time.
+5) Figure out our exit plan. What do we do after let's say half a year or 1 year? Let's think more about that.
+6) Figure out how to file patents.
+
 Jun3 29, 2014
 
 1. (Howard) Fix the pop-up error message during viewing.
@@ -7,11 +17,19 @@ Jun3 29, 2014
 2. (Howard) Check the possibility of mix ony a percentage of the loopback stream.
     Compare it with not including the loopback, and including 100% of the loopback stream.
 
-3. (Raymond) To follow up with Yantao, the Quanshi CTO.
+3. (Howard) enable users to select their songs
 
-4. (Raymond) To come up with the initial version of the business plan for on-line Karaoke.
+4. (Howard) mixing mp3 audio with speex audio on the mixer side. (One week)
 
-5. (Raymond) To check the options for upgrading AWS instance. 
+5. (Howard) migrating environment to macbook air.
+
+1. (Raymond) To follow up with Yantao, the Quanshi CTO.
+
+2. (Raymond) To come up with the initial version of the business plan for on-line Karaoke.
+
+3. (Raymond) To check the options for upgrading AWS instance. 
+
+4. (Raymond) Share XCode account with Howard.
    
 
 June 15, 2014
