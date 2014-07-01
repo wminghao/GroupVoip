@@ -123,7 +123,7 @@
 				  width="200" 
 				  fontSize="16"
 				  click="onSubscribeButtonClick();"/>
-		<s:TextInput id="statusText" width="50" text="Status"/>
-		<s:TextInput id="status" width="50" text=""/>
+		<s:Label id="statusText" width="50" height="20" fontSize="16" text="Status"/>
+		<s:TextInput id="status" width="150" text=""/>
 	</s:Group>
 </s:Application>
