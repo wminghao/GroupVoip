@@ -34,5 +34,7 @@
 	<bean id="web.handler" 
 	    class="org.red5.core.Application" 
 		singleton="true" />
+		
+	<bean id= "song.service" class = "org.red5.core.SongService"/> 
  
 </beans>
