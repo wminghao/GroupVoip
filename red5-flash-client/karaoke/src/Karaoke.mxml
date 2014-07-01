@@ -6,6 +6,7 @@
 	<s:layout>
 		<s:VerticalLayout/>
 	</s:layout>
+	<fx:Style source="Karaoke.css"/>
 	<fx:Declarations>
 		<!--  -->
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
@@ -23,12 +24,28 @@
 			private var connectionPub:NetConnection;			
 			private var connectionSub:NetConnection;
 			private var container:UIComponent;
+			private var mic:Microphone;
 			
 			[Bindable]
 			private var dataSet:ArrayCollection = new ArrayCollection(
 				[   
 					{value:"testliveA", code:"testliveA"},
 					{value:"testliveB", code:"testliveB"}			
+				]
+			);
+			
+			[Bindable]
+			private var songSet:ArrayCollection = new ArrayCollection(
+				[   
+					{value:"Yi Jian Mei", code:"Yi Jian Mei"},
+					{value:"Cannot take my eyes off of you", code:"Cannot take my eyes off of you"},	
+					{value:"Bella Ciao", code:"Bella Ciao"},	
+					{value:"Let It Go", code:"Let It Go"},	
+					{value:"Do You Want To Build A Snowman", code:"Do You Want To Build A Snowman"},	
+					{value:"For the First Time in Forever", code:"For the First Time in Forever"},	
+					{value:"Hong Dou", code:"Hong Dou"},	
+					{value:"Neon Lights", code:"Neon Lights"},	
+					{value:"Top of the world", code:"Top of the world"}		
 				]
 			);
 			private var publishDest:String = "testliveA";
@@ -79,7 +96,7 @@
 			}
 			private function publishStreamA():void {
 				var camera:Camera = Camera.getCamera();	     
-				var mic:Microphone = Microphone.getMicrophone();
+				mic = Microphone.getMicrophone();
 				camera.addEventListener(StatusEvent.STATUS, onCameraStatus) ;
 				mic.addEventListener(StatusEvent.STATUS, onMicStatus);
 				if (camera == null) {
@@ -140,7 +157,8 @@
 					case "NetStream.Video.DimensionChange":
 						break;
 					default:
-						Alert.show("Unknown event: " + event.info.code, "Information");
+						status.text = event.info.code;
+						//Alert.show("Unknown event: " + event.info.code, "Information");
 						break;
 				}
 			}
@@ -213,9 +231,21 @@
 				video.y = y;
 				video.visible = true;
 			}
-			protected function dropDownList_changeHandler(event:IndexChangeEvent):void	
+			private function dropDownList_changeHandler(event:IndexChangeEvent):void	
 			{
 				publishDest=dropDownList.selectedItem.value;				
+			}
+			private function songList_changeHandler(event:IndexChangeEvent):void	
+			{
+				status.text = "Song selected="+songList.selectedItem.value;
+				connectionPub.call("song.selectSong", null, songList.selectedItem.value);				
+			}
+			private function onLoopBack(evt:MouseEvent):void {
+				if(CheckBox(evt.target).selected) {
+					mic.setLoopBack(true);
+				} else {
+					mic.setLoopBack(false);
+				}
 			}
 		]]>
 	</fx:Script>
@@ -225,12 +255,21 @@
 		</s:layout>
 		<s:TextInput id="serverIp" width="100" text="192.168.2.103"/>
 		<s:Button id="button1" 
-				  label="Publish!" 
+				  label="Sing Karaoke As" 
 				  width="200" 
 				  fontSize="16"
 				  click="onPublishButtonClick();"/>
 		<s:DropDownList  id="dropDownList" dataProvider="{dataSet}" 
-						 width="150" change="dropDownList_changeHandler(event)"
+						 width="100" change="dropDownList_changeHandler(event)"
 						 selectedIndex="0" labelField="value"/>
+		<s:Label id="song" width="96" height="21" backgroundColor="#FFFFFF" color="#000000"
+				 fontFamily="Arial" fontSize="16" fontStyle="italic" fontWeight="bold"
+				 text="Pick A Song" textDecoration="none"/>
+		<s:DropDownList  id="songList" dataProvider="{songSet}" 
+						 width="200" change="songList_changeHandler(event)"
+						 selectedIndex="0" labelField="value"/>
+		<s:CheckBox id="loopback" label="Mic Loopback" click="onLoopBack(event);" selected="true"/>
+		<s:Label id="statusText" width="50" height="20" fontSize="16" text="Status"/>
+		<s:TextInput id="status" width="150" text=""/>
 	</s:Group>
 </s:Application>
