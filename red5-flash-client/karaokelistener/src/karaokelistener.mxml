@@ -92,10 +92,13 @@
 						break;
 					case "NetStream.Play.Start":
 					case "NetStream.Play.Reset":
+					case "Netstream.Play.PublishNotify":
+					case "Netstream.Play.UnpublishNotify":
 					case "NetStream.Video.DimensionChange":
 						break;
 					default:
-						Alert.show("Unknown event: " + event.info.code, "Information");
+						status.text = event.info.code;
+						//Alert.show("Unknown event: " + event.info.code, "Information");
 						break;
 				}
 			}
@@ -116,9 +119,11 @@
 		</s:layout>
 		<s:TextInput id="serverIp" width="100" text="192.168.2.103"/>
 		<s:Button id="button1" 
-				  label="View Karaoke!" 
+				  label="Listen To Karaoke!" 
 				  width="200" 
 				  fontSize="16"
 				  click="onSubscribeButtonClick();"/>
+		<s:TextInput id="statusText" width="50" text="Status"/>
+		<s:TextInput id="status" width="50" text=""/>
 	</s:Group>
 </s:Application>
