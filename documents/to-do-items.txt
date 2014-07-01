@@ -9,7 +9,7 @@ Mid July - Late July
 5) Figure out our exit plan. What do we do after let's say half a year or 1 year? Let's think more about that.
 6) Figure out how to file patents.
 
-Jun3 29, 2014
+June 29, 2014
 
 1. (Howard) Fix the pop-up error message during viewing.
    A logging text window should work better.
@@ -30,7 +30,8 @@ Jun3 29, 2014
 3. (Raymond) To check the options for upgrading AWS instance. 
 
 4. (Raymond) Share XCode account with Howard.
-   
+    DONE.
+
 5. (Raymond) Continue the work for bandwidth estimation
 
 June 15, 2014
