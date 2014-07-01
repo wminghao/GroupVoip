@@ -45,7 +45,15 @@
 					{value:"For the First Time in Forever", code:"For the First Time in Forever"},	
 					{value:"Hong Dou", code:"Hong Dou"},	
 					{value:"Neon Lights", code:"Neon Lights"},	
-					{value:"Top of the world", code:"Top of the world"}		
+					{value:"Top of the world", code:"Top of the world"},
+					{value:"Take back the night", code:"Take back the night"},
+					{value:"Fallen Kingdom", code:"Fallen Kingdom"},	
+					{value:"Lets have some fun in minecraft", code:"Lets have some fun in minecraft"},	
+					{value:"Gregory", code:"Gregory"},	
+					{value:"The Little Birch Tree", code:"The Little Birch Tree"},	
+					{value:"It's a small world", code:"It's a small world"},	
+					{value:"Rassa seya eh", code:"Rassa seya eh"},	
+					{value:"Crazy colored creatures", code:"Crazy colored creatures"}	
 				]
 			);
 			private var publishDest:String = "testliveA";
@@ -129,7 +137,7 @@
 					video.visible = true;
 					
 					//mic.rate = 8;
-					mic.setLoopBack(true);
+					mic.setLoopBack(CheckBox(loopback).selected);
 					mic.encodeQuality = 10; //best quality
 					mic.codec = SoundCodec.SPEEX; 
 					mic.framesPerPacket = 1; //20ms per frame, instead of 40ms per frame
@@ -198,14 +206,14 @@
 				var posIndex:int = 1;
 				for each(var item:Object in dataSet){
 					if( item.value != publishDest ) {
-						var stream:NetStream = new NetStream(connectionSub);
-						connectStream(stream, item.value, positionArray[posIndex][0], positionArray[posIndex][1], videoWidth, videoHeight);
+						var streamView:NetStream = new NetStream(connectionSub);
+						connectStream(streamView, item.value, positionArray[posIndex][0], positionArray[posIndex][1], videoWidth, videoHeight);
 						posIndex++;
 					}
 				}
 				// next is karaoke
-				var stream:NetStream = new NetStream(connectionSub);
-				connectStream(stream, "__mixed__karaoke", videoWidth, 0, videoWidth*2, videoHeight*2 );
+				var streamKara:NetStream = new NetStream(connectionSub);
+				connectStream(streamKara, "__mixed__karaoke", videoWidth, 0, videoWidth*2, videoHeight*2 );
 				
 				/*
 				for (var i:int = 0; i < container.numChildren; i++)
