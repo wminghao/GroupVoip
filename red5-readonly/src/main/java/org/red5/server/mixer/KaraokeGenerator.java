@@ -80,7 +80,8 @@ public class KaraokeGenerator implements Runnable, FLVParser.Delegate {
 	private void loadASong(String fileName) {
         firstPTS_ = 0xffffffff;
 		File file = new File(fileName);
-        log.info("File size: {}", file.length());
+        log.info("File {} size: {}", fileName, file.length());
+        long startTime = System.currentTimeMillis();
         try {
         	flvParser_ = new FLVParser(this, lastTimestamp_);
         	InputStream input = null;
@@ -92,7 +93,6 @@ public class KaraokeGenerator implements Runnable, FLVParser.Delegate {
     	        //skip 13 bytes header
     	        byte[] header = new byte[13];
     	        input.read(header);
-    	        long startTime = System.currentTimeMillis();
         		//log.info("---->Start timestamp:  {}", startTime);
     	        //read frame by frame
     	        while( (bytesTotal < fileLen || flvFrameQueue_.size() > 0 ) && !bCancelCurrentSong.get()) {
@@ -132,6 +132,23 @@ public class KaraokeGenerator implements Runnable, FLVParser.Delegate {
     	     	log.info("Closing input stream.");
     	   	  	input.close();
     	    }
+        	//empty the flvFrameQueue
+        	if(bCancelCurrentSong.get()) {
+    	     	log.info("flvFrameQueue_.size()={}", flvFrameQueue_.size());
+    	     	while ( flvFrameQueue_.size() > 0 ) {
+    	        	FLVFrameObject curFrame = flvFrameQueue_.peek();
+	        		if((curFrame.timestamp - firstPTS_) > ( System.currentTimeMillis() - startTime) ) {
+	        			Thread.sleep( 1 );
+	        		} else {
+	            		FLVFrameObject frame = flvFrameQueue_.remove();
+	        			delegate_.onKaraokeFrameParsed(frame.frame, frame.frame.capacity(), false);
+	        			delayObjectQueue_.add(new DelayObject(frame)); //add to the delayed object queue
+	            		//log.info("---->Popped a frame timestamp:  {}, len {}", curFrame.timestamp, curFrame.frame.capacity());
+	        		}
+        			checkForDelaySend();
+	        	}
+        	}
+        	
         	long duration = emptyDelayObjectQueue();
             lastTimestamp_ += duration; //advance a little bit
 			bCancelCurrentSong.compareAndSet(true, false); //set it back to false;
@@ -223,7 +240,7 @@ public class KaraokeGenerator implements Runnable, FLVParser.Delegate {
 				String songName = prop.getProperty(fileName);
 				songMappingTable_.put(songName, fileName);
 				curSong_ = karaokeFilePath_+"/"+fileName+".flv";
-				System.out.println("-------Reading property file: Key : " + fileName + ", Value : " + songName);
+				log.info("-------Reading song property file: Key : {}, Value : {}", fileName, songName);
 			}
 	        in.close();
 		} catch (FileNotFoundException e) {
@@ -240,7 +257,7 @@ public class KaraokeGenerator implements Runnable, FLVParser.Delegate {
 		if(fileName != null ) {
 			curSong_ = karaokeFilePath_+"/"+fileName+".flv";
 			bCancelCurrentSong.set(true);
-			System.out.println("-------A song is selected: Key : " + fileName + ", Value : " + songName);
+			log.info("-------A song selected: Key : {}, Value : {}", fileName, songName);
 		}
 	}
 }
