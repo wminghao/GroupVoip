@@ -52,11 +52,11 @@ public class Application extends ApplicationAdapter implements
 
 	/** {@inheritDoc} */
     public void streamPublishStart(IBroadcastStream stream) {
-		// Notify all the clients that the stream had been started
-		if (log.isDebugEnabled()) {
-			log.debug("stream broadcast start: {}", stream.getPublishedName());
-		}
-		IConnection current = Red5.getConnectionLocal();
+	// Notify all the clients that the stream had been started
+	if (log.isDebugEnabled()) {
+	    log.debug("stream broadcast start: {}", stream.getPublishedName());
+	}
+	IConnection current = Red5.getConnectionLocal();
         for(Set<IConnection> connections : scope.getConnections()) {
             for (IConnection conn: connections) {
                 if (conn.equals(current)) {
@@ -72,8 +72,8 @@ public class Application extends ApplicationAdapter implements
                     }
                 }
             }
-		}
 	}
+    }
 
 	/** {@inheritDoc} */
     public void streamRecordStart(IBroadcastStream stream) {

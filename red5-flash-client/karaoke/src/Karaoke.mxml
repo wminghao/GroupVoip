@@ -6,7 +6,6 @@
 	<s:layout>
 		<s:VerticalLayout/>
 	</s:layout>
-	<fx:Style source="Karaoke.css"/>
 	<fx:Declarations>
 		<!--  -->
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
@@ -25,6 +24,8 @@
 			private var connectionSub:NetConnection;
 			private var container:UIComponent;
 			private var mic:Microphone;
+			private var serverIp:String = "192.168.2.103";
+			private var karaokeStream:String = "__mixed__karaoke";
 			
 			[Bindable]
 			private var dataSet:ArrayCollection = new ArrayCollection(
@@ -56,17 +57,15 @@
 					{value:"Crazy colored creatures", code:"Crazy colored creatures"}	
 				]
 			);
-			private var publishDest:String = "testliveA";
+			private var publishDest:String = null;
+			private var publishedStreamArray:Vector.<String> = new Vector.<String>();
 			
 			private var videoWidth:int = 320;
 			private var videoHeight:int = 240;
 			private var positionArray:Array = [ [0, 0], [0, videoHeight]];
 			
 			public function onCreationComplete(event:FlexEvent) : void {
-			}
-			
-			public function onPublishButtonClick() : void {
-				var videoPath:String = "rtmp://"+serverIp.text+"/myRed5App/";
+				var videoPath:String = "rtmp://"+serverIp+"/myRed5App/";
 				// setup connection code
 				connectionPub = new NetConnection();
 				connectionPub.connect(videoPath);
@@ -78,7 +77,6 @@
 			public function onConnectionANetStatus(event:NetStatusEvent) : void {
 				// did we successfully connect
 				if(event.info.code == "NetConnection.Connect.Success") {
-					publishStreamA();
 				} else {
 					Alert.show("Unsuccessful Connection", "Information");
 				}
@@ -102,7 +100,31 @@
 						break;
 				}
 			}
-			private function publishStreamA():void {
+			
+			public function onPublishButtonClick() : void {
+				//find the publishDest
+				for each(var item:Object in dataSet){
+					var bFound:Boolean = false;
+					var length:uint = publishedStreamArray.length;
+					for ( var i:uint=0; i<length; i++ ) {
+						//check if the stream is already published
+						if (publishedStreamArray[ i ] == item.value ) {
+							bFound = true;
+							break;
+						}
+					}
+					if( !bFound) {
+						publishDest = item.value;
+						break;
+					}
+				}
+				
+				if( publishDest == null ) {
+					Alert.show("Cannot join Karaoke, since people are already in the room!", "Information");
+					karaokeStream += "_delayed"; //listen to the delayed stream
+					subscribeStreams(); //only showing streams
+					return;
+				}
 				var camera:Camera = Camera.getCamera();	     
 				mic = Microphone.getMicrophone();
 				camera.addEventListener(StatusEvent.STATUS, onCameraStatus) ;
@@ -179,7 +201,7 @@
 				// ignore AsyncErrorEvent events.
 			}
 			public function subscribeStreams():void {
-				var videoPath:String = "rtmp://"+serverIp.text+"/myRed5App/";
+				var videoPath:String = "rtmp://"+serverIp+"/myRed5App/";
 				// setup connection code
 				connectionSub = new NetConnection();
 				connectionSub.connect(videoPath);  //subscribe to live video
@@ -213,7 +235,7 @@
 				}
 				// next is karaoke
 				var streamKara:NetStream = new NetStream(connectionSub);
-				connectStream(streamKara, "__mixed__karaoke", videoWidth, 0, videoWidth*2, videoHeight*2 );
+				connectStream(streamKara, karaokeStream, videoWidth, 0, videoWidth*2, videoHeight*2 );
 				
 				/*
 				for (var i:int = 0; i < container.numChildren; i++)
@@ -239,10 +261,6 @@
 				video.y = y;
 				video.visible = true;
 			}
-			private function dropDownList_changeHandler(event:IndexChangeEvent):void	
-			{
-				publishDest=dropDownList.selectedItem.value;				
-			}
 			private function songList_changeHandler(event:IndexChangeEvent):void	
 			{
 				status.text = "Song selected="+songList.selectedItem.value;
@@ -255,24 +273,32 @@
 					mic.setLoopBack(false);
 				}
 			}
+			//server call to client
+			public function newStream(resp:Object):void {
+				publishedStreamArray.push(String(resp));
+			}
+			private function removeElementFromStringVector(element:String, vector:Vector.<String>):void {  
+				if(vector.indexOf(element) > -1){  
+					vector.splice(vector.indexOf(element), 1);  
+					removeElementFromStringVector(element, vector);  
+				} else {  
+					return;  
+				}  
+			}  
+			public function removeStream(resp:Object):void {
+				removeElementFromStringVector(String(resp), publishedStreamArray);
+			}
 		]]>
 	</fx:Script>
 	<s:Group>
 		<s:layout>
 			<s:HorizontalLayout/>
 		</s:layout>
-		<s:TextInput id="serverIp" width="100" text="192.168.2.103"/>
 		<s:Button id="button1" 
-				  label="Sing Karaoke As" 
-				  width="200" 
+				  label="Pick a Song and Sing Karaoke" 
+				  width="230" 
 				  fontSize="16"
 				  click="onPublishButtonClick();"/>
-		<s:DropDownList  id="dropDownList" dataProvider="{dataSet}" 
-						 width="100" change="dropDownList_changeHandler(event)"
-						 selectedIndex="0" labelField="value"/>
-		<s:Label id="song" width="96" height="21" backgroundColor="#FFFFFF" color="#000000"
-				 fontFamily="Arial" fontSize="16" fontStyle="italic" fontWeight="bold"
-				 text="Pick A Song" textDecoration="none"/>
 		<s:DropDownList  id="songList" dataProvider="{songSet}" 
 						 width="200" change="songList_changeHandler(event)"
 						 selectedIndex="0" labelField="value"/>
