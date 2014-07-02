@@ -13,11 +13,14 @@ June 29, 2014
 
 1. (Howard) Fix the pop-up error message during viewing.
    A logging text window should work better.
+   DONE.
 
 2. (Howard) Check the possibility of mix ony a percentage of the loopback stream.
     Compare it with not including the loopback, and including 100% of the loopback stream.
+   DONE.
 
 3. (Howard) enable users to select their songs
+   DONE.
 
 4. (Howard) mixing mp3 audio with speex audio on the mixer side. (One week)
 
