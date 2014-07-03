@@ -27,7 +27,7 @@
 			private var connectionSub:NetConnection;
 			private var container:UIComponent;
 			private var mic:Microphone;
-			private var serverIp:String = "192.168.0.61";
+			private var serverIp:String = "54.186.122.59";//"192.168.0.61";
 			private var mixedStreamPrefix:String = "__mixed__";
 			private var karaokeStream:String = "__mixed__karaoke";
 			
@@ -374,6 +374,6 @@
 		
 		<s:Label id="statusText" width="65" height="26" fontSize="20" paddingLeft="5" paddingTop="5"
 				 text="Status"/>
-		<s:TextInput id="status" width="603" height="25" text=""/>	
+		<s:TextInput id="status" width="305" height="25" text=""/>	
 	</s:Group>
 </s:Application>
