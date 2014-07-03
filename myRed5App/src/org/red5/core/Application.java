@@ -1,7 +1,6 @@
 package org.red5.core;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -41,10 +40,17 @@ public class Application extends ApplicationAdapter implements
 		log.info("Client connected {} conn {}", new Object[]{conn.getClient().getId(), conn});
 		service.invoke("setId", new Object[] { conn.getClient().getId() },
 						this);
-		//notify clients of all stream published
+		//notify clients of all stream published, in comma deliminated form
+		String publisherListNames = "";
+		int totalPublishers = publisherList.size();
+		int i = 0;
 		for (String publisherName : publisherList) {
-            sendToClient(conn, "newStream", publisherName);
+			publisherListNames += publisherName;
+			if( (++i) < totalPublishers) {
+				publisherListNames += ",";
+			}
 		}
+        sendToClient(conn, "initStreams", publisherListNames);
 		return true;
 	}
 
@@ -71,7 +77,7 @@ public class Application extends ApplicationAdapter implements
                     continue;
                 }
 
-                sendToClient(conn, "newStream", stream.getPublishedName());
+                sendToClient(conn, "addStream", stream.getPublishedName());
             }
         }
         publisherList.add(stream.getPublishedName());

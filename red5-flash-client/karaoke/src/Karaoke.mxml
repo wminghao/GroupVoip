@@ -20,6 +20,9 @@
 			import spark.events.IndexChangeEvent;
 			
 			private var streamPub:NetStream; //must declare outside, otherwise, gc will recycle it.
+			private var streamViewA:NetStream; //must declare outside
+			private var streamViewB:NetStream; //must declare outside
+			
 			private var connectionPub:NetConnection;			
 			private var connectionSub:NetConnection;
 			private var container:UIComponent;
@@ -78,6 +81,8 @@
 			public function onConnectionANetStatus(event:NetStatusEvent) : void {
 				// did we successfully connect
 				if(event.info.code == "NetConnection.Connect.Success") {
+					delayedFunctionCall(1000, function(e:Event):void {publishNow();});
+					//Alert.show("NetConnection.Connect.Success!", "Information");
 				} else {
 					Alert.show("Unsuccessful Connection", "Information");
 				}
@@ -102,7 +107,7 @@
 				}
 			}
 			
-			public function onPublishButtonClick() : void {
+			public function publishNow() : void {
 				//already published, don't do anything.
 				if( publishDest!=null) {
 					return;
@@ -124,8 +129,14 @@
 					}
 				}
 				
+				// container ( IVisualElement ) for DisplayObjects
+				container = new UIComponent();
+				container.width = stage.width/2;
+				container.height = stage.height/2;
+				addElement( container );
+				
 				if( publishDest == null ) {
-					Alert.show("Cannot join Karaoke, since the room is already full!", "Information");
+					Alert.show("Cannot only listen to karaoke, since the room is already full!", "Information");
 					karaokeStream += "_delayed"; //listen to the delayed stream
 					subscribeStreams(); //only showing streams
 					return;
@@ -139,12 +150,6 @@
 				} else{
 					camera.setMode(videoWidth*2, videoHeight*2, 30); //640*480 30 fps
 					camera.setQuality(16384,0); //0% quality, 16kBytes/sec bw limitation
-					
-					// container ( IVisualElement ) for DisplayObjects
-					container = new UIComponent();
-					container.width = stage.width/2;
-					container.height = stage.height/2;
-					addElement( container );
 					
 					streamPub = new NetStream(connectionPub);
 					var h264settings:H264VideoStreamSettings = new H264VideoStreamSettings(); 
@@ -218,6 +223,7 @@
 			public function onConnectionBNetStatus(event:NetStatusEvent) : void {
 				// did we successfully connect
 				if(event.info.code == "NetConnection.Connect.Success") {
+					//Alert.show("onConnectionBNetStatus: " + event, "Information");
 					connectStreams();
 				} else {
 					Alert.show("Unsuccessful Connection", "Information");
@@ -231,11 +237,22 @@
 			
 			private function connectStreams():void {
 				var posIndex:int = 1;
-				for each(var item:Object in dataSet){
-					if( item.value != publishDest ) {
-						var streamView:NetStream = new NetStream(connectionSub);
-						connectStream(streamView, item.value, positionArray[posIndex][0], positionArray[posIndex][1], videoWidth, videoHeight);
-						posIndex++;
+				if( publishDest == null) {
+					streamViewA = new NetStream(connectionSub);
+					var itemA:Object = dataSet.getItemAt(posIndex-1);
+					connectStream(streamViewA, itemA.value, positionArray[posIndex-1][0], positionArray[posIndex-1][1], videoWidth, videoHeight);
+					posIndex++;
+					streamViewB = new NetStream(connectionSub);
+					var itemB:Object = dataSet.getItemAt(posIndex-1);
+					connectStream(streamViewB, itemB.value, positionArray[posIndex-1][0], positionArray[posIndex-1][1], videoWidth, videoHeight);
+					posIndex++;
+				} else {
+					for each(var item:Object in dataSet){
+						if( item.value != publishDest ) {
+							var streamView:NetStream = new NetStream(connectionSub);
+							connectStream(streamView, item.value, positionArray[posIndex][0], positionArray[posIndex][1], videoWidth, videoHeight);
+							posIndex++;
+						}
 					}
 				}
 				// next is karaoke
@@ -268,8 +285,10 @@
 			}
 			private function songList_changeHandler(event:IndexChangeEvent):void	
 			{
-				status.text = "Song selected="+songList.selectedItem.value;
-				connectionPub.call("song.selectSong", null, songList.selectedItem.value);				
+				if( publishDest != null) {
+					status.text = "Song selected="+songList.selectedItem.value;
+					connectionPub.call("song.selectSong", null, songList.selectedItem.value);	
+				}
 			}
 			private function onLoopBack(evt:MouseEvent):void {
 				if(CheckBox(evt.target).selected) {
@@ -279,8 +298,7 @@
 				}
 			}
 			//server call to client
-			public function newStream(resp:Object):void {
-				var publishedStream:String = String(resp);
+			private function newStream(publishedStream:String):void {
 				if( publishedStreamArray.indexOf(publishedStream) == -1 && 
 					publishedStream.indexOf(mixedStreamPrefix) < 0 && 
 					publishedStream != publishDest ){ 
@@ -297,6 +315,27 @@
 					return;  
 				}  
 			}  
+			private function delayedFunctionCall(delay:int, func:Function):void {
+				//trace('going to execute the function you passed me in', delay, 'milliseconds');
+				var timer:Timer = new Timer(delay, 1);
+				timer.addEventListener(TimerEvent.TIMER, func);
+				timer.start();
+			}
+			
+			public function initStreams(resp:Object):void {
+				var streamListStr:String = String(resp);
+				//Alert.show("initStreams = "+streamListStr, "Information"); 
+				if( streamListStr != "") {
+					var streamListArr:Array = streamListStr.split(",");
+					var arrLen:int = streamListArr.length;
+					for (var i:int = 0; i<arrLen; i++) {
+						newStream(streamListArr[i]);
+					}
+				}
+			}
+			public function addStream(resp:Object):void {
+				newStream(String(resp));
+			}
 			public function removeStream(resp:Object):void {
 				removeElementFromStringVector(String(resp), publishedStreamArray);
 			}
@@ -306,16 +345,14 @@
 		<s:layout>
 			<s:HorizontalLayout/>
 		</s:layout>
-		<s:Button id="button1" 
-				  label="Sing Karaoke and Pick a Song" 
-				  width="250" 
-				  fontSize="16"
-				  click="onPublishButtonClick();"/>
-		<s:DropDownList  id="songList" dataProvider="{songSet}" 
-						 width="200" change="songList_changeHandler(event)"
-						 selectedIndex="0" labelField="value"/>
-		<s:CheckBox id="loopback" label="Mic Loopback" click="onLoopBack(event);" selected="false"/>
-		<s:Label id="statusText" width="50" height="20" fontSize="16" text="Status"/>
-		<s:TextInput id="status" width="150" text=""/>
+		<s:Label id="lbl" width="100%" height="100%" fontSize="20" horizontalCenter="0"
+				 paddingLeft="5" paddingRight="5" paddingTop="5" text="Pick a Song to Sing"
+				 verticalCenter="0"/>
+		<s:DropDownList id="songList" width="200" height="25" change="songList_changeHandler(event)"
+						dataProvider="{songSet}" labelField="value" selectedIndex="0"/>
+		<s:CheckBox id="loopback" label="Mic Loopback" click="onLoopBack(event);" fontSize="20"
+					selected="false"/>
+		<s:TextInput id="status" width="250" height="25" text=""/>
+		<s:Label id="statusText" width="58" height="26" fontSize="20" paddingTop="5" text="Status"/>
 	</s:Group>
 </s:Application>
