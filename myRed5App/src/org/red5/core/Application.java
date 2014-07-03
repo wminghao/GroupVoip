@@ -1,5 +1,6 @@
 package org.red5.core;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -23,6 +24,8 @@ public class Application extends ApplicationAdapter implements
 		IPendingServiceCallback, IStreamAwareScopeHandler {
 
     protected static Logger log = LoggerFactory.getLogger(Application.class);
+    
+    private Set<String> publisherList = new HashSet<String>();
 
 	/** {@inheritDoc} */
     @Override
@@ -38,6 +41,10 @@ public class Application extends ApplicationAdapter implements
 		log.info("Client connected {} conn {}", new Object[]{conn.getClient().getId(), conn});
 		service.invoke("setId", new Object[] { conn.getClient().getId() },
 						this);
+		//notify clients of all stream published
+		for (String publisherName : publisherList) {
+            sendToClient(conn, "newStream", publisherName);
+		}
 		return true;
 	}
 
@@ -52,27 +59,22 @@ public class Application extends ApplicationAdapter implements
 
 	/** {@inheritDoc} */
     public void streamPublishStart(IBroadcastStream stream) {
-	// Notify all the clients that the stream had been started
-	if (log.isDebugEnabled()) {
-	    log.debug("stream broadcast start: {}", stream.getPublishedName());
-	}
-	IConnection current = Red5.getConnectionLocal();
+    	// Notify all the clients that the stream had been started
+    	if (log.isDebugEnabled()) {
+    		log.debug("stream broadcast start: {}", stream.getPublishedName());
+    	}
+    	IConnection current = Red5.getConnectionLocal();
         for(Set<IConnection> connections : scope.getConnections()) {
             for (IConnection conn: connections) {
                 if (conn.equals(current)) {
                     // Don't notify current client
                     continue;
                 }
-    
-                if (conn instanceof IServiceCapableConnection) {
-                    ((IServiceCapableConnection) conn).invoke("newStream",
-                            new Object[] { stream.getPublishedName() }, this);
-                    if (log.isDebugEnabled()) {
-                        log.debug("sending notification to {}", conn);
-                    }
-                }
+
+                sendToClient(conn, "newStream", stream.getPublishedName());
             }
-	}
+        }
+        publisherList.add(stream.getPublishedName());
     }
 
 	/** {@inheritDoc} */
@@ -81,6 +83,20 @@ public class Application extends ApplicationAdapter implements
 
 	/** {@inheritDoc} */
     public void streamBroadcastClose(IBroadcastStream stream) {
+    	//notify the connections that a stream is unpublished
+    	IConnection current = Red5.getConnectionLocal();
+        for(Set<IConnection> connections : scope.getConnections()) {
+            for (IConnection conn: connections) {
+                if (conn.equals(current)) {
+                    // Don't notify current client
+                    continue;
+                }
+                sendToClient(conn, "removeStream", stream.getPublishedName());
+            }
+		}
+
+        publisherList.remove(stream.getPublishedName());
+    	super.streamBroadcastClose(stream);
 	}
 
 	/** {@inheritDoc} */
@@ -129,9 +145,9 @@ public class Application extends ApplicationAdapter implements
 	 * Get streams. called from client
 	 * @return iterator of broadcast stream names
 	 */
-	public List<String> getStreams() {
+	public Set<String> getStreams() {
 		IConnection conn = Red5.getConnectionLocal();
-		return (List<String>) getBroadcastStreamNames(conn.getScope());
+		return (Set<String>) getBroadcastStreamNames(conn.getScope());
 	}
 
 	/**
@@ -139,6 +155,16 @@ public class Application extends ApplicationAdapter implements
 	 */
 	public void resultReceived(IPendingServiceCall call) {
 		log.info("Received result {} for {}", new Object[]{call.getResult(), call.getServiceMethodName()});
+	}
+	
+	private void sendToClient(IConnection conn, String methodName, String publisherName) {
+		if (conn instanceof IServiceCapableConnection) {
+            ((IServiceCapableConnection) conn).invoke(methodName,
+                    new Object[] { publisherName }, this);
+            if (log.isDebugEnabled()) {
+                log.debug("sending {} notification to {}", methodName, conn);
+            }
+        }
 	}
 
 }

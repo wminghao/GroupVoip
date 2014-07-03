@@ -24,7 +24,8 @@
 			private var connectionSub:NetConnection;
 			private var container:UIComponent;
 			private var mic:Microphone;
-			private var serverIp:String = "192.168.2.103";
+			private var serverIp:String = "192.168.2.109";
+			private var mixedStreamPrefix:String = "__mixed__";
 			private var karaokeStream:String = "__mixed__karaoke";
 			
 			[Bindable]
@@ -102,6 +103,10 @@
 			}
 			
 			public function onPublishButtonClick() : void {
+				//already published, don't do anything.
+				if( publishDest!=null) {
+					return;
+				}
 				//find the publishDest
 				for each(var item:Object in dataSet){
 					var bFound:Boolean = false;
@@ -120,7 +125,7 @@
 				}
 				
 				if( publishDest == null ) {
-					Alert.show("Cannot join Karaoke, since people are already in the room!", "Information");
+					Alert.show("Cannot join Karaoke, since the room is already full!", "Information");
 					karaokeStream += "_delayed"; //listen to the delayed stream
 					subscribeStreams(); //only showing streams
 					return;
@@ -275,12 +280,19 @@
 			}
 			//server call to client
 			public function newStream(resp:Object):void {
-				publishedStreamArray.push(String(resp));
+				var publishedStream:String = String(resp);
+				if( publishedStreamArray.indexOf(publishedStream) == -1 && 
+					publishedStream.indexOf(mixedStreamPrefix) < 0 && 
+					publishedStream != publishDest ){ 
+					//Alert.show("A new connection "+publishedStream+" joined", "Information");
+					publishedStreamArray.push(publishedStream);
+				}
 			}
 			private function removeElementFromStringVector(element:String, vector:Vector.<String>):void {  
 				if(vector.indexOf(element) > -1){  
 					vector.splice(vector.indexOf(element), 1);  
-					removeElementFromStringVector(element, vector);  
+					removeElementFromStringVector(element, vector);
+					//Alert.show("An old connection "+element+" left", "Information");  
 				} else {  
 					return;  
 				}  
@@ -295,14 +307,14 @@
 			<s:HorizontalLayout/>
 		</s:layout>
 		<s:Button id="button1" 
-				  label="Pick a Song and Sing Karaoke" 
-				  width="230" 
+				  label="Sing Karaoke and Pick a Song" 
+				  width="250" 
 				  fontSize="16"
 				  click="onPublishButtonClick();"/>
 		<s:DropDownList  id="songList" dataProvider="{songSet}" 
 						 width="200" change="songList_changeHandler(event)"
 						 selectedIndex="0" labelField="value"/>
-		<s:CheckBox id="loopback" label="Mic Loopback" click="onLoopBack(event);" selected="true"/>
+		<s:CheckBox id="loopback" label="Mic Loopback" click="onLoopBack(event);" selected="false"/>
 		<s:Label id="statusText" width="50" height="20" fontSize="16" text="Status"/>
 		<s:TextInput id="status" width="150" text=""/>
 	</s:Group>
