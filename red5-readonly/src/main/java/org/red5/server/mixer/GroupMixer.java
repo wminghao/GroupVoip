@@ -8,6 +8,7 @@ import org.red5.logging.Red5LoggerFactory;
 import org.red5.server.api.Red5;
 import org.red5.server.net.rtmp.IRTMPHandler;
 import org.red5.server.net.rtmp.RTMPConnManager;
+import org.red5.server.net.rtmp.RTMPConnection;
 import org.red5.server.net.rtmp.RTMPMinaConnection;
 import org.red5.server.net.rtmp.event.AudioData;
 import org.red5.server.net.rtmp.event.ChunkSize;
@@ -377,6 +378,11 @@ public class GroupMixer implements SegmentParser.Delegate, KaraokeGenerator.Dele
 		onFrameGenerated(streamId, frame, len);
 	}
 
+	@Override
+    public void onSongPlaying(String songName) {
+    	RTMPConnection conn = getAllInOneConn();
+    	conn.onSongPlaying(songName);
+    }
 	public void selectSong(String songName) {
 		karaokeGen_.selectSong(songName);
 	}
