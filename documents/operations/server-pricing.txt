@@ -45,6 +45,13 @@ Core:  2
 HZ:    1.434G
 
 Mem:   800Mhz
-Cost:  $60 per unit
+Cost:  $60-$80 per unit
+
+--------------------------------------------------------------------------------
+- References: 
+--------------------------------------------------------------------------------
+* http://aws.amazon.com/ec2/pricing/
+* http://www.ebay.com/itm/Cubieboard-A20-Dual-core-Board-Upgrade-Versio-More-Powerful-Than-Raspberry-PI-/111297697992?pt=LH_DefaultDomain_0&hash=item19e9dc18c8
+
 
 
