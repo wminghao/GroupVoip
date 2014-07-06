@@ -1,0 +1,45 @@
+################################################################################
+# Key Technology Pieces Developed or to be Developed for the 
+# On-line Karaoke businesses
+#
+# First Draft: July 5, 2014
+#
+################################################################################
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~ Immediate Needs:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  1. basic web/based video content publisher
+  2. basic video server with mixing capabilities
+  3. basic web/smart phone client for playin back
+
+  Note that we have all these pieces today while 
+  we are not satisfied with the quality achieved with the basic set of
+  technology pieces.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~ Next Steps:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Realistic Karaoke playback
+  * Need to refine the user experience
+  * Curently the loopback appear un-natural, and tend to be long. 
+    While without it, the experience appears unnatural as well.
+
+- Large on-line song repo
+  * Methods to automate the process?
+  * Ways to guarantee the consistency among the song repo? 
+
+- B/W measurements 
+  * To integrate the methods obtaiend. 
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~ Future Needs:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Video processing to put together singer image with MTV background
+- Ways to improve the audio quality?
+
+
+
