@@ -1,0 +1,92 @@
+################################################################################
+#
+#    InnoVideo Laboratory, Inc.
+#
+################################################################################
+
+- Company Introduction
+- Technology Advantages
+- Market Analysis
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~ Company Introduction
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Mission:
+- Working on innovative video solutions.
+
+Founders:
+
+- Howard Minghao Wang
+
+  * BS in CS, FuDang University
+  * MS in CS, UCSC
+  * Team Leader and Sr. Engineer, FlashMobile/FlashPlayer Department, Adobe
+  * Principal Engineer, Veetle Inc.
+
+- Jian Raymond Li
+
+  * BS, Beijing University
+  * PhD, UIUC
+  * Technical Leader, and Engineering Manager, Cisco Systems, Inc
+  * Principal Engineer, Futurewei Technology, Huawei USA 
+  * MTS, Riverbed Technology
+
+Company History:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~ Technology Advantages 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+1) Adaptability. Our solution works at a wide range of the bandwidth conditions 
+   between publishers and viewers. Our solution also works under changing network 
+   conditions. Bandwidth supported are between 64Kbps to 800Kbps currently.
+
+2) Cross platforms. Our client code can be easily ported to different platforms, 
+   namely, Mac, Windows, Linux, iOS, Android etc.
+
+3) Light-weight clients. Video/audio processing and mixing are put on the 
+   servers.  It allows low-end devices such as google glass and iWatch 
+   to be used.
+
+4) Scalable, high-quality video chat services. VGA 640*480. 32 people 
+   conferencing per session with unlimited number f viewing streams.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~ Market Opportunity 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+With our video conferencing technology, we plan to provide a tool to allow
+people to sing songs following on-screen lyrics. It's an on-line form of
+the well-known Karaoke which is popular in the Eastern Asian countries.  
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~ Competition Analysis 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Traditional Karaoke businesses.
+
+  The on-line solution we offer is significantly more flexible and easily
+  accessible via smart phone, pads, or mobile desktops. With songs fetched
+  on-line, our collection of songs can not be matched by individual shops
+  running on DVD discs. It's easier for consumer to get connected with
+  friends and family w/o the need to be in the same physical location.
+
+  While the solution having edge over traditional business model, we
+  can partner instead of going head-on competition against individual 
+  Karaoke shops. The on-line solution helps to cut their cost while
+  making the original contents more readily accessible to them. 
+
+- Existing Smart Phone Applications that Enable Karaoke
+
+  There are existing solution allows people to sing along: 
+  * Just sing it
+  * Smule Sing
+  * Yokee
+  * Disney Karaoke
+  * Singsnap
+  * Stage it (Live)
+  * Backstage Pass
+  None of them offer a real-time solution as we do.
+
+
