@@ -27,10 +27,13 @@ June 29, 2014
 5. (Howard) migrating environment to macbook air.
 
 1. (Raymond) To follow up with Yantao, the Quanshi CTO.
+    Need to give him a call on 12th of July.
 
 2. (Raymond) To come up with the initial version of the business plan for on-line Karaoke.
+   DONE.
 
 3. (Raymond) To check the options for upgrading AWS instance. 
+    DONE.
 
 4. (Raymond) Share XCode account with Howard.
     DONE.
