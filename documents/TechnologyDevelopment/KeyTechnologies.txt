@@ -10,9 +10,9 @@
 ~ Immediate Needs:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  1. basic web/based video content publisher
-  2. basic video server with mixing capabilities
-  3. basic web/smart phone client for playin back
+  1. basic web/based video content publisher (Publisher)
+  2. basic video server with mixing capabilities (Server)
+  3. basic web/smart phone client for playing back (Viewer)
 
   Note that we have all these pieces today while 
   we are not satisfied with the quality achieved with the basic set of
@@ -24,15 +24,40 @@
 
 - Realistic Karaoke playback
   * Need to refine the user experience
+    TODO
+  
   * Curently the loopback appear un-natural, and tend to be long. 
-    While without it, the experience appears unnatural as well.
+    While without it, the experience appears unnatural as well.    
+    ===> The ultimate solution is to create a Flash-player simiiar browser plugin, to support it, 
+         requires at least 6 man-months of engineering work, a lot of work.
+    1) Research YY, their plugin 3 features 
+       a) Filter, karaoke sound effects.
+       b) Stereo, mp3 encoding/aac encoding
+       c) Delay??? (Real issue)
+    2) More user feedback from real users.
+       a) Uncompromised(without previous knowledge and impression of the product)
+       
+  * 2 way singing delay is unavoidable.
+    ===> How to minimize the delay, and to get ready for the minimum latency required for 2 ways singers to use.
+    1) BW in the beginning.
+    2) delay estimation in the beginning.
 
 - Large on-line song repo
   * Methods to automate the process?
+    1) License/Partner. (KaraFun, etc.) 
+    ===>Reserach who can be partnered with.
+    2) Format is not a problem. Use open source tool to do conversation. (100%)    
+
   * Ways to guarantee the consistency among the song repo? 
+    1) Quality. (Same source from same vendor should be no problem)
+    2) Partner, same source. (Option 1)
+    3) Allow user to upload content. (Option2) 
+      a) Copyright. (Youtube wins)
+      b) Monitoring. (All contents should be monitored)
+      c) Storage. (Smaller problem)
 
 - B/W measurements 
-  * To integrate the methods obtaiend. 
+  * To integrate the methods obtained. 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ~ Future Needs:

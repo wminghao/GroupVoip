@@ -27,7 +27,7 @@
 			private var connectionSub:NetConnection;
 			private var container:UIComponent;
 			private var mic:Microphone;
-			private var serverIp:String = "192.168.2.109";//"54.186.122.59";//"192.168.0.61";
+			private var serverIp:String = "54.186.122.59";//"192.168.2.109";//"54.186.122.59";//"192.168.0.61";
 			private var mixedStreamPrefix:String = "__mixed__";
 			private var karaokeStream:String = "__mixed__karaoke";
 			
@@ -43,7 +43,10 @@
 			private var songSet:ArrayCollection = new ArrayCollection(
 				[   
 					{value:"Please Pick A Song", code:"Please Pick A Song"},
-					{value:"Yi Jian Mei", code:"Yi Jian Mei"},
+					{value:"Yi Jian Mei", code:"Yi Jian Mei"},	
+					{value:"Shanghai Tan", code:"Shanghai Tan"},
+					{value:"Juan Zhu Lian", code:"Juan Zhu Lian"},
+					{value:"Pu Sa Man", code:"Pu Sa Man"},	
 					{value:"Cannot take my eyes off of you", code:"Cannot take my eyes off of you"},	
 					{value:"Bella Ciao", code:"Bella Ciao"},	
 					{value:"Let It Go", code:"Let It Go"},	
@@ -54,8 +57,7 @@
 					{value:"Top of the world", code:"Top of the world"},
 					{value:"Take back the night", code:"Take back the night"},
 					{value:"Fallen Kingdom", code:"Fallen Kingdom"},	
-					{value:"Lets have some fun in minecraft", code:"Lets have some fun in minecraft"},	
-					{value:"Gregory", code:"Gregory"},	
+					{value:"Lets have some fun in minecraft", code:"Lets have some fun in minecraft"},
 					{value:"The Little Birch Tree", code:"The Little Birch Tree"},	
 					{value:"It's a small world", code:"It's a small world"},	
 					{value:"Rassa seya eh", code:"Rassa seya eh"},	

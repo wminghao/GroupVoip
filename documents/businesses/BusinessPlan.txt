@@ -53,12 +53,24 @@ Company History:
    conferencing per session with unlimited number f viewing streams.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-~ Market Opportunity 
+~ Product Description
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-With our video conferencing technology, we plan to provide a tool to allow
-people to sing songs following on-screen lyrics. It's an on-line form of
-the well-known Karaoke which is popular in the Eastern Asian countries.  
+Our tool/platform allows people to sing following on-screen lyrics. 
+It's an on-line form of the well-known Karaoke system.
+
+(TODO)
+Tool = anyone can use at any time.
+Platform = social, public platform, i.e., YY, spreecast.
+
+(TODO) - Raymond will expand to cover the 3 forms) 
+1) Product core value. (What)
+2) Use case. (scenario)
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ADD 2 chapters
+
+1) Customer segmentation. (Who)
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ~ Competition Analysis 
