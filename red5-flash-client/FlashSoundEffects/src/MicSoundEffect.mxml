@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600">
+	<fx:Style source="MicSoundEffect.css"/>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+		import flash.events.SampleDataEvent;
+		import flash.media.Microphone;
+		import flash.media.Sound;
+		import mx.collections.ArrayCollection;
+		import mx.controls.Alert;
+	
+		private const BUFFER_SIZE:int = 2048; // output buffer size, minimal 2048
+		private const MIN_SAFETY_BUFFER:int = 1024; // minimum collected input before output starts 
+	
+		private var outputActive:Boolean = false; // will be set to true once MIN_SAFETY_BUFFER samples have been collected. 
+	
+		private var mic:Microphone = Microphone.getMicrophone(); 
+		private var playbackSound:Sound = new Sound(); 
+		private var inputBuffer:Vector.<Number> = new Vector.<Number>(); // buffer in which we'll store input data 
+			
+		private function micSampleDataHandler(event:SampleDataEvent):void  
+		{ 
+			while(event.data.bytesAvailable) 
+			{ 
+				var sample:Number = event.data.readFloat(); // microphone input is mono!  
+				inputBuffer.push(sample); 
+			} 
+			if (!outputActive && inputBuffer.length >= MIN_SAFETY_BUFFER) 
+			{ 
+				this.status.text = "starting playback!"; 
+				outputActive = true; 
+			} 
+		} 
+			
+		private function startMic(e:Event):void {
+			/*mic.encodeQuality = 10; //best quality
+			mic.codec = SoundCodec.SPEEX; 
+			mic.framesPerPacket = 1; //20ms per frame, instead of 40ms per frame
+			mic.setSilenceLevel(0,200);
+			mic.setLoopBack(false);
+			*/
+			mic.rate = 44;
+			mic.setSilenceLevel(0); // you need to set this, or else the mic will stop sending data when it detects prolonged silence!
+			
+			mic.addEventListener(SampleDataEvent.SAMPLE_DATA, micSampleDataHandler); 
+			playbackSound.addEventListener(SampleDataEvent.SAMPLE_DATA, soundSampleDataHandler); 
+			playbackSound.play(); 
+		}
+		 
+		 
+		private function soundSampleDataHandler(event:SampleDataEvent):void 
+		{ 
+		 	var outputBuffer:Vector.<Number>; 
+			 // move samples from input to output buffer: 
+			 if (outputActive)  { 
+			 	// if playback is enabled, take BUFFER_SIZE number of samples from the input buffer... 
+			 	outputBuffer = inputBuffer.splice(0, BUFFER_SIZE); 
+			 	if (outputBuffer.length < BUFFER_SIZE) 
+			 	{ 
+					this.status.text = "Underflow len="+outputBuffer.length;
+			 		while (outputBuffer.length < BUFFER_SIZE) {
+						outputBuffer.push(0); 
+					}
+			 	} else {
+					this.status.text = "Good";
+				}
+			 } else {
+				 // ... otherwise create an empty output buffer of the right size 
+				 outputBuffer = new Vector.<Number>(BUFFER_SIZE); 
+				 this.status.text = "Empty";
+			 } 
+			 // process samples and add them to the SampleDataEvent's data. 
+			 for (var i:int=0; i<BUFFER_SIZE; i++) 
+			 { 
+				var currentSample:Number = outputBuffer[i]; 
+				// do something interesting with the sample here! 
+				   
+			    event.data.writeFloat(currentSample); // left channel 
+   			    event.data.writeFloat(currentSample); // right channel 
+			  } 
+		 } 
+			
+		]]>
+	</fx:Script>
+	
+	<s:Group>
+		<s:layout>
+			<s:HorizontalLayout/>
+		</s:layout>
+		<s:Button id="b1" label="Click Me 4 Sound Effect" click="startMic(event)"/>
+		<s:TextInput id="status" width="305" height="25" text=""/>	
+	</s:Group>
+</s:Application>
