@@ -172,12 +172,15 @@
 					video.x = video.y = 0;
 					video.visible = true;
 					
-					//mic.rate = 8;
 					mic.setLoopBack(CheckBox(loopback).selected);
-					mic.encodeQuality = 10; //best quality
-					mic.codec = SoundCodec.SPEEX; 
-					mic.framesPerPacket = 1; //20ms per frame, instead of 40ms per frame
 					mic.setSilenceLevel(0,200);
+					//Nellymoser settings
+					mic.codec = SoundCodec.NELLYMOSER;
+					mic.rate = 44;
+					//Speex settings
+					//mic.encodeQuality = 10; //best quality
+					//mic.codec = SoundCodec.SPEEX; 
+					//mic.framesPerPacket = 1; //20ms per frame, instead of 40ms per frame
 					readVolume();
 					streamPub.attachAudio(mic);
 					//Alert.show("camera width="+camera.width);
@@ -379,9 +382,9 @@
 			<s:layout>
 				<s:VerticalLayout/>
 			</s:layout>
-			<s:HSlider id="volumeBar" width="191" height="12" maximum="10" minimum="0" value="5" change="volumeScroll();"/>
+			<s:HSlider id="volumeBar" width="191" height="12" maximum="10" minimum="0" value="10" change="volumeScroll();"/>
 			<s:CheckBox id="loopback" height="17" label="Mic Loopback Adjust Volume"
-						click="onLoopBack(event);" fontSize="14" selected="false"/>
+						click="onLoopBack(event);" fontSize="14" selected="true"/>
 		</s:Group>
 		
 		<s:Label id="statusText" width="65" height="26" fontSize="20" paddingLeft="5" paddingTop="5"
