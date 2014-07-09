@@ -47,6 +47,7 @@
 					{value:"Shanghai Tan", code:"Shanghai Tan"},
 					{value:"Juan Zhu Lian", code:"Juan Zhu Lian"},
 					{value:"Pu Sa Man", code:"Pu Sa Man"},	
+					{value:"You are the sunshine of my life", code:"You are the sunshine of my life"},
 					{value:"Cannot take my eyes off of you", code:"Cannot take my eyes off of you"},	
 					{value:"Bella Ciao", code:"Bella Ciao"},	
 					{value:"Let It Go", code:"Let It Go"},	
@@ -172,16 +173,10 @@
 					video.x = video.y = 0;
 					video.visible = true;
 					
-					mic.setLoopBack(CheckBox(loopback).selected);
 					mic.setSilenceLevel(0,200);
-					//Nellymoser settings
-					mic.codec = SoundCodec.NELLYMOSER;
-					mic.rate = 44;
-					//Speex settings
-					//mic.encodeQuality = 10; //best quality
-					//mic.codec = SoundCodec.SPEEX; 
-					//mic.framesPerPacket = 1; //20ms per frame, instead of 40ms per frame
-					readVolume();
+					detectSpeex();
+					detectLoopback();
+					detectVolume();
 					streamPub.attachAudio(mic);
 					//Alert.show("camera width="+camera.width);
 				}
@@ -297,10 +292,30 @@
 				}
 			}
 			private function onLoopBack(evt:MouseEvent):void {
-				if(CheckBox(evt.target).selected) {
+				detectLoopback();
+			}
+			private function detectLoopback():void {
+				if(CheckBox(loopback).selected) {
 					mic.setLoopBack(true);
+					mic.setUseEchoSuppression(true);
 				} else {
 					mic.setLoopBack(false);
+					mic.setUseEchoSuppression(false);
+				}
+			}
+			private function onUseSpeex(evt:MouseEvent):void {
+				detectSpeex();
+			}
+			private function detectSpeex():void{
+				if(CheckBox(useSpeex).selected) {
+					//Speex settings
+					mic.encodeQuality = 10; //best quality
+					mic.codec = SoundCodec.SPEEX; 
+					mic.framesPerPacket = 1; //20ms per frame, instead of 40ms per frame
+				} else {
+					//Nellymoser settings
+					mic.codec = SoundCodec.NELLYMOSER;
+					mic.rate = 44;
 				}
 			}
 			//server call to client
@@ -355,7 +370,7 @@
 			}
 			
 			// Event handler function to display the scroll location.
-			private function readVolume():void {
+			private function detectVolume():void {
 				var volume:Number = volumeBar.value/volumeBar.maximum;
 				var micTransform:SoundTransform = mic.soundTransform;
 				status.text = "volume was set to be "+micTransform.volume+" will be set to "+volume;
@@ -363,7 +378,7 @@
 				mic.soundTransform = micTransform;
 			}
 			private function volumeScroll():void {
-				readVolume();
+				detectVolume();
 			}
 		]]>
 	</fx:Script>
@@ -382,7 +397,7 @@
 			<s:layout>
 				<s:VerticalLayout/>
 			</s:layout>
-			<s:HSlider id="volumeBar" width="191" height="12" maximum="10" minimum="0" value="10" change="volumeScroll();"/>
+			<s:HSlider id="volumeBar" width="191" height="12" maximum="10" minimum="0" value="5" change="volumeScroll();"/>
 			<s:CheckBox id="loopback" height="17" label="Mic Loopback Adjust Volume"
 						click="onLoopBack(event);" fontSize="14" selected="true"/>
 		</s:Group>
@@ -390,5 +405,8 @@
 		<s:Label id="statusText" width="65" height="26" fontSize="20" paddingLeft="5" paddingTop="5"
 				 text="Status"/>
 		<s:TextInput id="status" width="305" height="25" text=""/>	
+		
+		<s:CheckBox id="useSpeex" height="17" label="Use Speex"
+					click="onUseSpeex(event);" fontSize="14" selected="true"/>
 	</s:Group>
 </s:Application>
