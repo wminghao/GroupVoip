@@ -22,6 +22,15 @@
 		private var mic:Microphone = Microphone.getMicrophone(); 
 		private var playbackSound:Sound = new Sound(); 
 		private var inputBuffer:Vector.<Number> = new Vector.<Number>(); // buffer in which we'll store input data 
+		
+		[Bindable]
+		private var micMethod:ArrayCollection = new ArrayCollection(
+				[ 
+					{value:"Speex", code:"Speex"},
+					{value:"Nellymoser", code:"Nellymoser"},
+					{value:"Native", code:"Native"},
+				]
+		);
 			
 		private function micSampleDataHandler(event:SampleDataEvent):void  
 		{ 
@@ -32,7 +41,7 @@
 			} 
 			if (!outputActive && inputBuffer.length >= MIN_SAFETY_BUFFER) 
 			{ 
-				this.status.text = "starting playback!"; 
+				this.status.text = "Native playback!"; 
 				outputActive = true; 
 			} 
 		} 
@@ -44,12 +53,36 @@
 			mic.setSilenceLevel(0,200);
 			mic.setLoopBack(false);
 			*/
-			mic.rate = 44;
-			mic.setSilenceLevel(0); // you need to set this, or else the mic will stop sending data when it detects prolonged silence!
-			
-			mic.addEventListener(SampleDataEvent.SAMPLE_DATA, micSampleDataHandler); 
-			playbackSound.addEventListener(SampleDataEvent.SAMPLE_DATA, soundSampleDataHandler); 
-			playbackSound.play(); 
+			switch( micMethodSel.selectedIndex) {
+				case 0: {
+					//Speex settings
+					mic.encodeQuality = 10; //best quality
+					mic.codec = SoundCodec.SPEEX; 
+					mic.framesPerPacket = 1; //20ms per frame, instead of 40ms per frame
+					mic.setLoopBack(true);
+					this.status.text = "Speex";
+					break;
+				}
+				case 1: {
+					//Nellymoser settings
+					mic.codec = SoundCodec.NELLYMOSER;
+					mic.rate = 44;
+					mic.setLoopBack(true);
+					this.status.text = "Nellymoser";
+					break;
+				}
+				case 2: {
+					mic.rate = 44;
+					mic.setSilenceLevel(0); // you need to set this, or else the mic will stop sending data when it detects prolonged silence!
+					mic.setLoopBack(false);
+					
+					mic.addEventListener(SampleDataEvent.SAMPLE_DATA, micSampleDataHandler); 
+					playbackSound.addEventListener(SampleDataEvent.SAMPLE_DATA, soundSampleDataHandler); 
+					playbackSound.play(); 
+					this.status.text = "Native";
+					break;
+				}
+			}
 		}
 		 
 		 
@@ -67,7 +100,7 @@
 						outputBuffer.push(0); 
 					}
 			 	} else {
-					this.status.text = "Good";
+					//this.status.text = "Good";
 				}
 			 } else {
 				 // ... otherwise create an empty output buffer of the right size 
@@ -94,5 +127,8 @@
 		</s:layout>
 		<s:Button id="b1" label="Click Me 4 Sound Effect" click="startMic(event)"/>
 		<s:TextInput id="status" width="305" height="25" text=""/>	
+		
+		<s:DropDownList id="micMethodSel" width="200" height="25"
+						dataProvider="{micMethod}" labelField="value" selectedIndex="0"/>
 	</s:Group>
 </s:Application>
