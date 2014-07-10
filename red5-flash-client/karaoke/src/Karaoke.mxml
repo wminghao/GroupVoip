@@ -406,7 +406,7 @@
 				 text="Status"/>
 		<s:TextInput id="status" width="305" height="25" text=""/>	
 		
-		<s:CheckBox id="useSpeex" height="17" label="Use Speex"
-					click="onUseSpeex(event);" fontSize="14" selected="true"/>
+		<s:CheckBox id="useSpeex" height="17" label="UseSpeex"
+					click="onUseSpeex(event);" fontSize="14" selected="false"/>
 	</s:Group>
 </s:Application>
