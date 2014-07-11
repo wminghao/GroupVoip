@@ -20,7 +20,7 @@ double rawStringToDouble(const char *s) {
 int main(int argc, char** argv) {
   double d = rawStringToDouble("401c000000000000");
   printf("d=%f\r\n",d);
-  char* eightResult = doubleToRawString(8.0);
+  char* eightResult = doubleToRawString(7.0);
   printf("eightResult=%s\r\n",eightResult);
   free(eightResult);
   return 0;
