@@ -1,0 +1,152 @@
+This is a document to illustrate how to build VLC.
+
+========
+VLC for iOS
+
+PLEASE USE:
+https://wiki.videolan.org/VLCKit/
+
+DON"T USE:
+http://www.videolan.org/vlc/download-ios.html
+https://wiki.videolan.org/Documentation:IOS/
+https://wiki.videolan.org/IOSCompile
+
+========
+Repositary/Branch instruction, (DO IT ONLY ONCE)
+
+Create a repo from vlchub to github:
+
+Step 0. download vlckit from videolan.org, run the following
+   $cd VLCKit
+   $sh ./buildMobileVLCKit.sh -d -s -v
+       i.e. make sure the source code compiles successfully, which means it's a valid trunk snapshot
+       i.e. change buildMobileVLCKit.sh "git branch --set-upstream-to origin/master"
+
+Step 1, create 2 new repos on github
+   1) one called GroupVoIP.VLCKitIOS, 
+   2) the otherone called GroupVoIP.VLCSrcIOS
+
+Step 2, push vlckithub to github
+  $cd VLCKit
+  $git remote add vlckit https://github.com/wminghao/GroupVoIP.VLCKitIOS.git
+  $git remote -v
+    origin	     git://git.videolan.org/vlc-bindings/VLCKit.git (fetch)
+    origin	     git://git.videolan.org/vlc-bindings/VLCKit.git (push)
+    vlckit	     https://github.com/wminghao/GroupVoIP.VLCKitIOS.git (fetch)
+    vlckit	     https://github.com/wminghao/GroupVoIP.VLCKitIOS.git (push)
+  $git push vlckit master
+
+Step 3, push vlc source to github
+
+  $cd VLCKit/MobileVLCKit/ImportedSources/vlc
+  $git remote add vlcsrc https://github.com/wminghao/GroupVoIP.VLCSrcIOS.git
+  $git remote -v
+     vlcsrc    https://github.com/wminghao/GroupVoIP.VLCSrcIOS.git (fetch)
+     vlcsrc    https://github.com/wminghao/GroupVoIP.VLCSrcIOS.git (push)
+     origin    git://git.videolan.org/vlc.git (fetch)
+     origin    git://git.videolan.org/vlc.git (push)
+  *******There are 2 branches, we are modifying localBranch, while VLC team is modifying master branch*******
+  $git branch
+     * localBranch
+     master
+  $git push vlcsrc localBranch (Push localBranch to vlcsrc/localBranch)
+
+Step 4, then keep vlckithub untact, only touch my own github project
+  $git commit -a
+  $git push vlckit master
+  $git push vlcsrc localBranch
+
+Step 5. modify a few places in the build scripts to make sure other people can use it. (See changelists for more details)
+  including: build.sh, buildMobileVLCKit.sh, configure.ac, contrib/tar/*.tar.* etc.
+
+========
+Binary size reduction
+
+    Binary size reduction (ONLY DO IT ONCE)
+    see more details in ../thirdparty/vlc-shrink/README 
+
+========
+VLCKit Build instruction,
+How to Modify VLCSrc, VLCKit and VLCSrc/Contrib
+Step 1.
+
+    Must use iTerm2
+    upgrade Xcode to be 5.1
+    After 2, must download commandline tools from XCode->preferences->downloads, otherwise build will fail.
+
+Step 2.
+
+   Download the code from github and build the code successfully once
+   $git clone https://github.com/wminghao/GroupVoIP.VLCKitIOS.git
+   $sh ./buildMobileVLCKit.sh -d -s -v
+
+Step 3.
+
+    modify vlckit or vlc source code, 
+    sh ./b﻿﻿uildMobileVLCKit.sh -d --v
+    git commit filname.cpp
+    git push vlckit master (vlckit source)
+    git push vlcsrc localBranch (vlcsrc source)
+
+Step 4.
+     
+    modify ffmpeg source code
+    Here is a way to force rebuild after we modified ffmpeg/libavformat code
+    see more details in ../thirdparty/ffmpeg-patch/README
+    
+========
+Aspen projects
+Includes 3 sub-projects:
+
+    MobileVLCKit, bridge/wrapper code between VLC c library and main project, VLCKit/Sources
+    vlc-source, c library, VLCKit/MobileVLCKit/ImportedSources/vlc
+    Example code, VLCKit/Examples_iOS main/UI project, can be your own project, need to add 1 as its subproject
+
+==========
+VLCKit buildscript
+VlcKit/buildMobileVLCKit.sh--->vlc/extra/packages/build.sh--->vlc/contrib/bootstrap--->make fetch && make
+
+========
+MobileVLCKit
+-->Static library, libMobileVLCKit.a, bundles together with vlc source
+
+    VLCLibrary, wrapper to instantiate the library
+    VLCMedia, wrapper for media object(File/URL), create/destroy/get info/handle events from media objects
+    VLCMediaPlayer, a media player object to play/pause a media object
+    VLCAudio, audio control from media player object, mute/set volume, etc.
+    VLCMediaList, a list of VLCMedia objects
+    VLCMediaThumbnailer, fetch the thumbnail by instantiating a instance of vlc player on a media object
+    VLCMediaDiscoverer, find a list of VLCMedia objects from disc/local network/usb, etc
+
+========
+Create Main project In XCode
+
+    Create Main project In XCode
+
+    First of all, run build script to compile vlc-ios and MobileVLCKit. (Never compile it directly in Xcode, debug it directly)
+    Run command cplibfiles.bat to
+        Copy the libMobileVLCKit.a files under $trunk/ios-client/vlclibs
+        Copy the header files under $trunk/ios-client/vlclibs/include
+    Create a main project, called GroupVoip.IOSClient
+    Include MobileVLCKit as a sub-project
+        Add File ... and find the file MobileVLCKit.xcodeproj and add it into the main project so it's within it as a child, not parallel to it.
+        Once added, there should be a blue xcode icon with the project named "MobileVLCKit.xcodeproj" with 2 targets. Click on the arrow to expand it.
+        Expand the "Products" folder, you should see " libMobileVLCKit.a"
+        Click on the your main project and then click on the main app target.
+    Include vlc-ios as source for debugging, but exclude them from compilation.
+        Create a group under the main project called vlc-source
+        Click on that group and WITHIN it, create a group called vlc
+        Open up Finder and navigate to the MobileVLCKit/ImportedSources/vlc directory
+        Drag modules, contrib/ffmpeg, include, lib and src into the 'vlc' group. Ensure to uncheck the make option for.
+        rename files MobileVLCKit/ImportedSources/vlc/contrib/iPhoneOS-armv7/libmatroska/make/macosx/macosx.pbproj
+    Add User Header Search Path for target under Debug and Release: /Users/wminghao/Develop/vlc-iOS/VLCKit/build/Debug-iphonesimulator/include/
+    Add User Library Search Path for target under Debug and Release:
+        Click on Build Settings
+        Click on Other Link Flags
+        In Release, add Any iOS Simulator SDK, point to $trunk/ios-client/vlclibs/Release-iphonesimulator/libMobileVLCKit.a
+        In Release, add Any iOS SDK, point to $trunk/ios-client/vlclibs/Release-iphoneos/libMobileVLCKit.a
+        Do the same thing for Debug
+    Hit run to build the main app.
+
+==========
+       

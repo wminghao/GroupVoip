@@ -20,9 +20,16 @@
 			import spark.events.IndexChangeEvent;
 			
 			private var streamPub:NetStream; //must declare outside, otherwise, gc will recycle it.
+			private var streamViewA:NetStream; //must declare outside
+			private var streamViewB:NetStream; //must declare outside
+			
 			private var connectionPub:NetConnection;			
 			private var connectionSub:NetConnection;
 			private var container:UIComponent;
+			private var mic:Microphone;
+			private var serverIp:String = "54.186.122.59";//"192.168.2.109";//"54.186.122.59";//"192.168.0.61";
+			private var mixedStreamPrefix:String = "__mixed__";
+			private var karaokeStream:String = "__mixed__karaoke";
 			
 			[Bindable]
 			private var dataSet:ArrayCollection = new ArrayCollection(
@@ -31,17 +38,42 @@
 					{value:"testliveB", code:"testliveB"}			
 				]
 			);
-			private var publishDest:String = "testliveA";
+			
+			[Bindable]
+			private var songSet:ArrayCollection = new ArrayCollection(
+				[   
+					{value:"Please Pick A Song", code:"Please Pick A Song"},
+					{value:"Yi Jian Mei", code:"Yi Jian Mei"},	
+					{value:"Shanghai Tan", code:"Shanghai Tan"},
+					{value:"Juan Zhu Lian", code:"Juan Zhu Lian"},
+					{value:"Pu Sa Man", code:"Pu Sa Man"},	
+					{value:"You are the sunshine of my life", code:"You are the sunshine of my life"},
+					{value:"Cannot take my eyes off of you", code:"Cannot take my eyes off of you"},	
+					{value:"Bella Ciao", code:"Bella Ciao"},	
+					{value:"Let It Go", code:"Let It Go"},	
+					{value:"Do You Want To Build A Snowman", code:"Do You Want To Build A Snowman"},	
+					{value:"For the First Time in Forever", code:"For the First Time in Forever"},	
+					{value:"Hong Dou", code:"Hong Dou"},	
+					{value:"Neon Lights", code:"Neon Lights"},	
+					{value:"Top of the world", code:"Top of the world"},
+					{value:"Take back the night", code:"Take back the night"},
+					{value:"Fallen Kingdom", code:"Fallen Kingdom"},	
+					{value:"Lets have some fun in minecraft", code:"Lets have some fun in minecraft"},
+					{value:"The Little Birch Tree", code:"The Little Birch Tree"},	
+					{value:"It's a small world", code:"It's a small world"},	
+					{value:"Rassa seya eh", code:"Rassa seya eh"},	
+					{value:"Crazy colored creatures", code:"Crazy colored creatures"}	
+				]
+			);
+			private var publishDest:String = null;
+			private var publishedStreamArray:Vector.<String> = new Vector.<String>();
 			
 			private var videoWidth:int = 320;
 			private var videoHeight:int = 240;
 			private var positionArray:Array = [ [0, 0], [0, videoHeight]];
 			
 			public function onCreationComplete(event:FlexEvent) : void {
-			}
-			
-			public function onPublishButtonClick() : void {
-				var videoPath:String = "rtmp://"+serverIp.text+"/myRed5App/";
+				var videoPath:String = "rtmp://"+serverIp+"/myRed5App/";
 				// setup connection code
 				connectionPub = new NetConnection();
 				connectionPub.connect(videoPath);
@@ -53,7 +85,8 @@
 			public function onConnectionANetStatus(event:NetStatusEvent) : void {
 				// did we successfully connect
 				if(event.info.code == "NetConnection.Connect.Success") {
-					publishStreamA();
+					delayedFunctionCall(1000, function(e:Event):void {publishNow();});
+					//Alert.show("NetConnection.Connect.Success!", "Information");
 				} else {
 					Alert.show("Unsuccessful Connection", "Information");
 				}
@@ -77,9 +110,44 @@
 						break;
 				}
 			}
-			private function publishStreamA():void {
+			
+			public function publishNow() : void {
+				//already published, don't do anything.
+				if( publishDest!=null) {
+					return;
+				}
+				//find the publishDest
+				for each(var item:Object in dataSet){
+					var bFound:Boolean = false;
+					var length:uint = publishedStreamArray.length;
+					for ( var i:uint=0; i<length; i++ ) {
+						//check if the stream is already published
+						if (publishedStreamArray[ i ] == item.value ) {
+							bFound = true;
+							break;
+						}
+					}
+					if( !bFound) {
+						publishDest = item.value;
+						break;
+					}
+				}
+				
+				// container ( IVisualElement ) for DisplayObjects
+				container = new UIComponent();
+				container.width = stage.width/2;
+				container.height = stage.height/2;
+				addElement( container );
+				
+				if( publishDest == null ) {
+					Alert.show("Cannot only listen to karaoke, since the room is already full!", "Information");
+					lbl.text = "Listen mode. Can't Pick Songs";
+					karaokeStream += "_delayed"; //listen to the delayed stream
+					subscribeStreams(); //only showing streams
+					return;
+				}
 				var camera:Camera = Camera.getCamera();	     
-				var mic:Microphone = Microphone.getMicrophone();
+				mic = Microphone.getMicrophone();
 				camera.addEventListener(StatusEvent.STATUS, onCameraStatus) ;
 				mic.addEventListener(StatusEvent.STATUS, onMicStatus);
 				if (camera == null) {
@@ -87,12 +155,6 @@
 				} else{
 					camera.setMode(videoWidth*2, videoHeight*2, 30); //640*480 30 fps
 					camera.setQuality(16384,0); //0% quality, 16kBytes/sec bw limitation
-					
-					// container ( IVisualElement ) for DisplayObjects
-					container = new UIComponent();
-					container.width = stage.width/2;
-					container.height = stage.height/2;
-					addElement( container );
 					
 					streamPub = new NetStream(connectionPub);
 					var h264settings:H264VideoStreamSettings = new H264VideoStreamSettings(); 
@@ -111,15 +173,10 @@
 					video.x = video.y = 0;
 					video.visible = true;
 					
-					//mic.rate = 8;
-					mic.setLoopBack(true);
-					mic.encodeQuality = 10; //best quality
-					mic.codec = SoundCodec.SPEEX; 
-					mic.framesPerPacket = 1; //20ms per frame, instead of 40ms per frame
 					mic.setSilenceLevel(0,200);
-					var soundTrans:SoundTransform = new SoundTransform();
-					soundTrans.volume = 6;
-					mic.soundTransform = soundTrans;
+					detectSpeex();
+					detectLoopback();
+					detectVolume();
 					streamPub.attachAudio(mic);
 					//Alert.show("camera width="+camera.width);
 				}
@@ -140,7 +197,8 @@
 					case "NetStream.Video.DimensionChange":
 						break;
 					default:
-						Alert.show("Unknown event: " + event.info.code, "Information");
+						status.text = event.info.code;
+						//Alert.show("Unknown event: " + event.info.code, "Information");
 						break;
 				}
 			}
@@ -153,7 +211,7 @@
 				// ignore AsyncErrorEvent events.
 			}
 			public function subscribeStreams():void {
-				var videoPath:String = "rtmp://"+serverIp.text+"/myRed5App/";
+				var videoPath:String = "rtmp://"+serverIp+"/myRed5App/";
 				// setup connection code
 				connectionSub = new NetConnection();
 				connectionSub.connect(videoPath);  //subscribe to live video
@@ -165,6 +223,7 @@
 			public function onConnectionBNetStatus(event:NetStatusEvent) : void {
 				// did we successfully connect
 				if(event.info.code == "NetConnection.Connect.Success") {
+					//Alert.show("onConnectionBNetStatus: " + event, "Information");
 					connectStreams();
 				} else {
 					Alert.show("Unsuccessful Connection", "Information");
@@ -178,16 +237,27 @@
 			
 			private function connectStreams():void {
 				var posIndex:int = 1;
-				for each(var item:Object in dataSet){
-					if( item.value != publishDest ) {
-						var stream:NetStream = new NetStream(connectionSub);
-						connectStream(stream, item.value, positionArray[posIndex][0], positionArray[posIndex][1], videoWidth, videoHeight);
-						posIndex++;
+				if( publishDest == null) {
+					streamViewA = new NetStream(connectionSub);
+					var itemA:Object = dataSet.getItemAt(posIndex-1);
+					connectStream(streamViewA, itemA.value, positionArray[posIndex-1][0], positionArray[posIndex-1][1], videoWidth, videoHeight);
+					posIndex++;
+					streamViewB = new NetStream(connectionSub);
+					var itemB:Object = dataSet.getItemAt(posIndex-1);
+					connectStream(streamViewB, itemB.value, positionArray[posIndex-1][0], positionArray[posIndex-1][1], videoWidth, videoHeight);
+					posIndex++;
+				} else {
+					for each(var item:Object in dataSet){
+						if( item.value != publishDest ) {
+							var streamView:NetStream = new NetStream(connectionSub);
+							connectStream(streamView, item.value, positionArray[posIndex][0], positionArray[posIndex][1], videoWidth, videoHeight);
+							posIndex++;
+						}
 					}
 				}
 				// next is karaoke
-				var stream:NetStream = new NetStream(connectionSub);
-				connectStream(stream, "__mixed__karaoke", videoWidth, 0, videoWidth*2, videoHeight*2 );
+				var streamKara:NetStream = new NetStream(connectionSub);
+				connectStream(streamKara, karaokeStream, videoWidth, 0, videoWidth*2, videoHeight*2 );
 				
 				/*
 				for (var i:int = 0; i < container.numChildren; i++)
@@ -213,24 +283,130 @@
 				video.y = y;
 				video.visible = true;
 			}
-			protected function dropDownList_changeHandler(event:IndexChangeEvent):void	
+			private function songList_changeHandler(event:IndexChangeEvent):void	
 			{
-				publishDest=dropDownList.selectedItem.value;				
+				if( publishDest != null && songList.selectedIndex != 0) {
+					status.text = "Song selected="+songList.selectedItem.value;
+					connectionPub.call("song.selectSong", null, songList.selectedItem.value);	
+					songList.selectedIndex = 0;
+				}
+			}
+			private function onLoopBack(evt:MouseEvent):void {
+				detectLoopback();
+			}
+			private function detectLoopback():void {
+				if(CheckBox(loopback).selected) {
+					mic.setLoopBack(true);
+					mic.setUseEchoSuppression(true);
+				} else {
+					mic.setLoopBack(false);
+					mic.setUseEchoSuppression(false);
+				}
+			}
+			private function onUseSpeex(evt:MouseEvent):void {
+				detectSpeex();
+			}
+			private function detectSpeex():void{
+				if(CheckBox(useSpeex).selected) {
+					//Speex settings
+					mic.encodeQuality = 10; //best quality
+					mic.codec = SoundCodec.SPEEX; 
+					mic.framesPerPacket = 1; //20ms per frame, instead of 40ms per frame
+				} else {
+					//Nellymoser settings
+					mic.codec = SoundCodec.NELLYMOSER;
+					mic.rate = 44;
+				}
+			}
+			//server call to client
+			private function newStream(publishedStream:String):void {
+				if( publishedStreamArray.indexOf(publishedStream) == -1 && 
+					publishedStream.indexOf(mixedStreamPrefix) < 0 && 
+					publishedStream != publishDest ){ 
+					//Alert.show("A new connection "+publishedStream+" joined", "Information");
+					publishedStreamArray.push(publishedStream);
+				}
+			}
+			private function removeElementFromStringVector(element:String, vector:Vector.<String>):void {  
+				if(vector.indexOf(element) > -1){  
+					vector.splice(vector.indexOf(element), 1);  
+					removeElementFromStringVector(element, vector);
+					//Alert.show("An old connection "+element+" left", "Information");  
+				} else {  
+					return;  
+				}  
+			}  
+			private function delayedFunctionCall(delay:int, func:Function):void {
+				//trace('going to execute the function you passed me in', delay, 'milliseconds');
+				var timer:Timer = new Timer(delay, 1);
+				timer.addEventListener(TimerEvent.TIMER, func);
+				timer.start();
+			}
+			
+			public function initStreams(resp:Object):void {
+				var streamListStr:String = String(resp);
+				//Alert.show("initStreams = "+streamListStr, "Information"); 
+				if( streamListStr != "") {
+					var streamListArr:Array = streamListStr.split(",");
+					var arrLen:int = streamListArr.length;
+					for (var i:int = 0; i<arrLen; i++) {
+						newStream(streamListArr[i]);
+					}
+				}
+			}
+			public function addStream(resp:Object):void {
+				newStream(String(resp));
+			}
+			public function removeStream(resp:Object):void {
+				removeElementFromStringVector(String(resp), publishedStreamArray);
+			}
+			
+			public function songSelected(resp:Object):void	
+			{
+				var song:String = String(resp);
+				if( song != null) {
+					status.text = "Song playing="+song;
+				}
+			}
+			
+			// Event handler function to display the scroll location.
+			private function detectVolume():void {
+				var volume:Number = volumeBar.value/volumeBar.maximum;
+				var micTransform:SoundTransform = mic.soundTransform;
+				status.text = "volume was set to be "+micTransform.volume+" will be set to "+volume;
+				micTransform.volume = volume;
+				mic.soundTransform = micTransform;
+			}
+			private function volumeScroll():void {
+				detectVolume();
 			}
 		]]>
 	</fx:Script>
+	
 	<s:Group>
 		<s:layout>
 			<s:HorizontalLayout/>
 		</s:layout>
-		<s:TextInput id="serverIp" width="100" text="192.168.2.103"/>
-		<s:Button id="button1" 
-				  label="Publish!" 
-				  width="200" 
-				  fontSize="16"
-				  click="onPublishButtonClick();"/>
-		<s:DropDownList  id="dropDownList" dataProvider="{dataSet}" 
-						 width="150" change="dropDownList_changeHandler(event)"
-						 selectedIndex="0" labelField="value"/>
+		<s:Label id="lbl" width="100%" height="100%" fontSize="20" horizontalCenter="0"
+				 paddingLeft="10" paddingRight="5" paddingTop="5" text="Karaoke With Friends"
+				 verticalCenter="0"/>
+		<s:DropDownList id="songList" width="200" height="25" change="songList_changeHandler(event)"
+						dataProvider="{songSet}" labelField="value" selectedIndex="0"/>
+		
+		<s:Group>
+			<s:layout>
+				<s:VerticalLayout/>
+			</s:layout>
+			<s:HSlider id="volumeBar" width="191" height="12" maximum="10" minimum="0" value="5" change="volumeScroll();"/>
+			<s:CheckBox id="loopback" height="17" label="Mic Loopback Adjust Volume"
+						click="onLoopBack(event);" fontSize="14" selected="true"/>
+		</s:Group>
+		
+		<s:Label id="statusText" width="65" height="26" fontSize="20" paddingLeft="5" paddingTop="5"
+				 text="Status"/>
+		<s:TextInput id="status" width="305" height="25" text=""/>	
+		
+		<s:CheckBox id="useSpeex" height="17" label="UseSpeex"
+					click="onUseSpeex(event);" fontSize="14" selected="false"/>
 	</s:Group>
 </s:Application>

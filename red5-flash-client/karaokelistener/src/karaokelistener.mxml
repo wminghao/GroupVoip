@@ -17,6 +17,7 @@
 			
 			private var videoURLA:String = "testliveA"//"red5"//"mp4:timbo";
 			private var videoURLB:String = "testliveB"//"red5"//"mp4:timbo";
+			private var videoKaraoke:String = "__mixed__karaoke_delayed";
 			private var connection:NetConnection;
 			private var videoWidth:int = 320;
 			private var videoHeight:int = 240;
@@ -65,7 +66,7 @@
 				
 				// next is karaoke
 				var stream:NetStream = new NetStream(connection);
-				playStream(stream, "__mixed__karaoke", container, videoWidth, 0, videoWidth*2, videoHeight*2 );
+				playStream(stream, videoKaraoke, container, videoWidth, 0, videoWidth*2, videoHeight*2 );
 			}
 			
 			private function playStream(stream:NetStream, url:String, container:UIComponent, x:int, y:int, width:int, height:int):void {
@@ -91,10 +92,13 @@
 						break;
 					case "NetStream.Play.Start":
 					case "NetStream.Play.Reset":
+					case "Netstream.Play.PublishNotify":
+					case "Netstream.Play.UnpublishNotify":
 					case "NetStream.Video.DimensionChange":
 						break;
 					default:
-						Alert.show("Unknown event: " + event.info.code, "Information");
+						status.text = event.info.code;
+						//Alert.show("Unknown event: " + event.info.code, "Information");
 						break;
 				}
 			}
@@ -113,11 +117,13 @@
 		<s:layout>
 			<s:HorizontalLayout/>
 		</s:layout>
-		<s:TextInput id="serverIp" width="100" text="127.0.0.1"/>
+		<s:TextInput id="serverIp" width="100" text="192.168.2.103"/>
 		<s:Button id="button1" 
-				  label="View Karaoke!" 
+				  label="Listen To Karaoke!" 
 				  width="200" 
 				  fontSize="16"
 				  click="onSubscribeButtonClick();"/>
+		<s:Label id="statusText" width="50" height="20" fontSize="16" text="Status"/>
+		<s:TextInput id="status" width="150" text=""/>
 	</s:Group>
 </s:Application>

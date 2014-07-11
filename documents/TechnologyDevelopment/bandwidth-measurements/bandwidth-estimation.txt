@@ -1,0 +1,75 @@
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~ Design Sketch of the Bandwith Estimation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+............................................................
+. Algorithms:
+............................................................
+
+- We follow the packet pair approach.
+- Different flavor of the packet pair approaches
+  1) sender-based packet pair (SBPP)
+  2) receiver-based packet pair (RBPP)
+  3) receiver only packet pair (ROPP)
+
+  SBPP: sends out packets back-to-back, measure time the echos to these packets
+        get received at the sender, get time difference
+
+  ROPP: sends out packets back-to-back, measure time they get received on the 
+        receiver, caculate time gap
+
+  RBPP: senders sends gap between packets, receiver calcuates changes in the gap
+        between packets
+
+............................................................
+. Design Considerations:
+............................................................
+
+1. We want to use in-band traffic or out-of-ban traffic?
+
+   in-band  	                    		out-of-band probes
+   ^^^^^^^                                      ^^^^^^^^^^^^^^^^^^
+
+    no bw overhead              		bw overhead
+    no measurement when no traffic              measurement available always
+    						may not be as accurate
+ 
+2. size of packets to be used in packet-pair measurements?
+
+............................................................
+. Implementation:
+............................................................
+
+* We will go with the out-of-band solution for simplicility.
+  So we don't need to hanck infor the RTMP parsing code.
+
+* Cient:  iOS
+  Server: AWS
+
+  We will start with ubuntu-to-ubuntu tests betweeb 
+  cubie at my house and the AWS.
+
+............................................................
+. Issues 
+............................................................
+
+* timing compression due to buffering
+* timing extension
+
+............................................................
+. References:
+............................................................
+
+0. Initial Work by Robert Carter, Boston University
+   1996-006-measuring-bottleneck-link.pdf
+
+1. Stanford, http://www.hpl.hp.com/personal/Mary_Baker/publications/lai99measuring.pdf, 1999
+   lai99measuring.pdf
+2. CMU, http://www.cs.cmu.edu/~hnn/papers/igi-tr.pdf, 2002
+3. Berkeley, A PhD Thesis, 1998
+   CSD-97-945.pdf
+
+4. bprobe and tcpanaly
+   - http://www.cs.bu.edu/~crovella/src/bprobe/Tools.html
+
+
