@@ -9,7 +9,7 @@ import org.red5.server.api.Red5;
 import org.slf4j.Logger;
 
 public class IdLookup {
-	//both karaoke stream and allinone stream should not be mixed
+	//both original karaoke stream and allinone stream should not be mixed, the karaoke delayed stream should be mixed instead
 	public static final int KARAOKE_STREAM_MIXER_ID = 100;
 	public static final int MAX_STREAM_COUNT = 32;
 	//mapping from original to streamId to newly generated stream
@@ -56,7 +56,7 @@ public class IdLookup {
 		int result = -1;
 		if(streamName.equalsIgnoreCase(GroupMixer.ALL_IN_ONE_STREAM_NAME)) {
 			result = MAX_STREAM_COUNT; //should not be mixed
-		} else if(streamName.equalsIgnoreCase(GroupMixer.KARAOKE_STREAM_NAME)) {
+		} else if(streamName.equalsIgnoreCase(GroupMixer.KARAOKE_ORIG_STREAM_NAME)) {
 			result = KARAOKE_STREAM_MIXER_ID; //should not be mixed
 		} else {
     		for (int i = 0; true; i++) {
