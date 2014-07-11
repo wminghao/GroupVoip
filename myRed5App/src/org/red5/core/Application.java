@@ -173,4 +173,16 @@ public class Application extends ApplicationAdapter implements
         }
 	}
 
+	/*
+	 * Notification when a song is playing
+	 */
+    public void onSongPlaying(String songName) {
+    	super.onSongPlaying(songName);
+        for(Set<IConnection> connections : scope.getConnections()) {
+            for (IConnection conn: connections) {
+                sendToClient(conn, "songSelected", songName);
+            }
+        }
+    }
+
 }

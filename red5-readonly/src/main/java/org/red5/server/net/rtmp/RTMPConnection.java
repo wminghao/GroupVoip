@@ -1409,4 +1409,11 @@ public abstract class RTMPConnection extends BaseConnection implements IStreamCa
 	public void selectSong(String songName) {
 		GroupMixer.getInstance().selectSong(songName);
 	}
+
+    public void onSongPlaying(String songName) {
+		Red5.setConnectionLocal(this);
+		// get ClientBroadcastStream defined as a prototype in red5-common.xml
+		ClientBroadcastStream cbs = (ClientBroadcastStream) scope.getContext().getBean("clientBroadcastStream");
+		cbs.onSongPlaying(songName);
+    }
 }

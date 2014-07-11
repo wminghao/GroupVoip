@@ -948,5 +948,21 @@ public class ClientBroadcastStream extends AbstractClientStream implements IClie
 			}
 		}
 	}
+	
+	//notify client a song is playing
+    public void onSongPlaying(String songName) {
+    	IEventListener source = Red5.getConnectionLocal();
+
+		if (source instanceof IConnection) {
+			IScope scope = ((IConnection) source).getScope();
+			if (scope.hasHandler()) {
+				final Object handler = scope.getHandler();
+				if (handler instanceof IStreamAwareScopeHandler) {
+					// callback for song playing
+					((IStreamAwareScopeHandler) handler).onSongPlaying(songName);
+				}
+			}
+		}
+    }
 
 }

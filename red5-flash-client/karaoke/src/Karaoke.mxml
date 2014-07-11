@@ -27,7 +27,7 @@
 			private var connectionSub:NetConnection;
 			private var container:UIComponent;
 			private var mic:Microphone;
-			private var serverIp:String = "54.186.122.59";//"192.168.0.61";
+			private var serverIp:String = "54.186.122.59";//"192.168.2.109";//"54.186.122.59";//"192.168.0.61";
 			private var mixedStreamPrefix:String = "__mixed__";
 			private var karaokeStream:String = "__mixed__karaoke";
 			
@@ -42,7 +42,12 @@
 			[Bindable]
 			private var songSet:ArrayCollection = new ArrayCollection(
 				[   
-					{value:"Yi Jian Mei", code:"Yi Jian Mei"},
+					{value:"Please Pick A Song", code:"Please Pick A Song"},
+					{value:"Yi Jian Mei", code:"Yi Jian Mei"},	
+					{value:"Shanghai Tan", code:"Shanghai Tan"},
+					{value:"Juan Zhu Lian", code:"Juan Zhu Lian"},
+					{value:"Pu Sa Man", code:"Pu Sa Man"},	
+					{value:"You are the sunshine of my life", code:"You are the sunshine of my life"},
 					{value:"Cannot take my eyes off of you", code:"Cannot take my eyes off of you"},	
 					{value:"Bella Ciao", code:"Bella Ciao"},	
 					{value:"Let It Go", code:"Let It Go"},	
@@ -53,8 +58,7 @@
 					{value:"Top of the world", code:"Top of the world"},
 					{value:"Take back the night", code:"Take back the night"},
 					{value:"Fallen Kingdom", code:"Fallen Kingdom"},	
-					{value:"Lets have some fun in minecraft", code:"Lets have some fun in minecraft"},	
-					{value:"Gregory", code:"Gregory"},	
+					{value:"Lets have some fun in minecraft", code:"Lets have some fun in minecraft"},
 					{value:"The Little Birch Tree", code:"The Little Birch Tree"},	
 					{value:"It's a small world", code:"It's a small world"},	
 					{value:"Rassa seya eh", code:"Rassa seya eh"},	
@@ -169,13 +173,10 @@
 					video.x = video.y = 0;
 					video.visible = true;
 					
-					//mic.rate = 8;
-					mic.setLoopBack(CheckBox(loopback).selected);
-					mic.encodeQuality = 10; //best quality
-					mic.codec = SoundCodec.SPEEX; 
-					mic.framesPerPacket = 1; //20ms per frame, instead of 40ms per frame
 					mic.setSilenceLevel(0,200);
-					readVolume();
+					detectSpeex();
+					detectLoopback();
+					detectVolume();
 					streamPub.attachAudio(mic);
 					//Alert.show("camera width="+camera.width);
 				}
@@ -284,16 +285,37 @@
 			}
 			private function songList_changeHandler(event:IndexChangeEvent):void	
 			{
-				if( publishDest != null) {
+				if( publishDest != null && songList.selectedIndex != 0) {
 					status.text = "Song selected="+songList.selectedItem.value;
 					connectionPub.call("song.selectSong", null, songList.selectedItem.value);	
+					songList.selectedIndex = 0;
 				}
 			}
 			private function onLoopBack(evt:MouseEvent):void {
-				if(CheckBox(evt.target).selected) {
+				detectLoopback();
+			}
+			private function detectLoopback():void {
+				if(CheckBox(loopback).selected) {
 					mic.setLoopBack(true);
+					mic.setUseEchoSuppression(true);
 				} else {
 					mic.setLoopBack(false);
+					mic.setUseEchoSuppression(false);
+				}
+			}
+			private function onUseSpeex(evt:MouseEvent):void {
+				detectSpeex();
+			}
+			private function detectSpeex():void{
+				if(CheckBox(useSpeex).selected) {
+					//Speex settings
+					mic.encodeQuality = 10; //best quality
+					mic.codec = SoundCodec.SPEEX; 
+					mic.framesPerPacket = 1; //20ms per frame, instead of 40ms per frame
+				} else {
+					//Nellymoser settings
+					mic.codec = SoundCodec.NELLYMOSER;
+					mic.rate = 44;
 				}
 			}
 			//server call to client
@@ -339,8 +361,16 @@
 				removeElementFromStringVector(String(resp), publishedStreamArray);
 			}
 			
+			public function songSelected(resp:Object):void	
+			{
+				var song:String = String(resp);
+				if( song != null) {
+					status.text = "Song playing="+song;
+				}
+			}
+			
 			// Event handler function to display the scroll location.
-			private function readVolume():void {
+			private function detectVolume():void {
 				var volume:Number = volumeBar.value/volumeBar.maximum;
 				var micTransform:SoundTransform = mic.soundTransform;
 				status.text = "volume was set to be "+micTransform.volume+" will be set to "+volume;
@@ -348,7 +378,7 @@
 				mic.soundTransform = micTransform;
 			}
 			private function volumeScroll():void {
-				readVolume();
+				detectVolume();
 			}
 		]]>
 	</fx:Script>
@@ -358,7 +388,7 @@
 			<s:HorizontalLayout/>
 		</s:layout>
 		<s:Label id="lbl" width="100%" height="100%" fontSize="20" horizontalCenter="0"
-				 paddingLeft="5" paddingRight="5" paddingTop="5" text="Pick a Song to Sing"
+				 paddingLeft="10" paddingRight="5" paddingTop="5" text="Karaoke With Friends"
 				 verticalCenter="0"/>
 		<s:DropDownList id="songList" width="200" height="25" change="songList_changeHandler(event)"
 						dataProvider="{songSet}" labelField="value" selectedIndex="0"/>
@@ -367,13 +397,16 @@
 			<s:layout>
 				<s:VerticalLayout/>
 			</s:layout>
-			<s:HSlider id="volumeBar" width="171" height="12" maximum="10" minimum="0" value="5" change="volumeScroll();"/>
-			<s:CheckBox id="loopback" label="Mic Loopback Volume" click="onLoopBack(event);" fontSize="16"
-					selected="false"/>
+			<s:HSlider id="volumeBar" width="191" height="12" maximum="10" minimum="0" value="5" change="volumeScroll();"/>
+			<s:CheckBox id="loopback" height="17" label="Mic Loopback Adjust Volume"
+						click="onLoopBack(event);" fontSize="14" selected="true"/>
 		</s:Group>
 		
 		<s:Label id="statusText" width="65" height="26" fontSize="20" paddingLeft="5" paddingTop="5"
 				 text="Status"/>
 		<s:TextInput id="status" width="305" height="25" text=""/>	
+		
+		<s:CheckBox id="useSpeex" height="17" label="UseSpeex"
+					click="onUseSpeex(event);" fontSize="14" selected="false"/>
 	</s:Group>
 </s:Application>

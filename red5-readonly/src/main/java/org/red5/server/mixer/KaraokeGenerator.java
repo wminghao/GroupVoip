@@ -32,7 +32,8 @@ public class KaraokeGenerator implements Runnable, FLVParser.Delegate {
     
     //key is fileName, value is song name
     Map<String,String> songMappingTable_ = new HashMap<String, String>();
-    String curSong_ = "";
+    String curSongFile_ = "";
+    String curSongName_ = "";
     private AtomicBoolean bCancelCurrentSong = new AtomicBoolean(false);;
     
     private class DelayObject 
@@ -61,6 +62,7 @@ public class KaraokeGenerator implements Runnable, FLVParser.Delegate {
 	
     public interface Delegate {
         public void onKaraokeFrameParsed(ByteBuffer frame, int len, boolean bIsDelayed);
+        public void onSongPlaying(String songName);
     }
 
 	public KaraokeGenerator(KaraokeGenerator.Delegate delegate, String karaokeFilePath){
@@ -170,7 +172,8 @@ public class KaraokeGenerator implements Runnable, FLVParser.Delegate {
     	//read a segment file and send it over
     	log.info("Reading in karaoke filePath: {}", karaokeFilePath_);
     	while(true) {
-        	loadASong(curSong_);
+            delegate_.onSongPlaying(curSongName_);
+        	loadASong(karaokeFilePath_+"/"+curSongFile_+".flv");
     	}
 	}
 
@@ -239,7 +242,8 @@ public class KaraokeGenerator implements Runnable, FLVParser.Delegate {
 				String fileName = (String) e.nextElement();
 				String songName = prop.getProperty(fileName);
 				songMappingTable_.put(songName, fileName);
-				curSong_ = karaokeFilePath_+"/"+fileName+".flv";
+				curSongFile_ = fileName;
+				curSongName_ = songName;
 				log.info("-------Reading song property file: Key : {}, Value : {}", fileName, songName);
 			}
 	        in.close();
@@ -255,7 +259,8 @@ public class KaraokeGenerator implements Runnable, FLVParser.Delegate {
 	public void selectSong(String songName) {
 		String fileName = songMappingTable_.get(songName);
 		if(fileName != null ) {
-			curSong_ = karaokeFilePath_+"/"+fileName+".flv";
+			curSongFile_ = fileName;
+			curSongName_ = songName;
 			bCancelCurrentSong.set(true);
 			log.info("-------A song selected: Key : {}, Value : {}", fileName, songName);
 		}
