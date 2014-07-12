@@ -122,8 +122,8 @@ public interface IStreamAwareScopeHandler extends IScopeHandler {
 	 */
 	public void streamPlayItemSeek(ISubscriberStream stream, IPlayItem item, int position);
 	
-	/*
+	/**
 	 * Notification when a song is playing
 	 */
-    public void onSongPlaying(String songName);
+	public void onSongPlaying(String songName);
 }

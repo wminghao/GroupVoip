@@ -27,7 +27,7 @@ public class GroupMixer implements SegmentParser.Delegate, KaraokeGenerator.Dele
 
 	public static final String MIXED_STREAM_PREFIX = "__mixed__";
 	public static final String ALL_IN_ONE_STREAM_NAME = "allinone";
-	public static final String KARAOKE_STREAM_NAME = "karaoke"; //test name
+	public static final String KARAOKE_ORIG_STREAM_NAME = "karaoke"; //test name
 	public static final String KARAOKE_DELAYED_STREAM_NAME = "karaoke_delayed"; //test name
 	private static final String AppName = "myRed5App";//TODO appName change to a room or something
 	private static final String ipAddr = "localhost"; //TODO change to something else in the future
@@ -84,7 +84,7 @@ public class GroupMixer implements SegmentParser.Delegate, KaraokeGenerator.Dele
         	//kick off karaoke 
         	if( bGenKaraoke ) {
         		karaokeGen_ = new KaraokeGenerator(this, karaokeFilePath);
-            	createMixedStream(KARAOKE_STREAM_NAME);
+            	createMixedStream(KARAOKE_ORIG_STREAM_NAME);
             	createMixedStream(KARAOKE_DELAYED_STREAM_NAME);
         	}
         	
@@ -374,7 +374,7 @@ public class GroupMixer implements SegmentParser.Delegate, KaraokeGenerator.Dele
 	@Override
 	public void onKaraokeFrameParsed(ByteBuffer frame, int len, boolean bIsDelayed) {
 		//either send it to the original stream or delayed stream.
-		int streamId = idLookupTable.lookupStreamId(bIsDelayed?KARAOKE_DELAYED_STREAM_NAME:KARAOKE_STREAM_NAME);
+		int streamId = idLookupTable.lookupStreamId(bIsDelayed?KARAOKE_DELAYED_STREAM_NAME:KARAOKE_ORIG_STREAM_NAME);
 		onFrameGenerated(streamId, frame, len);
 	}
 
