@@ -9,6 +9,10 @@
 #include "CodecInfo.h"
 #include "MediaTarget.h"
 
+extern "C" {
+#include <samplerate.h> //resampling
+}
+
 //audio decoder implementation
 class AudioDecoder
 {
@@ -38,5 +42,15 @@ class AudioDecoder
 
     int streamId_;
     int sampleSize_;
+    
+    /* Resample */
+    SRC_STATE* resamplerState_;
+    /* one second at 44 khz times two channels - its PLENTY */
+    float resampleFloatBufIn_[44100 * 2];
+    float resampleFloatBufOut_[44100 * 2];
+    short resampleShortBuf_[44100 * 2];
+    /* Here, we accumulate one-frame's worth of samples to send to avcodec */
+    short resampleShortBufFrame_[44100];
+    int frameLen_;
 };
 #endif
