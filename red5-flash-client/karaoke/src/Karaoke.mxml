@@ -174,7 +174,11 @@
 					video.visible = true;
 					
 					mic.setSilenceLevel(0,200);
-					detectSpeex();
+					//Speex settings
+					mic.encodeQuality = 10; //best quality
+					mic.codec = SoundCodec.SPEEX; 
+					mic.framesPerPacket = 1; //20ms per frame, instead of 40ms per frame
+					
 					detectLoopback();
 					detectVolume();
 					streamPub.attachAudio(mic);
@@ -303,21 +307,6 @@
 					mic.setUseEchoSuppression(false);
 				}
 			}
-			private function onUseSpeex(evt:MouseEvent):void {
-				detectSpeex();
-			}
-			private function detectSpeex():void{
-				if(CheckBox(useSpeex).selected) {
-					//Speex settings
-					mic.encodeQuality = 10; //best quality
-					mic.codec = SoundCodec.SPEEX; 
-					mic.framesPerPacket = 1; //20ms per frame, instead of 40ms per frame
-				} else {
-					//Nellymoser settings
-					mic.codec = SoundCodec.NELLYMOSER;
-					mic.rate = 44;
-				}
-			}
 			//server call to client
 			private function newStream(publishedStream:String):void {
 				if( publishedStreamArray.indexOf(publishedStream) == -1 && 
@@ -405,8 +394,5 @@
 		<s:Label id="statusText" width="65" height="26" fontSize="20" paddingLeft="5" paddingTop="5"
 				 text="Status"/>
 		<s:TextInput id="status" width="305" height="25" text=""/>	
-		
-		<s:CheckBox id="useSpeex" height="17" label="Use Speex"
-					click="onUseSpeex(event);" fontSize="14" selected="true"/>
 	</s:Group>
 </s:Application>

@@ -1,8 +1,22 @@
-
 Early July
 1) Try the test among ourselves, and our relatives to get more feedback. (More feedback)
+
+Howard reached out to his friends on July 11th and collecting feedbacks next week.
+
 2) Improve the demo. (Desktop Done, Mobile not ready)
+
+   Howard compared different ways of loopback and concluded the following:
+   a) microphone is essential for singing karoake
+   b) Flash loopback mechanism is flawed.
+   c) A great solution is to develop our own plugin.
+
 3) Start a business plan. (On-going)
+
+   Howard and Raymond spent time understanding the product better. 
+   a) Here is Howard's thought on the product. It's a platform for people to gather together to sing karaoke.
+      Pretty much like a open Karaoke bar, where people hangout and sing. (YY, 9158, kk, etc)
+   b) Here is Raymond's thought on the product. It's a tool for people to sing karoke together.
+      Pretty much like a closed Karaoke room, where close friends sing together or sing alone. (Smule, yokee, etc)
 
 Mid July - Late July
 4) Find people we can trust for initial funding. Roughly we need to have an idea of how much is needed in order to support both of us for at most 1 year. We must prepare ourselves for a pay cut. If I starts early, how soon can you start? Or should we both start at the same time.
@@ -23,10 +37,10 @@ June 29, 2014
    DONE.
 
 4. (Howard) mixing mp3 audio with speex audio on the mixer side. (One week)
-   On-Going
+   On-Going (1/4 done as of July 12th)
 
 5. (Howard) migrating environment to macbook air.
-   On-Going
+   DONE.
 
 1. (Raymond) To follow up with Yantao, the Quanshi CTO.
     Need to give him a call on 12th of July.

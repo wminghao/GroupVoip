@@ -47,12 +47,6 @@
 		} 
 			
 		private function startMic(e:Event):void {
-			/*mic.encodeQuality = 10; //best quality
-			mic.codec = SoundCodec.SPEEX; 
-			mic.framesPerPacket = 1; //20ms per frame, instead of 40ms per frame
-			mic.setSilenceLevel(0,200);
-			mic.setLoopBack(false);
-			*/
 			switch( micMethodSel.selectedIndex) {
 				case 0: {
 					//Speex settings
@@ -125,10 +119,10 @@
 		<s:layout>
 			<s:HorizontalLayout/>
 		</s:layout>
-		<s:Button id="b1" label="Click Me 4 Sound Effect" click="startMic(event)"/>
-		<s:TextInput id="status" width="305" height="25" text=""/>	
+		<s:Button id="b1" label="Click Me 4 Sound Effect, Refresh the webpage before you select a diffrent method" click="startMic(event)"/>
+		<s:TextInput id="status" width="700" height="25" text=""/>	
 		
-		<s:DropDownList id="micMethodSel" width="200" height="25"
+		<s:DropDownList id="micMethodSel" width="100" height="25"
 						dataProvider="{micMethod}" labelField="value" selectedIndex="0"/>
 	</s:Group>
 </s:Application>
