@@ -55,3 +55,12 @@ env.Program( segOutputParserProg,
 	     [ segOutputParserObj,
 	       loggerObj ], 
 	     CCFLAGS=mixCoderCflags)
+
+segInputParserObj = env.Object('prog/SegInputParser.cpp', CCFLAGS=mixCoderCflags )
+segInputParserProg = File("prog/seg_input_parser")
+
+progs.append( segInputParserProg )
+env.Program( segInputParserProg,
+	     [ segInputParserObj,
+	       loggerObj ], 
+	     CCFLAGS=mixCoderCflags)
