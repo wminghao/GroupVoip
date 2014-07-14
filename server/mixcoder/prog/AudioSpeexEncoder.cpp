@@ -1,7 +1,7 @@
 #include "AudioSpeexEncoder.h"
 #include <speex/speex.h>
 
-AudioSpeexEncoder::AudioSpeexEncoder(AudioStreamSetting* inputSetting, AudioStreamSetting* outputSetting, int aBitrate):AudioEncoder(inputSetting, outputSetting, aBitrate)
+AudioSpeexEncoder::AudioSpeexEncoder(AudioStreamSetting* outputSetting, int aBitrate):AudioEncoder(outputSetting, aBitrate)
 {
     //speex encoder
     /*Create a new encoder state in wideband mode*/

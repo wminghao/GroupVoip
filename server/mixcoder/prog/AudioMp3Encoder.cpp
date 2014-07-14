@@ -9,7 +9,7 @@ void error_handler_function(const char *format, va_list ap)
     LOG( format, ap);
     assert(0);
 }
-AudioMp3Encoder::AudioMp3Encoder(AudioStreamSetting* inputSetting, AudioStreamSetting* outputSetting, int aBitrate):AudioEncoder(inputSetting, outputSetting, aBitrate)
+AudioMp3Encoder::AudioMp3Encoder(AudioStreamSetting* outputSetting, int aBitrate):AudioEncoder(outputSetting, aBitrate)
 {
     //speex encoder
     /*Create a new encoder state in wideband mode*/

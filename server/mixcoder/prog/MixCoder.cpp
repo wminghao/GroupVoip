@@ -31,7 +31,6 @@ MixCoder::MixCoder(int vBitrate, int width, int height,
     
     VideoStreamSetting vOutputSetting = { kVP8VideoPacket, vWidth_, vHeight_ }; 
     AudioStreamSetting aOutputSetting = { kMP316kHz, getAudioRate(16000), kSndMono, kSnd16Bit, 0 };
-    AudioStreamSetting aInputSetting = { kSpeex, getAudioRate(16000), kSndMono, kSnd16Bit, 0 };
                                          
     videoEncoder_ = new VideoEncoder( &vOutputSetting, vBitrate_ );
     videoMixer_ = new VideoMixer(&vOutputSetting);
@@ -42,11 +41,13 @@ MixCoder::MixCoder(int vBitrate, int width, int height,
 
     for( u32 i = 0; i < MAX_XCODING_INSTANCES+1; i++ ) {
         if( bUseSpeex_ ) {
-            audioEncoder_[i] = new AudioSpeexEncoder( &aInputSetting, &aOutputSetting, aBitrate_ );
+            audioEncoder_[i] = new AudioSpeexEncoder( &aOutputSetting, aBitrate_ );
         } else {
-            //TODO aInputSetting and aOutputSettings are wrong
-            audioEncoder_[i] = new AudioMp3Encoder( &aInputSetting, &aOutputSetting, aBitrate_ );
+            //TODO aOutputSettings can be changed
+            audioEncoder_[i] = new AudioMp3Encoder( &aOutputSetting, aBitrate_ );
         }
+        //save the raw audio Settings_
+        memcpy( &rawAudioSettings_[i], &aOutputSetting, sizeof(AudioStreamSetting) );
         audioMixer_[i] = new AudioMixer();
     }
     for( u32 i = 0; i < MAX_XCODING_INSTANCES; i++ ) {

@@ -11,7 +11,7 @@ class AudioMp3Encoder:public AudioEncoder
 {
  public:
     //always encode in speex or mp3
-    AudioMp3Encoder(AudioStreamSetting* inputSetting, AudioStreamSetting* outputSetting, int aBitrate);
+    AudioMp3Encoder(AudioStreamSetting* outputSetting, int aBitrate);
     virtual ~AudioMp3Encoder();
     virtual SmartPtr<SmartBuffer> encodeAFrame(SmartPtr<SmartBuffer> input) ;
  private:
