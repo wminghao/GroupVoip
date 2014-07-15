@@ -71,7 +71,17 @@ SmartPtr<SmartBuffer>  AudioFfmpegDecoder::newAccessUnit( SmartPtr<AccessUnit> a
         LOG( "Source audio settings: #Channels=%d, #Freq=%d, sampleFmt=%s\n", decoderCtx_->channels, getFreq(setting_.ar), codecID==CODEC_ID_AAC?"aac":"mp3" );
     }
     
+    
+    AVPacket decodePkt;
+    av_init_packet( &decodePkt );
+    decodePkt.data = au->payload->data();
+    decodePkt.size = au->payload->dataLength();
 
+    int gotFrame = 0;
+    avcodec_decode_audio4( decoderCtx_, decoderFrame_, &gotFrame, &decodePkt );
+    if( gotFrame ) {
+        //TODO
+    }
 
     return SmartPtr<SmartBuffer>(NULL);
 }

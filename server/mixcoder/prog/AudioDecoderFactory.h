@@ -1,8 +1,9 @@
 #ifndef __AUDIODECODERFACTORY_H
 #define __AUDIODECODERFACTORY_H
+#include "fwk/SmartPtr.h"
+#include "MediaTarget.h"
 
-#include "AudioSpeexDecoder.h"
-//#include "AudioFfmpegDecoder.h"
+class AudioDecoder;
 
 class AudioDecoderFactory
 {

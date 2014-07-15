@@ -2,8 +2,8 @@
 #include "fwk/SmartPtr.h"
 #include "fwk/SmartBuffer.h"
 #include "fwk/Units.h"
-
-class AudioDecoder;
+#include "AudioSpeexDecoder.h"
+#include "AudioFfmpegDecoder.h"
 
 AudioDecoder* AudioDecoderFactory::CreateAudioDecoder(SmartPtr<AccessUnit> au, int streamId)
 {
@@ -23,9 +23,7 @@ AudioDecoder* AudioDecoderFactory::CreateAudioDecoder(SmartPtr<AccessUnit> au, i
                                             kSnd16Bit,
                                             kSndMono);
         } else {
-            //TODO
-            //change it to be ffmpeg decoder
-            decoder = new AudioSpeexDecoder(streamId, 
+            decoder = new AudioFfmpegDecoder(streamId, 
                                             codecType,
                                             audioRate,
                                             audioSize,

@@ -8,10 +8,7 @@
 #include <stdlib.h>
 #include "CodecInfo.h"
 #include "MediaTarget.h"
-
-extern "C" {
-#include <samplerate.h> //resampling
-}
+#include "AudioResampler.h"
 
 //audio decoder implementation
 class AudioDecoder
@@ -25,7 +22,7 @@ class AudioDecoder
         setting_.ap = 0;
         
         hasFirstFrameDecoded_ = false;
-        streamId_ = streamId;
+        streamId_ = streamId;       
     }
     virtual ~AudioDecoder() {}
     //send it to the decoder, return the target settings for mixing
@@ -43,16 +40,7 @@ class AudioDecoder
 
     int streamId_;
     int sampleSize_;
-    
-    /* Resample */
-    SRC_STATE* resamplerState_;
-    /* one second at 44 khz times two channels - its PLENTY */
-    float resampleFloatBufIn_[44100 * 2];
-    float resampleFloatBufOut_[44100 * 2];
-    short resampleShortBuf_[44100 * 2];
 
-    /* Here, we accumulate one-frame's worth of samples to send to avcodec */
-    short resampleShortBufFrame_[44100];
-    int frameLen_;
+    AudioResampler* resampler_;    
 };
 #endif
