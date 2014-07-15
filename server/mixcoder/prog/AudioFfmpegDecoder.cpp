@@ -21,7 +21,7 @@ AudioFfmpegDecoder::~AudioFfmpegDecoder()
 }
 
 //send it to the decoder
-SmartPtr<SmartBuffer>  AudioFfmpegDecoder::newAccessUnit( SmartPtr<AccessUnit> au, AudioStreamSetting* rawAudioSetting)
+void  AudioFfmpegDecoder::newAccessUnit( SmartPtr<AccessUnit> au, AudioStreamSetting* rawAudioSetting)
 {
     if( !hasFirstFrameDecoded_ ) {
         hasFirstFrameDecoded_ = true;
@@ -80,10 +80,7 @@ SmartPtr<SmartBuffer>  AudioFfmpegDecoder::newAccessUnit( SmartPtr<AccessUnit> a
     int gotFrame = 0;
     avcodec_decode_audio4( decoderCtx_, decoderFrame_, &gotFrame, &decodePkt );
     if( gotFrame ) {
-        //TODO
+        sampleSize_ = decoderFrame_->linesize[0]/(sizeof(short) * getNumChannels(setting_.at));
+        resampleFrame( rawAudioSetting, sampleSize_, decoderFrame_->data[0]);
     }
-
-    return SmartPtr<SmartBuffer>(NULL);
 }
-
-

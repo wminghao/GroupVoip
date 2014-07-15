@@ -6,16 +6,21 @@ extern "C" {
 #include <samplerate.h> //resampling
 }
 #include <assert.h>
+#include <list>
+
+//each mp3 frame, contains 1152 samples
+#define MP3_FRAME_SAMPLE_SIZE 1152
 
 //an audio resampler from ffmpeg
 class AudioResampler
 {
  public:
  AudioResampler(int inputFreq, int inputChannels, int outputFreq, int outputChannels):
-    inputFreq_(inputFreq), inputChannels_(inputChannels), outputFreq_(outputFreq), outputChannels_(outputChannels){
+    inputFreq_(inputFreq), inputChannels_(inputChannels), outputFreq_(outputFreq), outputChannels_(outputChannels), remainingSampleCnt_(0), sampleCnt_(0){
         /* resample */
         int error = 0;
         resamplerState_ = src_new( SRC_SINC_MEDIUM_QUALITY, inputChannels_, &error );
+        frameSize_ = MP3_FRAME_SAMPLE_SIZE * sizeof(short) * outputChannels_;
         assert(resamplerState_);
         assert(inputChannels_==1 || inputChannels_==2);
         assert(outputChannels_==2);
@@ -27,27 +32,37 @@ class AudioResampler
         }
     }
     
-    //return the many samples
-    u32 resample(u8* inputData, u32 totalInputBytes);
+    //return success or failure
+    bool resample(u8* inputData, u32 sampleSize);
+
+    //get the next batch of mp3 1152 samples
+    bool isNextRawMp3FrameReady();
+    //return a buffer, must be freed outside
+    u8* getNextRawMp3Frame(u32& totalBytes);
 
  private:
     /* Resample */
     SRC_STATE* resamplerState_;
     
-    /* one second at 44 khz times two channels - its PLENTY */
+    /* temp buffers, one second at 44 khz times two channels - its PLENTY */
     float resampleFloatBufIn_[44100 * 2];
     float resampleFloatBufOut_[44100 * 2];
     short resampleShortBufOneChannel_[44100];
     short resampleShortBufOut_[44100 * 2];
-
-    /* Max of 44.1K buffer size */
-    short resampleShortBufFrame_[44100];
-    int frameLen_;
 
     //channel info
     int inputFreq_;
     int inputChannels_;
     int outputFreq_;
     int outputChannels_;
+
+    //linked list of mp3 raw frame of 1152 samples
+    std::list<u8*> mp3FrameList_; // integer list
+    short resampleShortRemaining_[MP3_FRAME_SAMPLE_SIZE * 2]; //save reamining data from the previous read
+    u32 remainingSampleCnt_;
+
+    //stats
+    u32 sampleCnt_;
+    u32 frameSize_;
 };
 #endif //

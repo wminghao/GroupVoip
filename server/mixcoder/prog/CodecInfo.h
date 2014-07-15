@@ -134,6 +134,10 @@ typedef enum
     kSndStereo
 }AudioType;
 
+inline int getNumChannels(AudioType at) {
+    return (at==kSndMono)?1:2;
+}
+
 typedef enum
 {
     kAACSeqHeader,

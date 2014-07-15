@@ -16,7 +16,7 @@ class AudioFfmpegDecoder:public AudioDecoder
     AudioFfmpegDecoder(int streamId, AudioCodecId codecType, AudioRate audioRate, AudioSize audioSize, AudioType audioType):AudioDecoder(streamId, codecType, audioRate, audioSize, audioType) {}
     virtual ~AudioFfmpegDecoder();
     //send it to the decoder
-    virtual SmartPtr<SmartBuffer>  newAccessUnit( SmartPtr<AccessUnit> au, AudioStreamSetting* rawAudioSetting);
+    virtual void newAccessUnit( SmartPtr<AccessUnit> au, AudioStreamSetting* rawAudioSetting);
 
  private:
     short* outputFrame_;
