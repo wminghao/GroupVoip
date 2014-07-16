@@ -30,17 +30,6 @@ class AudioDecoder
 
     bool hasFirstFrameDecoded(){ return hasFirstFrameDecoded_; }
     
-    int getSampleSize() { return sampleSize_; }
-    
-    //send it to resampler
-    void resampleFrame(AudioStreamSetting* aRawSetting, int sampleSize, u8* outputFrame) {
-        if( !resampler_ ) {
-            resampler_ = new AudioResampler( getFreq(setting_.ar), getNumChannels(setting_.at), getFreq(aRawSetting->ar), getNumChannels(aRawSetting->at));
-        }
-        if( resampler_ ) {
-            resampler_->resample(outputFrame, sampleSize);
-        }    
-    }
     //get the next batch of mp3 1152 samples
     bool isNextRawMp3FrameReady() {
         if( resampler_ ) {
@@ -48,6 +37,7 @@ class AudioDecoder
         }
         return false;
     }
+
     //return a buffer, must be freed outside
     SmartPtr<SmartBuffer>  getNextRawMp3Frame() {
         SmartPtr<SmartBuffer> result;
@@ -57,6 +47,17 @@ class AudioDecoder
             result = new SmartBuffer(totalBytes, rawData);
         }
         return result;
+    }
+
+ protected:    
+    //send it to resampler
+    void resampleFrame(AudioStreamSetting* aRawSetting, int sampleSize, u8* outputFrame) {
+        if( !resampler_ ) {
+            resampler_ = new AudioResampler( getFreq(setting_.ar), getNumChannels(setting_.at), getFreq(aRawSetting->ar), getNumChannels(aRawSetting->at));
+        }
+        if( resampler_ ) {
+            resampler_->resample(outputFrame, sampleSize);
+        }    
     }
  protected:
     //input audio setting

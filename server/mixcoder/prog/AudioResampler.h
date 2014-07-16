@@ -16,7 +16,7 @@ class AudioResampler
 {
  public:
  AudioResampler(int inputFreq, int inputChannels, int outputFreq, int outputChannels):
-    inputFreq_(inputFreq), inputChannels_(inputChannels), outputFreq_(outputFreq), outputChannels_(outputChannels), remainingSampleCnt_(0), sampleCnt_(0){
+    inputFreq_(inputFreq), inputChannels_(inputChannels), outputFreq_(outputFreq), outputChannels_(outputChannels), remainingSampleCnt_(0){
         /* resample */
         int error = 0;
         resamplerState_ = src_new( SRC_SINC_MEDIUM_QUALITY, inputChannels_, &error );
@@ -61,8 +61,7 @@ class AudioResampler
     short resampleShortRemaining_[MP3_FRAME_SAMPLE_SIZE * 2]; //save reamining data from the previous read
     u32 remainingSampleCnt_;
 
-    //stats
-    u32 sampleCnt_;
+    //mp3 frame size
     u32 frameSize_;
 };
 #endif //

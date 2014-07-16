@@ -15,6 +15,7 @@ bool AudioResampler::resample(u8* inputData, u32 sampleSize)
         //direct copy w/o resampling
         memcpy(resampleShortBufOut_, inputData, totalInputBytes);
         sampleCount = sampleSize;
+        LOG("======no need for resampling, copy over sampleSize=%d\r\n", sampleSize);        
     } else {
         //convert to float
         src_short_to_float_array( (const short* )inputData,
@@ -55,8 +56,6 @@ bool AudioResampler::resample(u8* inputData, u32 sampleSize)
 
         LOG( "resampling from %d to %d, srcData.input_frames=%ld, srcData.output_frames_gen=%ld\n", inputFreq_, outputFreq_, srcData.input_frames, srcData.output_frames_gen);
     }
-    sampleCnt_ += sampleCount;
-    
     //push the samples into an linked list
     while( sampleCount > 0 ) {
         u32 samplesToCopyFromOutBuf = 0;
