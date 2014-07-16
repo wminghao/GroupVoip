@@ -7,6 +7,9 @@
 #include "FLVParser.h"
 #include "CodecInfo.h"
 #include "FLVSegmentParserDelegate.h"
+#include "RawData.h"
+#include "VideoDecoder.h"
+#include "AudioDecoder.h"
 #include <queue>
 
 using namespace std;
@@ -43,7 +46,7 @@ using namespace std;
 class FLVSegmentParser:public FLVSegmentParserDelegate
 {
  public:
-    FLVSegmentParser(u32 targetVideoFrameRate): parsingState_(SEARCHING_SEGHEADER),
+ FLVSegmentParser(u32 targetVideoFrameRate, AudioStreamSetting* aRawSetting): parsingState_(SEARCHING_SEGHEADER),
         curSegTagSize_(0), curStreamId_(0), curStreamLen_(0), curStreamCnt_(0),
         numStreams_(0), targetVideoFrameRate_(targetVideoFrameRate), 
         hasStarted_(0), lastBucketTimestamp_(0), globalAudioTimestamp_(0)
@@ -52,11 +55,16 @@ class FLVSegmentParser:public FLVSegmentParserDelegate
             memset(videoStreamStatus_, 0, sizeof(StreamStatus)*MAX_XCODING_INSTANCES);
             for(u32 i = 0; i < MAX_XCODING_INSTANCES; i++) {
                 parser_[i] = new FLVParser(this, i);
+                audioDecoder_[i] = NULL; //initialize it later
+                videoDecoder_[i] = new VideoDecoder(i);
             }
+            memcpy( &rawAudioSettings_, aRawSetting, sizeof(AudioStreamSetting) );
         }
     ~FLVSegmentParser() {
         for(u32 i = 0; i < MAX_XCODING_INSTANCES; i++) {
             delete parser_[i];
+            delete audioDecoder_[i];
+            delete videoDecoder_[i];
         }
     }
     StreamSource getStreamSource(int streamId) { return streamSource[streamId]; }
@@ -70,9 +78,11 @@ class FLVSegmentParser:public FLVSegmentParserDelegate
     //check the status of a stream to see if it's online
     bool isStreamOnlineStarted(StreamType streamType, int index);
 
-    //get next flv frame
-    SmartPtr<AccessUnit> getNextAudioFrame(u32 index); //return at most 1 frame
-    SmartPtr<AccessUnit> getNextVideoFrame(u32 index, u32 timestamp); // can return more than 1 frames
+    bool hasFirstFrameDecoded(int i, bool bIsVideo) { return bIsVideo?videoDecoder_[i]->hasFirstFrameDecoded():audioDecoder_[i]->hasFirstFrameDecoded(); }
+
+    //get next decoded frame
+    SmartPtr<AudioRawData> getNextAudioFrame(u32 index); //return at most 1 frame
+    SmartPtr<VideoRawData> getNextVideoFrame(u32 index, u32 timestamp); // can return more than 1 frames
 
  private:
     bool isNextVideoFrameSpsPps(u32 index, u32& timestamp);
@@ -104,9 +114,10 @@ class FLVSegmentParser:public FLVSegmentParserDelegate
     u32 curStreamLen_;
     u32 curStreamCnt_;
 
-    queue< SmartPtr<AccessUnit> > audioQueue_[MAX_XCODING_INSTANCES];
+    //stores raw audio and video messages
+    queue<SmartPtr<AudioRawData> > audioQueue_[MAX_XCODING_INSTANCES];
     StreamStatus audioStreamStatus_[MAX_XCODING_INSTANCES]; //tells whether a queue has benn used or not
-    queue< SmartPtr<AccessUnit> > videoQueue_[MAX_XCODING_INSTANCES];
+    queue<SmartPtr<VideoRawData> > videoQueue_[MAX_XCODING_INSTANCES];
     StreamStatus videoStreamStatus_[MAX_XCODING_INSTANCES]; //tells whether a queue has been used or not
 
     FLVParser* parser_[MAX_XCODING_INSTANCES];
@@ -120,5 +131,14 @@ class FLVSegmentParser:public FLVSegmentParserDelegate
     double lastBucketTimestamp_;      //1st video frame timestamp
 
     u32 globalAudioTimestamp_; //global audio timestamp used for avsync between different video streams
+
+    //immediately decodes any video/audio messages once we receive any data
+    AudioDecoder* audioDecoder_[ MAX_XCODING_INSTANCES ];
+    VideoDecoder* videoDecoder_[ MAX_XCODING_INSTANCES ];
+
+    //audio settings for decoder
+    AudioStreamSetting rawAudioSettings_;
+
+    //current audio timestamp, mapping
 };
 #endif

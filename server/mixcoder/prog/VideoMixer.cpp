@@ -18,14 +18,12 @@ int mappingToScalingHeight(int totalStream) {
 }
 
 //do the mixing, for now, always mix n raw streams into 1 rawstream
-SmartPtr<SmartBuffer> VideoMixer::mixStreams(SmartPtr<SmartBuffer> planes[][3],
-                                             int strides[][3],
-                                             VideoStreamSetting* settings, 
+SmartPtr<SmartBuffer> VideoMixer::mixStreams(SmartPtr<VideoRawData>* rawData,
                                              int totalStreams,
                                              VideoRect* videoRect)
 {
     SmartPtr<SmartBuffer> result;
-    if( tryToInitSws(settings, totalStreams) ) {
+    if( tryToInitSws(rawData, totalStreams) ) {
         int scaledWidth = mappingToScalingWidth(totalStreams);
         int scaledHeight = mappingToScalingHeight(totalStreams);
 
@@ -36,7 +34,7 @@ SmartPtr<SmartBuffer> VideoMixer::mixStreams(SmartPtr<SmartBuffer> planes[][3],
         int validStreamIdIndex = 0;
         
         for(u32 i=0; i<MAX_XCODING_INSTANCES; i++) {
-            if( settings[i].bIsValid ) { 
+            if( rawData[i]->rawVideoSettings_.bIsValid ) { 
                 scaledVideoPlanes[i][0] = new SmartBuffer( scaledWidth* scaledHeight );
                 scaledVideoPlanes[i][1] = new SmartBuffer( ( scaledWidth * scaledHeight  + 4) / 4 );
                 scaledVideoPlanes[i][2] = new SmartBuffer( ( scaledWidth * scaledHeight  + 4) / 4 );
@@ -45,15 +43,15 @@ SmartPtr<SmartBuffer> VideoMixer::mixStreams(SmartPtr<SmartBuffer> planes[][3],
                 scaledVideoStrides[i][2] = scaledWidth/2;
                 
                 u8* inputPlanes[3];
-                inputPlanes[0] = planes[i][0]->data();
-                inputPlanes[1] = planes[i][1]->data();
-                inputPlanes[2] = planes[i][2]->data();
+                inputPlanes[0] = rawData[i]->rawVideoPlanes_[0]->data();
+                inputPlanes[1] = rawData[i]->rawVideoPlanes_[1]->data();
+                inputPlanes[2] = rawData[i]->rawVideoPlanes_[2]->data();
 
                 u8* scaledPlanes[3];
                 scaledPlanes[0] = scaledVideoPlanes[i][0]->data();
                 scaledPlanes[1] = scaledVideoPlanes[i][1]->data();
                 scaledPlanes[2] = scaledVideoPlanes[i][2]->data();
-                sws_scale( swsCtx_[i], inputPlanes, strides[i], 0, settings[i].height,
+                sws_scale( swsCtx_[i], inputPlanes, rawData[i]->rawVideoStrides_, 0, rawData[i]->rawVideoSettings_.height,
                            scaledPlanes, scaledVideoStrides[i]);
                 validStreamId[validStreamIdIndex++] = i;
                 assert(validStreamIdIndex <= totalStreams);
@@ -301,7 +299,7 @@ void VideoMixer::releaseSws()
         }
     }
 }
-bool VideoMixer::tryToInitSws(VideoStreamSetting* settings, int totalStreams)
+bool VideoMixer::tryToInitSws(SmartPtr<VideoRawData>* rawData, int totalStreams)
 {
     bool ret = true;
     int outputWidth = mappingToScalingWidth(totalStreams);
@@ -311,12 +309,13 @@ bool VideoMixer::tryToInitSws(VideoStreamSetting* settings, int totalStreams)
         releaseSws();
     }
     for(u32 i=0;  i<MAX_XCODING_INSTANCES; i++) {
-        if ( settings[i].bIsValid && !swsCtx_[i] ) {
-            swsCtx_[i] = sws_getCachedContext( swsCtx_[i], settings[i].width, settings[i].height, PIX_FMT_YUV420P,
+        VideoStreamSetting* curSetting = &(rawData[i]->rawVideoSettings_);
+        if ( curSetting->bIsValid && !swsCtx_[i] ) {
+            swsCtx_[i] = sws_getCachedContext( swsCtx_[i], curSetting->width, curSetting->height, PIX_FMT_YUV420P,
                                                outputWidth, outputHeight, PIX_FMT_YUV420P,
                                                SWS_BICUBIC, 0, 0, 0 );
             if( !swsCtx_[i] ) {
-                LOG("FAILED to create swscale context, inWidth=%d, inHeight=%d, outWith=%d, outHeight=%d\n", settings[i].width, settings[i].height, outputWidth, outputHeight);
+                LOG("FAILED to create swscale context, inWidth=%d, inHeight=%d, outWith=%d, outHeight=%d\n", curSetting->width, curSetting->height, outputWidth, outputHeight);
                 assert(0);
                 ret = false;
             }

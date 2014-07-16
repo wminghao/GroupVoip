@@ -1,4 +1,3 @@
-
 #ifndef __CODECINFOCOMMON_H__
 #define __CODECINFOCOMMON_H__
 

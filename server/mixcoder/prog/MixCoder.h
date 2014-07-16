@@ -9,14 +9,10 @@
 #ifndef __MIXCODERCOMMON_H__
 #define __MIXCODERCOMMON_H__
 
-extern "C" {
-#include <libavcodec/avcodec.h>    // required headers
-#include <libavformat/avformat.h>
-}
-
 #include "fwk/SmartBuffer.h"
 #include "MediaTarget.h"
 #include "CodecInfo.h"
+#include "RawData.h"
 
 using namespace std;
 
@@ -62,10 +58,6 @@ class MixCoder
     //output
     FLVSegmentOutput* flvSegOutput_;
     
-    //decoders
-    AudioDecoder* audioDecoder_[ MAX_XCODING_INSTANCES ];
-    VideoDecoder* videoDecoder_[ MAX_XCODING_INSTANCES ];
-    
     //encoders
     AudioEncoder* audioEncoder_[ MAX_XCODING_INSTANCES+1 ];;
     VideoEncoder* videoEncoder_;
@@ -77,13 +69,10 @@ class MixCoder
     //TODO needs to reset those buffers when a stream ends
 
     //raw video frame in case it does not exist, yuv 3 planes
-    SmartPtr<SmartBuffer> rawVideoPlanes_[MAX_XCODING_INSTANCES][3];
-    int rawVideoStrides_[MAX_XCODING_INSTANCES][3];
-    VideoStreamSetting rawVideoSettings_[MAX_XCODING_INSTANCES];
+    SmartPtr<VideoRawData> rawVideoData_[MAX_XCODING_INSTANCES];
 
     //raw audio frame in case data is late to arrive
-    SmartPtr<SmartBuffer> rawAudioFrame_[MAX_XCODING_INSTANCES];
-    AudioStreamSetting rawAudioSettings_[MAX_XCODING_INSTANCES];
+    SmartPtr<AudioRawData> rawAudioData_[MAX_XCODING_INSTANCES];
 };
 
 #endif

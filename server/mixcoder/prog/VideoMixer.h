@@ -6,8 +6,8 @@ extern "C" {
 }
 
 #include "fwk/SmartBuffer.h"
-#include "MediaTarget.h"
 #include "CodecInfo.h"
+#include "RawData.h"
 
 class VideoMixer
 {
@@ -19,13 +19,11 @@ class VideoMixer
     ~VideoMixer();
     
     //do the mixing, for now, always mix n* 640*480 buffers into 1 640*480 buffer
-    SmartPtr<SmartBuffer> mixStreams(SmartPtr<SmartBuffer> planes[][3], 
-                                     int strides[][3], 
-                                     VideoStreamSetting* settings, 
+    SmartPtr<SmartBuffer> mixStreams(SmartPtr<VideoRawData>* rawData,
                                      int totalStreams,
                                      VideoRect* videoRect);
  private:
-    bool tryToInitSws(VideoStreamSetting* settings, int totalStreams);
+    bool tryToInitSws(SmartPtr<VideoRawData>* rawData, int totalStreams);
     void releaseSws();
 
  private:

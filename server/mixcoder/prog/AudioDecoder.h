@@ -45,6 +45,7 @@ class AudioDecoder
             u32 totalBytes = 0;
             u8* rawData = resampler_->getNextRawMp3Frame(totalBytes);
             result = new SmartBuffer(totalBytes, rawData);
+            free(rawData);
         }
         return result;
     }
