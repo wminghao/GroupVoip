@@ -171,12 +171,18 @@ void FLVSegmentParser::onFLVFrameParsed( SmartPtr<AccessUnit> au, int index )
         if( !audioDecoder_[index] )  {
             audioDecoder_[index] = AudioDecoderFactory::CreateAudioDecoder(au, index);
         }
+        u32 origPts = au->pts;
         audioDecoder_[index]->newAccessUnit(au, &rawAudioSettings_); //decode here
+        //if there is a timestamp jump, restart the resampler
+        if( audioTsMapper_[index].shouldAdjustTs( origPts ) ) {
+            audioDecoder_[index]->discardResamplerResidual();
+        }
+
         //read a couple of 1152 samples/frame here
         while(audioDecoder_[index]->isNextRawMp3FrameReady() ) {
             SmartPtr<AudioRawData> a = new AudioRawData();
             a->rawAudioFrame_ = audioDecoder_[index]->getNextRawMp3Frame();
-            a->pts = 0; //TODO
+            a->pts = audioTsMapper_[index].getNextTimestamp( origPts ); 
             audioQueue_[index].push( a );
             globalAudioTimestamp_ = a->pts; //global audio timestamp updated here
         }

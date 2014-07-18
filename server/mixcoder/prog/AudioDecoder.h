@@ -50,6 +50,12 @@ class AudioDecoder
         return result;
     }
 
+    void discardResamplerResidual() {
+        if( resampler_ ) {
+            resampler_->discardResidual();
+        }
+    }
+
  protected:    
     //send it to resampler
     void resampleFrame(AudioStreamSetting* aRawSetting, int sampleSize, u8* outputFrame) {

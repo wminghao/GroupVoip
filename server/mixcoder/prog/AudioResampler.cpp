@@ -2,7 +2,6 @@
 #include "fwk/log.h"
 #include <stdio.h>
 #include <string.h>
-#include <stdlib.h>
 
 //return the many samples
 bool AudioResampler::resample(u8* inputData, u32 sampleSize)
@@ -115,4 +114,10 @@ u8* AudioResampler::getNextRawMp3Frame(u32& totalBytes)
     } else {
         return NULL;
     }
+}
+
+void AudioResampler::discardResidual()
+{
+    reset();
+    alloc();
 }

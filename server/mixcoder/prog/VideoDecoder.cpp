@@ -63,6 +63,7 @@ bool VideoDecoder::newAccessUnit( SmartPtr<AccessUnit> au, SmartPtr<VideoRawData
 
     //save the settings here
     v->sp = au->sp;
+    v->pts = au->pts;
 
     //it can be a sps-pps header or regular nalu    
     if ( au->sp == kSpsPps ) {
@@ -109,7 +110,7 @@ bool VideoDecoder::newAccessUnit( SmartPtr<AccessUnit> au, SmartPtr<VideoRawData
                     v->rawVideoSettings_.vcid = kAVCVideoPacket;
                     v->rawVideoSettings_.width = inWidth_;
                     v->rawVideoSettings_.height =inHeight_; 
-                    v->pts = au->pts;
+
                     bIsValidFrame = true;
                     bHasFirstFrameStarted = true;
                     

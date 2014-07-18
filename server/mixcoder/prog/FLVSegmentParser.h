@@ -10,6 +10,7 @@
 #include "RawData.h"
 #include "VideoDecoder.h"
 #include "AudioDecoder.h"
+#include "AudioTimestampMapper.h"
 #include <queue>
 
 using namespace std;
@@ -140,5 +141,6 @@ class FLVSegmentParser:public FLVSegmentParserDelegate
     AudioStreamSetting rawAudioSettings_;
 
     //current audio timestamp, mapping
+    AudioTimestampMapper audioTsMapper_[ MAX_XCODING_INSTANCES ];
 };
 #endif
