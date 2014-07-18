@@ -34,7 +34,7 @@ SmartPtr<SmartBuffer> VideoMixer::mixStreams(SmartPtr<VideoRawData>* rawData,
         int validStreamIdIndex = 0;
         
         for(u32 i=0; i<MAX_XCODING_INSTANCES; i++) {
-            if( rawData[i]->rawVideoSettings_.bIsValid ) { 
+            if( rawData[i] && rawData[i]->rawVideoSettings_.bIsValid ) { 
                 scaledVideoPlanes[i][0] = new SmartBuffer( scaledWidth* scaledHeight );
                 scaledVideoPlanes[i][1] = new SmartBuffer( ( scaledWidth * scaledHeight  + 4) / 4 );
                 scaledVideoPlanes[i][2] = new SmartBuffer( ( scaledWidth * scaledHeight  + 4) / 4 );
@@ -309,15 +309,17 @@ bool VideoMixer::tryToInitSws(SmartPtr<VideoRawData>* rawData, int totalStreams)
         releaseSws();
     }
     for(u32 i=0;  i<MAX_XCODING_INSTANCES; i++) {
-        VideoStreamSetting* curSetting = &(rawData[i]->rawVideoSettings_);
-        if ( curSetting->bIsValid && !swsCtx_[i] ) {
-            swsCtx_[i] = sws_getCachedContext( swsCtx_[i], curSetting->width, curSetting->height, PIX_FMT_YUV420P,
-                                               outputWidth, outputHeight, PIX_FMT_YUV420P,
-                                               SWS_BICUBIC, 0, 0, 0 );
-            if( !swsCtx_[i] ) {
-                LOG("FAILED to create swscale context, inWidth=%d, inHeight=%d, outWith=%d, outHeight=%d\n", curSetting->width, curSetting->height, outputWidth, outputHeight);
-                assert(0);
-                ret = false;
+        if( rawData[i] ) {
+            VideoStreamSetting* curSetting = &(rawData[i]->rawVideoSettings_);
+            if ( curSetting->bIsValid && !swsCtx_[i] ) {
+                swsCtx_[i] = sws_getCachedContext( swsCtx_[i], curSetting->width, curSetting->height, PIX_FMT_YUV420P,
+                                                   outputWidth, outputHeight, PIX_FMT_YUV420P,
+                                                   SWS_BICUBIC, 0, 0, 0 );
+                if( !swsCtx_[i] ) {
+                    LOG("FAILED to create swscale context, inWidth=%d, inHeight=%d, outWith=%d, outHeight=%d\n", curSetting->width, curSetting->height, outputWidth, outputHeight);
+                    assert(0);
+                    ret = false;
+                }
             }
         }
     }

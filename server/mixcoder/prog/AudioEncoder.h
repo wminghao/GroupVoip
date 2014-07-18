@@ -5,7 +5,7 @@
 #include <queue>
 #include "CodecInfo.h"
 
-#define MAX_WB_BYTES 1000
+#define MAX_ENCODED_BYTES 1000
 
 //audio encoder implementation
 class AudioEncoder
@@ -26,7 +26,7 @@ class AudioEncoder
     void* encoder_;
     int frameSize_;
     
-    char encodedBits_[MAX_WB_BYTES];
+    char encodedBits_[MAX_ENCODED_BYTES];
 };
 
 #endif

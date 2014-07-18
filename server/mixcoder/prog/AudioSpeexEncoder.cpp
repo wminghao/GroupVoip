@@ -37,7 +37,7 @@ SmartPtr<SmartBuffer> AudioSpeexEncoder::encodeAFrame(SmartPtr<SmartBuffer> inpu
         speex_encode_int(encoder_, in, &bits_);
 
         /*Copy the bits to an array of char that can be written*/
-        int nbBytes = speex_bits_write(&bits_, encodedBits_, MAX_WB_BYTES);
+        int nbBytes = speex_bits_write(&bits_, encodedBits_, MAX_ENCODED_BYTES);
         
         //LOG("audio encoded pkt size=%d sample size=%d\n", nbBytes, sampleSize); 
         result = new SmartBuffer( nbBytes,  encodedBits_);

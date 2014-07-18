@@ -7,7 +7,6 @@
 bool AudioResampler::resample(u8* inputData, u32 sampleSize)
 {
     u32 totalInputBytes =  sampleSize * sizeof(short) * inputChannels_;
-    //TODO different channel count
     int sampleCount = 0;
     if ( inputFreq_ == outputFreq_ ) {
         assert(inputChannels_ == 2); //Only take care of 2 channels case
@@ -53,7 +52,7 @@ bool AudioResampler::resample(u8* inputData, u32 sampleSize)
                                       srcData.output_frames_gen * inputChannels_ );
         }
 
-        LOG( "resampling from %d to %d, srcData.input_frames=%ld, srcData.output_frames_gen=%ld\n", inputFreq_, outputFreq_, srcData.input_frames, srcData.output_frames_gen);
+        //LOG( "resampling from %d to %d, srcData.input_frames=%ld, inputChannels_=%d, srcData.output_frames_gen=%ld\n", inputFreq_, outputFreq_, srcData.input_frames, inputChannels_, srcData.output_frames_gen);
     }
     //push the samples into an linked list
     while( sampleCount > 0 ) {
@@ -67,14 +66,16 @@ bool AudioResampler::resample(u8* inputData, u32 sampleSize)
                 memcpy(mp3RawFrame, (u8*)resampleShortRemaining_, remainingBytes);
                 samplesToCopyFromOutBuf = MP3_FRAME_SAMPLE_SIZE-remainingSampleCnt_;
                 memcpy(mp3RawFrame + remainingBytes, (u8*)resampleShortBufOut_, samplesToCopyFromOutBuf * sizeof(short) * outputChannels_);
+                samplesToSkip_ = samplesToCopyFromOutBuf;
                 remainingSampleCnt_ = 0;
                 mp3FrameList_.push_back( mp3RawFrame );
-                LOG("======got a part-part frame, remainingSampleCnt_=%d, samplesToCopyFromOutBuf=%d===\r\n", remainingSampleCnt_, samplesToCopyFromOutBuf);
+                //LOG("======got a part-part frame, remainingSampleCnt_=%d, samplesToCopyFromOutBuf=%d===\r\n", remainingSampleCnt_, samplesToCopyFromOutBuf);
             } else {
                 memcpy((u8*)resampleShortRemaining_+remainingBytes, (u8*)resampleShortBufOut_, sampleCount * sizeof(short) * outputChannels_);
                 remainingSampleCnt_ += sampleCount;
                 samplesToCopyFromOutBuf = sampleCount;
-                LOG("======got nothing, remainingSampleCnt_=%d, samplesToCopyFromOutBuf=%d===\r\n", remainingSampleCnt_, samplesToCopyFromOutBuf);
+                samplesToSkip_ = 0;
+                //LOG("======got nothing, remainingSampleCnt_=%d, samplesToCopyFromOutBuf=%d===\r\n", remainingSampleCnt_, samplesToCopyFromOutBuf);
             }
         } else {
             //no residual, so create a new buffer
@@ -84,13 +85,15 @@ bool AudioResampler::resample(u8* inputData, u32 sampleSize)
                 samplesToCopyFromOutBuf = MP3_FRAME_SAMPLE_SIZE;
                 memcpy(mp3RawFrame, (u8*)resampleShortBufOut_, bytesToCopy);
                 remainingSampleCnt_ = (sampleCount - MP3_FRAME_SAMPLE_SIZE);
+                samplesToSkip_ = samplesToCopyFromOutBuf;
                 mp3FrameList_.push_back( mp3RawFrame );
-                LOG("======got a brand new frame, remainingSampleCnt_=%d, samplesToCopyFromOutBuf=%d===\r\n", remainingSampleCnt_, samplesToCopyFromOutBuf);
+                //LOG("======got a brand new frame, remainingSampleCnt_=%d, samplesToCopyFromOutBuf=%d===\r\n", remainingSampleCnt_, samplesToCopyFromOutBuf);
             } else {
-                memcpy((u8*)resampleShortRemaining_, (u8*)resampleShortBufOut_, sampleCount * sizeof(short) * outputChannels_);
+                memcpy((u8*)resampleShortRemaining_, (u8*)(resampleShortBufOut_+samplesToSkip_*outputChannels_), sampleCount * sizeof(short) * outputChannels_);
                 remainingSampleCnt_ = sampleCount;
                 samplesToCopyFromOutBuf = sampleCount;
-                LOG("======copy residual for a frame, remainingSampleCnt_=%d, samplesToCopyFromOutBuf=%d===\r\n", remainingSampleCnt_, samplesToCopyFromOutBuf);
+                samplesToSkip_ = 0;
+                //LOG("======No residual, not enough for a frame, remainingSampleCnt_=%d, samplesToCopyFromOutBuf=%d===\r\n", remainingSampleCnt_, samplesToCopyFromOutBuf);
             }
         }
         sampleCount -= samplesToCopyFromOutBuf;

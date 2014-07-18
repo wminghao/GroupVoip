@@ -176,6 +176,7 @@ void FLVSegmentParser::onFLVFrameParsed( SmartPtr<AccessUnit> au, int index )
         //if there is a timestamp jump, restart the resampler
         if( audioTsMapper_[index].shouldAdjustTs( origPts ) ) {
             audioDecoder_[index]->discardResamplerResidual();
+            LOG("-----------Timestamp JUMP\r\n");
         }
 
         //read a couple of 1152 samples/frame here
@@ -183,9 +184,12 @@ void FLVSegmentParser::onFLVFrameParsed( SmartPtr<AccessUnit> au, int index )
             SmartPtr<AudioRawData> a = new AudioRawData();
             a->rawAudioFrame_ = audioDecoder_[index]->getNextRawMp3Frame();
             a->pts = audioTsMapper_[index].getNextTimestamp( origPts ); 
+            //LOG("-----------After resampling, pts=%d to %d\r\n", au->pts, a->pts);
+
             audioQueue_[index].push( a );
             globalAudioTimestamp_ = a->pts; //global audio timestamp updated here
         }
+
         audioStreamStatus_[index] = kStreamOnlineStarted;
     } else {
         //do nothing

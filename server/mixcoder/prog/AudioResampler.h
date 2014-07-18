@@ -19,7 +19,7 @@ class AudioResampler
 {
  public:
  AudioResampler(int inputFreq, int inputChannels, int outputFreq, int outputChannels):
-    inputFreq_(inputFreq), inputChannels_(inputChannels), outputFreq_(outputFreq), outputChannels_(outputChannels), remainingSampleCnt_(0){
+    inputFreq_(inputFreq), inputChannels_(inputChannels), outputFreq_(outputFreq), outputChannels_(outputChannels), remainingSampleCnt_(0), samplesToSkip_(0){
         /* resample */
         alloc();
 
@@ -59,6 +59,7 @@ class AudioResampler
             free( res );
         }
         remainingSampleCnt_ = 0;
+        samplesToSkip_ = 0;
     }
 
  private:
@@ -81,6 +82,7 @@ class AudioResampler
     std::list<u8*> mp3FrameList_; // integer list
     short resampleShortRemaining_[MP3_FRAME_SAMPLE_SIZE * 2]; //save reamining data from the previous read
     u32 remainingSampleCnt_;
+    u32 samplesToSkip_;
 
     //mp3 frame size
     u32 frameSize_;

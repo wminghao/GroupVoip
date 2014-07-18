@@ -59,7 +59,7 @@ bool VideoDecoder::newAccessUnit( SmartPtr<AccessUnit> au, SmartPtr<VideoRawData
 {
     bool bIsValidFrame = false;
     assert( au->st == kVideoStreamType );
-    assert( au->ct == kAVCVideoPacket );
+    assert( au->ctype == kAVCVideoPacket );
 
     //save the settings here
     v->sp = au->sp;

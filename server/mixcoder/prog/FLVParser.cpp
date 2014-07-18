@@ -92,7 +92,7 @@ void FLVParser::parseNextFLVFrame( string& strFlvTag )
                 u32 frameType = bsParser.readBits(4);
                 accessUnit->isKey = (frameType == 1);
                 u32 codecId = bsParser.readBits(4);
-                accessUnit->ct = codecId;
+                accessUnit->ctype = codecId;
                 dataSize -= 1;
 
                 std::string inputData;
@@ -211,7 +211,7 @@ void FLVParser::parseNextFLVFrame( string& strFlvTag )
                 u32 soundType = bsParser.readBits(1);
                 dataSize -= 1;
 
-                accessUnit->ct = soundFormat;
+                accessUnit->ctype = (soundFormat<<4)|(soundRate<<2)|(soundSize<<1)|soundType;
                 accessUnit->isKey = true;
                 if ( soundFormat == kAAC ) {
                     u8 aacPacketType = bsParser.readByte();
@@ -267,9 +267,9 @@ void FLVParser::parseNextFLVFrame( string& strFlvTag )
         }
         if ( accessUnit->sp == kSpsPps ) {
             //reset the spspps timestamp to be next ts
-            accessUnit->pts = accessUnit->dts = prevVideoAdjPts_+1;
+            accessUnit->pts = prevVideoAdjPts_+1;
         } else {
-            accessUnit->pts = accessUnit->dts = tsUnion.timestamp + ((relTimeStampOffset_ == MAX_U32)?0:relTimeStampOffset_);
+            accessUnit->pts = tsUnion.timestamp + ((relTimeStampOffset_ == MAX_U32)?0:relTimeStampOffset_);
         }
 
         if( accessUnit->st == kVideoStreamType ) {
