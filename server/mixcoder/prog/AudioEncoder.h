@@ -4,8 +4,9 @@
 #include "fwk/SmartBuffer.h"
 #include <queue>
 #include "CodecInfo.h"
+#include "AudioResampler.h"
 
-#define MAX_ENCODED_BYTES 1000
+#define MAX_ENCODED_BYTES MP3_FRAME_SAMPLE_SIZE*sizeof(short)*2 //max size 
 
 //audio encoder implementation
 class AudioEncoder

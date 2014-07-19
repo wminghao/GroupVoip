@@ -56,11 +56,13 @@ SmartPtr<SmartBuffer> AudioMp3Encoder::encodeAFrame(SmartPtr<SmartBuffer> input)
                                                          (u8*)encodedBits_, MAX_ENCODED_BYTES);
         
         if( encodedSize ) {
-            LOG("AudioMp3Encoder lame =====sample size=%d, channels=%d, encodedSize=%d\n", sampleSize, numChannels, encodedSize); 
-
+            //LOG("AudioMp3Encoder lame =====sample size=%d, channels=%d, encodedSize=%d, sampling rate=%d\n", sampleSize, numChannels, encodedSize, getFreq(outputSetting_.ar)); 
+           #if 0
+            //TODO for mp3 no need to flush nogap????
             int paddingSize = lame_encode_flush_nogap(lgf_, (u8*)encodedBits_+encodedSize, MAX_ENCODED_BYTES-encodedSize);
             encodedSize += paddingSize;
-        
+           #endif
+
             LOG("AudioMp3Encoder lame encoded pkt size=%d sample size=%d\n", encodedSize, sampleSize); 
             result = new SmartBuffer( encodedSize, encodedBits_);
         } else {
