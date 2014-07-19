@@ -1,19 +1,24 @@
 ################################################################################
 #
-#    InnoVideo Laboratory, Inc.
+#    I3 Media Laboratory, Inc.
 #
 ################################################################################
 
 - Company Introduction
-- Technology Advantages
-- Market Analysis
+- Value Proposition
+- Target Market and Customer Segments 
+- Key Assets
+- Business Costs and Revenue Sources
+- Competition Analysis
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ~ Company Introduction
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Mission:
-- Working on innovative video solutions.
+
+- Working on innovative, interactive, and Internet-based Video solutions to 
+  make people's life and work more enjoyable.
 
 Founders:
 
@@ -34,31 +39,61 @@ Founders:
 
 Company History:
 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~ Value Proposition 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+We are targeting at providing a Internet-based platform for music lovers 
+to sing Karaoke on-line and social with their friends, families, 
+and people of similar interest.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~ Target Market and Customer Segments 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The general population who listen to songs and sing as a hobby are our 
+targeted customer base. The primary segment in this consumer base 
+are the teenage girls who spend significant amount of time following popular 
+music and practicing singing.  
+
+Our service will start in the US where there no established service of 
+the same kind.
+
+Our basic service will be provided free to the general public while 
+premiums will be collected over advanced services which require
+- higher quality of delver in terms of lower latency
+- recoding that requires storage on our servers
+
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-~ Technology Advantages 
+~ Key Assets 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-1) Adaptability. Our solution works at a wide range of the bandwidth conditions 
-   between publishers and viewers. Our solution also works under changing network 
-   conditions. Bandwidth supported are between 64Kbps to 800Kbps currently.
+We have the following key assets:
 
-2) Cross platforms. Our client code can be easily ported to different platforms, 
-   namely, Mac, Windows, Linux, iOS, Android etc.
+1) Our technologies developed to deliver mixed Video/Audio streams over the 
+   Internet.
+ 
+2) Technical expertise our founders have accumulated in Video and networking 
+   areas over the years working for leading technology companies in the Silicon 
+   Valley.
 
-3) Light-weight clients. Video/audio processing and mixing are put on the 
-   servers.  It allows low-end devices such as google glass and iWatch 
-   to be used.
+The contents we need can be obtained for free initially from other websites
+like youtube. The copyright issues should have been addressed already.
 
-4) Scalable, high-quality video chat services. VGA 640*480. 32 people 
-   conferencing per session with unlimited number f viewing streams.
+(TODO - need to research over this)
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-~ Market Opportunity 
+~ Business Costs and Revenue Sources 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-With our video conferencing technology, we plan to provide a tool to allow
-people to sing songs following on-screen lyrics. It's an on-line form of
-the well-known Karaoke which is popular in the Eastern Asian countries.  
+- Major Costs
+  1) Technical Talents
+  2) Operation Cost in terms of BW and computing powers for running the video 
+     processing and stream dispatching servers 
+ 
+- Revenue:
+  1) Premiums paid for value-added service 
+  2) Advertisements
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ~ Competition Analysis 
@@ -88,5 +123,21 @@ the well-known Karaoke which is popular in the Eastern Asian countries.
   * Stage it (Live)
   * Backstage Pass
   None of them offer a real-time solution as we do.
+
+TODO - to go through these website.
+
+- Existing On-line Karaoke services in other markets
+
+  There are successful on-line Karaoke services provided in China.
+  While their service is available to customer in US, we see several
+  major factors holding them back from acceptance in the US markets
+  1) inferior technologies 
+  2) extra latency due to physical distance between US markets and 
+     video severs located in China.
+  3) Language and Culture differences
+
+  Major competing on-line Karaoke service in China markets
+  - 9158 
+  - huxiu
 
 
