@@ -58,6 +58,17 @@ o 9158KTV:
 ~ Smule Sing 
 ................................................................................
 
+* People can sing togehter
+* got stuck sometimes
+* Quality of singing is poort
+* Feature to add sound effects
+* Example
+  "Call me maybe"
+  - joined someone else's singing
+* Nice to have the original songs
+* Tried searching for "Polic", "Joan Baez", dont' see them
+  - no problem with Youtube of cause
+
 ................................................................................
 ~ Yokee 
 ................................................................................
