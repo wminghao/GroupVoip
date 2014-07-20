@@ -4,13 +4,25 @@
 ~ Competitions in the on-line Karaoke Space
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-o 9158: 
-  - http://v.youku.com/v_show/id_XMjI2NTQ4ODU2.html
-o 用户体验、互联网思维，以及形成互动
-  - http://www.huxiu.com/article/37754/1.html
+................................................................................
+~ 9158KTV 
+................................................................................
+
+o 9158KTV: 
+  - Instructions on how to use the 9158KTV 
+    * http://v.youku.com/v_show/id_XMjI2NTQ4ODU2.html
 
   - client app not integrated in the browser
     * not as easy to use as our proposed solutions
+
+................................................................................
+~ Changba 
+................................................................................
+
+* http://changba.com
+
+* 唱吧(changba)用互联网思维做线下KTV
+  - http://www.huxiu.com/article/37754/1.html
 
 ................................................................................
 ~ YY.com

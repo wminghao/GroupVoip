@@ -138,9 +138,9 @@ TODO - to go through these website.
   While their service is available to customer in US, we see several
   major factors holding them back from acceptance in the US markets
   1) inferior technologies 
-  2) extra latency due to physical distance between US markets and 
-     video severs located in China.
-  3) Language and Culture differences
+  2) Language and Culture differences
+  3) extra latency due to physical distance between US markets and
+     video severs located in China. (not noticable for broadcast)
 
   Major competing on-line Karaoke service in China markets
   - 9158 
