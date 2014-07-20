@@ -1,7 +1,38 @@
 
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~ Competitions in the on-line Karaoke Space
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 o 9158: 
   - http://v.youku.com/v_show/id_XMjI2NTQ4ODU2.html
 o 用户体验、互联网思维，以及形成互动
   - http://www.huxiu.com/article/37754/1.html
+
+  - client app not integrated in the browser
+    * not as easy to use as our proposed solutions
+
+................................................................................
+~ YY.com
+................................................................................
+
+  - teenage girls singing, which got broadcasted via the Internet
+  - no spearate MV available to viewers
+
+  - one revenue source, viwers paying for flower etc
+
+  - How did the MV shown to the singers? Do they get their own?
+
+    What did singner hear from the head phones?
+
+  - channels 2085, 3649, 
+
+  - not many good channes
+    fewer good singers (maybe because I am trying in the morning?)
+
+
+
+
+
 
 
