@@ -91,10 +91,13 @@ o Looks kinda primitive
 o Ads at the bottome of the app
   - for example, Google Search App
 
+................................................................................
+~ Disney Karaoke 
+................................................................................
 
-
-
-
+* Registration page has obvious bug
+* Recoding locally
+  - nice and no latency
 
 
 
