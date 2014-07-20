@@ -88,6 +88,11 @@ o record, save, and share
 o Watch and listen
 o Sing, Record and upload
 o Looks kinda primitive
+o Ads at the bottome of the app
+  - for example, Google Search App
+
+
+
 
 
 
