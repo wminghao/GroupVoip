@@ -2,6 +2,7 @@
 #include "fwk/log.h"
 #include <assert.h>
 #include <stdio.h>
+#include "AudioDecoderFactory.h"
 
 #define OUTPUT_VIDEO_FRAME_RATE 30
 
@@ -160,17 +161,40 @@ u32 count_bits(u32 n) {
 void FLVSegmentParser::onFLVFrameParsed( SmartPtr<AccessUnit> au, int index )
 {
     if( au->st == kVideoStreamType ) {
-        videoQueue_[index].push( au );
-        videoStreamStatus_[index] = kStreamOnlineStarted;
+        SmartPtr<VideoRawData> v = new VideoRawData();
+        bool bIsValidFrame = videoDecoder_[index]->newAccessUnit(au, v); //decode here
+        if( bIsValidFrame || v->sp == kSpsPps ) { //if decoded successfully or it's an sps pps frame
+            videoQueue_[index].push( v );
+            videoStreamStatus_[index] = kStreamOnlineStarted;
+        }
     } else if ( au->st == kAudioStreamType ) {
-        audioQueue_[index].push( au );
+        if( !audioDecoder_[index] )  {
+            audioDecoder_[index] = AudioDecoderFactory::CreateAudioDecoder(au, index);
+        }
+        u32 origPts = au->pts;
+        audioDecoder_[index]->newAccessUnit(au, &rawAudioSettings_); //decode here
+        //if there is a timestamp jump, restart the resampler
+        if( audioTsMapper_[index].shouldAdjustTs( origPts ) ) {
+            audioDecoder_[index]->discardResamplerResidual();
+            LOG("-----------Timestamp JUMP\r\n");
+        }
+
+        //read a couple of 1152 samples/frame here
+        while(audioDecoder_[index]->isNextRawMp3FrameReady() ) {
+            SmartPtr<AudioRawData> a = new AudioRawData();
+            a->rawAudioFrame_ = audioDecoder_[index]->getNextRawMp3Frame();
+            a->pts = audioTsMapper_[index].getNextTimestamp( origPts ); 
+            //LOG("-----------After resampling, pts=%d to %d\r\n", au->pts, a->pts);
+
+            audioQueue_[index].push( a );
+            globalAudioTimestamp_ = a->pts; //global audio timestamp updated here
+        }
+
         audioStreamStatus_[index] = kStreamOnlineStarted;
-        globalAudioTimestamp_ = au->pts; //global audio timestamp updated here
     } else {
         //do nothing
     }
 }
-
 
 bool FLVSegmentParser::readData(SmartPtr<SmartBuffer> input)
 {
@@ -314,41 +338,41 @@ bool FLVSegmentParser::isNextVideoFrameSpsPps(u32 index, u32& timestamp)
 {
     bool bIsSpsPps = false;
     if ( videoQueue_[index].size() > 0 ) {
-        SmartPtr<AccessUnit> au = videoQueue_[index].front();
-        if ( au && au->sp == kSpsPps ) {
+        SmartPtr<VideoRawData> v = videoQueue_[index].front();
+        if ( v && v->sp == kSpsPps ) {
             bIsSpsPps = true;
-            timestamp = au->pts;
+            timestamp = v->pts;
         }
     }
     return bIsSpsPps;
 }
 
-//canr eturn more than 1 frome
-SmartPtr<AccessUnit> FLVSegmentParser::getNextVideoFrame(u32 index, u32 timestamp)
+//can return more than 1 frome
+SmartPtr<VideoRawData> FLVSegmentParser::getNextVideoFrame(u32 index, u32 timestamp)
 {
-    SmartPtr<AccessUnit> au;
+    SmartPtr<VideoRawData> v;
     if ( videoQueue_[index].size() > 0 ) {
-        au = videoQueue_[index].front();
-        if ( au && au->pts <= timestamp ) {
+        v = videoQueue_[index].front();
+        if ( v && v->pts <= timestamp ) {
             //LOG("------pop Next video frame, index=%d pts=%d\r\n", index, au->pts);
             videoQueue_[index].pop();
         } else {
             //LOG("------nopop Next video frame, index=%d pts=%d\r\n", index, au->pts);
             //don't pop anything that has a bigger timestamp
-            au = NULL;
+            v = NULL;
         }
     }
-    return au;
+    return v;
 }
 
-SmartPtr<AccessUnit> FLVSegmentParser::getNextAudioFrame(u32 index)
+SmartPtr<AudioRawData> FLVSegmentParser::getNextAudioFrame(u32 index)
 {
-    SmartPtr<AccessUnit> au;
+    SmartPtr<AudioRawData> a;
     if ( audioQueue_[index].size() > 0 ) {
-        au = audioQueue_[index].front();
-        if ( au ) {
+        a = audioQueue_[index].front();
+        if ( a ) {
             audioQueue_[index].pop();
         }
     }
-    return au;
+    return a;
 }

@@ -23,94 +23,93 @@ void genWhiteNoise(short* buffer, int bufSize)
     }
 }
 
-void AudioMixer::mixTwoStreams(SmartPtr<SmartBuffer> buffer[], 
+void AudioMixer::mixTwoStreams(SmartPtr<AudioRawData>* rawData,
                    int* twoIndex,
                    short* valShort,
-                   int sampleSize)
+                   int sampleChannelSize)
 {
     int a = twoIndex[0];
     int b = twoIndex[1];
-    short* aData = (short*)buffer[a]->data();
-    short* bData = (short*)buffer[b]->data();
+    short* aData = (short*)rawData[a]->rawAudioFrame_->data();
+    short* bData = (short*)rawData[b]->rawAudioFrame_->data();
     //    fprintf(stderr, "--------two index=%d %d\r\n", twoIndex[0], twoIndex[1]);
-    for ( int i = sampleSize-1; i>=0; i-- ) {
+    for ( int i = sampleChannelSize-1; i>=0; i-- ) {
         int val = aData[i] + bData[i];
         valShort[i] = CLIP(val, 32767, -32768);
     }
 }
 
-void AudioMixer::mixThreeStreams(SmartPtr<SmartBuffer> buffer[], 
+void AudioMixer::mixThreeStreams(SmartPtr<AudioRawData>* rawData,
                    int* threeIndex,
                    short* valShort,
-                   int sampleSize)
+                   int sampleChannelSize)
 {
     int a = threeIndex[0];
     int b = threeIndex[1];
     int c = threeIndex[2];
-    short* aData = (short*)buffer[a]->data();
-    short* bData = (short*)buffer[b]->data();
-    short* cData = (short*)buffer[c]->data();
-    for ( int i = sampleSize-1 ; i>=0; i-- ) {
+    short* aData = (short*)rawData[a]->rawAudioFrame_->data();
+    short* bData = (short*)rawData[b]->rawAudioFrame_->data();
+    short* cData = (short*)rawData[c]->rawAudioFrame_->data();
+    for ( int i = sampleChannelSize-1 ; i>=0; i-- ) {
         int val = aData[i] + bData[i] + cData[i];
         valShort[i] = CLIP(val, 32767, -32768);
     }
 }
 
-void AudioMixer::mixFourStreams(SmartPtr<SmartBuffer> buffer[], 
+void AudioMixer::mixFourStreams(SmartPtr<AudioRawData>* rawData,
                                 int* fourIndex,
                                 short* valShort,
-                                int sampleSize)
+                                int sampleChannelSize)
 {
     int a = fourIndex[0];
     int b = fourIndex[1];
     int c = fourIndex[2];
     int d = fourIndex[3];
-    short* aData = (short*)buffer[a]->data();
-    short* bData = (short*)buffer[b]->data();
-    short* cData = (short*)buffer[c]->data();
-    short* dData = (short*)buffer[d]->data();
-    for ( int i = sampleSize-1; i>=0; i-- ) {
+    short* aData = (short*)rawData[a]->rawAudioFrame_->data();
+    short* bData = (short*)rawData[b]->rawAudioFrame_->data();
+    short* cData = (short*)rawData[c]->rawAudioFrame_->data();
+    short* dData = (short*)rawData[d]->rawAudioFrame_->data();
+    for ( int i = sampleChannelSize-1; i>=0; i-- ) {
         int val = aData[i] + bData[i] + cData[i] + dData[i];
         valShort[i] = CLIP(val, 32767, -32768);
     }
 }
-void AudioMixer::findIndexes(AudioStreamSetting settings[],
-                     u32 excludeStreamId,
-                     int* indexArr)
+void AudioMixer::findIndexes(SmartPtr<AudioRawData>* rawData,
+                             u32 excludeStreamId,
+                             int* indexArr)
 {
     int i = 0;
     for(u32 j=0; j<MAX_XCODING_INSTANCES; j++) {
-        if( settings[j].bIsValid && j != excludeStreamId) {
+        if( rawData[j] && rawData[j]->bIsValid && j != excludeStreamId) {
             indexArr[i++] = j;
         }
     } 
 }
 
 //do the mixing, for now, always mix n speex streams into 1 speex stream
-SmartPtr<SmartBuffer> AudioMixer::mixStreams(SmartPtr<SmartBuffer> buffer[], 
-                                             AudioStreamSetting settings[], 
-                                             int sampleSize,
+SmartPtr<SmartBuffer> AudioMixer::mixStreams(SmartPtr<AudioRawData>* rawData,
+                                             int sampleChannelSize,
                                              int totalStreams,
                                              u32 excludeStreamId)
 {
     SmartPtr<SmartBuffer> result;
     if ( totalStreams > 0 ) {
-        u32 frameTotalLen = sampleSize*sizeof(u16);
-        short valShort[sampleSize];
+        u32 frameTotalLen = sampleChannelSize*sizeof(u16);
+        short valShort[sampleChannelSize];
         switch ( totalStreams ) {
             case 1: {
                 if( excludeStreamId != 0xffffffff ) {
                     //if nothing is mixed, i.e., one stream only voip, use white noise
-                    genWhiteNoise(valShort, sampleSize);
+                    genWhiteNoise(valShort, sampleChannelSize);
                 } else {
                     int a = 0;
                     for(u32 j=0; j<MAX_XCODING_INSTANCES; j++) {
-                        if( settings[j].bIsValid && j != excludeStreamId ) { 
+                        if( rawData[j] && rawData[j]->bIsValid && j != excludeStreamId ) { 
                             a = j;
                             break;
                         }
                     }
-                    memcpy((u8*)valShort, buffer[a]->data(), sampleSize*sizeof(short));
+                    memcpy((u8*)valShort, rawData[a]->rawAudioFrame_->data(), sampleChannelSize*sizeof(short));
                 }
                 break;
             }
@@ -118,40 +117,40 @@ SmartPtr<SmartBuffer> AudioMixer::mixStreams(SmartPtr<SmartBuffer> buffer[],
                 if( excludeStreamId != 0xffffffff ) {
                     int a = 0;
                     for(u32 j=0; j<MAX_XCODING_INSTANCES; j++) {
-                        if( settings[j].bIsValid && j != excludeStreamId ) { 
+                        if( rawData[j] && rawData[j]->bIsValid && j != excludeStreamId ) { 
                             a = j;
                             break;
                         }
                     }
-                    memcpy((u8*)valShort, buffer[a]->data(), sampleSize*sizeof(short));
+                    memcpy((u8*)valShort, rawData[a]->rawAudioFrame_->data(), sampleChannelSize*sizeof(short));
                 } else {
                     int twoIndex[2];
-                    findIndexes(settings, excludeStreamId, twoIndex);
-                    mixTwoStreams(buffer, twoIndex, valShort, sampleSize);
+                    findIndexes(rawData, excludeStreamId, twoIndex);
+                    mixTwoStreams(rawData, twoIndex, valShort, sampleChannelSize);
                 }
                 break;
             }
             case 3: {
                 if( excludeStreamId != 0xffffffff ) {
                     int twoIndex[2];
-                    findIndexes(settings, excludeStreamId, twoIndex);
-                    mixTwoStreams(buffer, twoIndex, valShort, sampleSize);
+                    findIndexes(rawData, excludeStreamId, twoIndex);
+                    mixTwoStreams(rawData, twoIndex, valShort, sampleChannelSize);
                 } else {
                     int threeIndex[3];
-                    findIndexes(settings, excludeStreamId, threeIndex);
-                    mixThreeStreams(buffer, threeIndex, valShort, sampleSize);
+                    findIndexes(rawData, excludeStreamId, threeIndex);
+                    mixThreeStreams(rawData, threeIndex, valShort, sampleChannelSize);
                 }
                 break;
             }
             case 4: {
                 if( excludeStreamId != 0xffffffff ) {
                     int threeIndex[3];
-                    findIndexes(settings, excludeStreamId, threeIndex);
-                    mixThreeStreams(buffer, threeIndex, valShort, sampleSize);
+                    findIndexes(rawData, excludeStreamId, threeIndex);
+                    mixThreeStreams(rawData, threeIndex, valShort, sampleChannelSize);
                 } else {
                     int fourIndex[2];
-                    findIndexes(settings, excludeStreamId, fourIndex);
-                    mixFourStreams(buffer, fourIndex, valShort, sampleSize);
+                    findIndexes(rawData, excludeStreamId, fourIndex);
+                    mixFourStreams(rawData, fourIndex, valShort, sampleChannelSize);
                 }
                 break;
             }

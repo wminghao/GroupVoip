@@ -32,13 +32,13 @@ int main( int argc, char** argv ) {
     signal( SIGBUS, handlesig );
     signal( SIGSYS, handlesig );
     
-    Logger::initLog("MixCoder", kSyslog);
+    Logger::initLog("MixCoder", kStderr);
 
     int videoBitrate = 40;
     int videoWidth = 640;
     int videoHeight = 480;
 
-    int audioBitrate = 16; //16kbps
+    int audioBitrate = 64; //64kbps
     int audioFrequency = 16000;
     
     MixCoder* mixCoder = new MixCoder(videoBitrate, videoWidth, videoHeight, audioBitrate, audioFrequency);

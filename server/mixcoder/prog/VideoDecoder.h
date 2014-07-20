@@ -1,10 +1,15 @@
 #ifndef __VIDEODECODER_H
 #define __VIDEODECODER_H
 
+extern "C" {
+#include <libavcodec/avcodec.h>    // required headers
+#include <libavformat/avformat.h>
+}
 #include "fwk/SmartBuffer.h"
 #include <queue>
 #include "CodecInfo.h"
 #include "MediaTarget.h"
+#include "RawData.h"
 
 //video decoder implementation, h264 only
 class VideoDecoder
@@ -16,7 +21,7 @@ class VideoDecoder
             av_register_all();
         }
     ~VideoDecoder();
-    virtual bool newAccessUnit( SmartPtr<AccessUnit> au, SmartPtr<SmartBuffer> plane[], int stride[], VideoStreamSetting* vInputSetting);
+    bool newAccessUnit( SmartPtr<AccessUnit> au, SmartPtr<VideoRawData> v);
     bool hasFirstFrameDecoded() { return bHasFirstFrameStarted; }
  private:
     void reset();

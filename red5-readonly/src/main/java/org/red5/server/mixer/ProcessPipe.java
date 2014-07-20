@@ -92,7 +92,7 @@ public class ProcessPipe implements SegmentParser.Delegate{
     		InputObject inputObject = new InputObject(idLookupTable, streamName, msgType, buf, eventTime, dataLen);
     		if(bSaveToDisc) {
         	    try {
-        	    	//log.info("=====>Writing binary file... totalLen={} size={}", totalLen, seg.limit());
+        	    	//log.info("=====>Writing binary file... outputFile={}", this.outputFilePath);
         	    	if( outputFile_ == null ) {
             	    	outputFile_ = new BufferedOutputStream(new FileOutputStream(this.outputFilePath));
         	    	}

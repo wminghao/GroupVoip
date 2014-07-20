@@ -1,4 +1,3 @@
-
 #ifndef __CODECINFOCOMMON_H__
 #define __CODECINFOCOMMON_H__
 
@@ -91,6 +90,37 @@ typedef enum
     k16kHz = 5
 }AudioRate;
 
+inline int getFreq(AudioRate ar) {
+    int freq = 0;
+    switch(ar) {
+    case k5Dot5kHz: {
+        freq = 5512;
+        break;
+    }
+    case k11kHz: {
+        freq = 11025;
+        break;
+    }
+    case k22kHz: {
+        freq = 22050;
+        break;
+    }
+    case k44kHz: {
+        freq = 44100;
+        break;
+    }
+    case k8kHz: {
+        freq = 8000;
+        break;
+    }
+    case k16kHz: {
+        freq = 16000;
+        break;
+    }
+    }
+    return freq;
+}
+
 typedef enum
 {
     kSnd8Bit,
@@ -102,6 +132,10 @@ typedef enum
     kSndMono,
     kSndStereo
 }AudioType;
+
+inline int getNumChannels(AudioType at) {
+    return (at==kSndMono)?1:2;
+}
 
 typedef enum
 {

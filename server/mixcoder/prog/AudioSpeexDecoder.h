@@ -22,12 +22,10 @@ class AudioSpeexDecoder:public AudioDecoder
 
         speex_decoder_ctl(decoder_, SPEEX_GET_FRAME_SIZE, &sampleSize_);  
         outputFrame_ = (short*)malloc(sizeof(short)*sampleSize_);
-
-        hasFirstFrameDecoded_ = false;
     }
     virtual ~AudioSpeexDecoder();
     //send it to the decoder
-    virtual SmartPtr<SmartBuffer>  newAccessUnit( SmartPtr<AccessUnit> au, AudioStreamSetting* aInputSetting);
+    virtual void newAccessUnit( SmartPtr<AccessUnit> au, AudioStreamSetting* rawAudioSetting);
     
  private:
     /*Holds the state of the decoder*/

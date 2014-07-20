@@ -27,7 +27,7 @@
 			private var connectionSub:NetConnection;
 			private var container:UIComponent;
 			private var mic:Microphone;
-			private var serverIp:String = "192.168.2.109";//"54.186.122.59";//"192.168.0.61";
+			private var serverIp:String = "54.186.122.59";//"192.168.2.109";//"54.186.122.59";//"192.168.0.61";
 			private var mixedStreamPrefix:String = "__mixed__";
 			private var karaokeStream:String = "__mixed__karaoke";
 			
@@ -43,7 +43,11 @@
 			private var songSet:ArrayCollection = new ArrayCollection(
 				[   
 					{value:"Please Pick A Song", code:"Please Pick A Song"},
-					{value:"Yi Jian Mei", code:"Yi Jian Mei"},
+					{value:"Yi Jian Mei", code:"Yi Jian Mei"},	
+					{value:"Shanghai Tan", code:"Shanghai Tan"},
+					{value:"Juan Zhu Lian", code:"Juan Zhu Lian"},
+					{value:"Pu Sa Man", code:"Pu Sa Man"},	
+					{value:"You are the sunshine of my life", code:"You are the sunshine of my life"},
 					{value:"Cannot take my eyes off of you", code:"Cannot take my eyes off of you"},	
 					{value:"Bella Ciao", code:"Bella Ciao"},	
 					{value:"Let It Go", code:"Let It Go"},	
@@ -54,8 +58,7 @@
 					{value:"Top of the world", code:"Top of the world"},
 					{value:"Take back the night", code:"Take back the night"},
 					{value:"Fallen Kingdom", code:"Fallen Kingdom"},	
-					{value:"Lets have some fun in minecraft", code:"Lets have some fun in minecraft"},	
-					{value:"Gregory", code:"Gregory"},	
+					{value:"Lets have some fun in minecraft", code:"Lets have some fun in minecraft"},
 					{value:"The Little Birch Tree", code:"The Little Birch Tree"},	
 					{value:"It's a small world", code:"It's a small world"},	
 					{value:"Rassa seya eh", code:"Rassa seya eh"},	
@@ -170,13 +173,14 @@
 					video.x = video.y = 0;
 					video.visible = true;
 					
-					//mic.rate = 8;
-					mic.setLoopBack(CheckBox(loopback).selected);
+					mic.setSilenceLevel(0,200);
+					//Speex settings
 					mic.encodeQuality = 10; //best quality
 					mic.codec = SoundCodec.SPEEX; 
 					mic.framesPerPacket = 1; //20ms per frame, instead of 40ms per frame
-					mic.setSilenceLevel(0,200);
-					readVolume();
+					
+					detectLoopback();
+					detectVolume();
 					streamPub.attachAudio(mic);
 					//Alert.show("camera width="+camera.width);
 				}
@@ -292,10 +296,15 @@
 				}
 			}
 			private function onLoopBack(evt:MouseEvent):void {
-				if(CheckBox(evt.target).selected) {
+				detectLoopback();
+			}
+			private function detectLoopback():void {
+				if(CheckBox(loopback).selected) {
 					mic.setLoopBack(true);
+					mic.setUseEchoSuppression(true);
 				} else {
 					mic.setLoopBack(false);
+					mic.setUseEchoSuppression(false);
 				}
 			}
 			//server call to client
@@ -350,7 +359,7 @@
 			}
 			
 			// Event handler function to display the scroll location.
-			private function readVolume():void {
+			private function detectVolume():void {
 				var volume:Number = volumeBar.value/volumeBar.maximum;
 				var micTransform:SoundTransform = mic.soundTransform;
 				status.text = "volume was set to be "+micTransform.volume+" will be set to "+volume;
@@ -358,7 +367,7 @@
 				mic.soundTransform = micTransform;
 			}
 			private function volumeScroll():void {
-				readVolume();
+				detectVolume();
 			}
 		]]>
 	</fx:Script>
@@ -379,7 +388,7 @@
 			</s:layout>
 			<s:HSlider id="volumeBar" width="191" height="12" maximum="10" minimum="0" value="5" change="volumeScroll();"/>
 			<s:CheckBox id="loopback" height="17" label="Mic Loopback Adjust Volume"
-						click="onLoopBack(event);" fontSize="14" selected="false"/>
+						click="onLoopBack(event);" fontSize="14" selected="true"/>
 		</s:Group>
 		
 		<s:Label id="statusText" width="65" height="26" fontSize="20" paddingLeft="5" paddingTop="5"
