@@ -1,5 +1,4 @@
 
-
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ~ Competitions in the on-line Karaoke Space
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -37,12 +36,38 @@ o 9158KTV:
 
     What did singner hear from the head phones?
 
-  - channels 2085, 3649, 
+  - channels 2085, 3649, 2873
 
   - not many good channes
-    fewer good singers (maybe because I am trying in the morning?)
+    fewer good singers
+    * 12PM better
 
+~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~ 
+. Smart Phone App for Karaoke 
+~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~
 
+  * Just sing it
+  * Smule Sing
+  * Yokee
+  * Disney Karaoke
+  * Singsnap
+  * Stage it (Live)
+  * Backstage Pass
+
+................................................................................
+~ Smule Sing 
+................................................................................
+
+................................................................................
+~ Yokee 
+................................................................................
+
+o in-app ads at the bottom of the initial page
+o MV got downloaded first
+  - Quality is good
+  - no delay issue
+
+o record, save, and share
 
 
 
