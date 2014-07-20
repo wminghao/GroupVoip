@@ -25,14 +25,14 @@ Founders:
 - Howard Minghao Wang
 
   * BS in CS, FuDang University
-  * MS in CS, UCSC
+  * MS in CS, University of California, Santa Cruz 
   * Team Leader and Sr. Engineer, FlashMobile/FlashPlayer Department, Adobe
   * Principal Engineer, Veetle Inc.
 
 - Jian Raymond Li
 
   * BS, Beijing University
-  * PhD, UIUC
+  * PhD, University of Illinois at Urbana-Champaign (UIUC)
   * Technical Leader, and Engineering Manager, Cisco Systems, Inc
   * Principal Engineer, Futurewei Technology, Huawei USA 
   * MTS, Riverbed Technology
@@ -47,28 +47,31 @@ We are targeting at providing a Internet-based platform for music lovers
 to sing Karaoke on-line and social with their friends, families, 
 and people of similar interest.
 
+TODO - to add more description here.
+
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ~ Target Market and Customer Segments 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The general population who listen to songs and sing as a hobby are our 
-targeted customer base. The primary segment in this consumer base 
-are the teenage girls who spend significant amount of time following popular 
-music and practicing singing.  
+The general population who listen to songs and sing as a hobby or sing during
+social occasions are our targeted customer base. The primary segment in this 
+consumer base are the teenage girls who spend significant amount of time 
+following popular music and practicing singing.  
 
 Our service will start in the US where there no established service of 
 the same kind.
 
-Our basic service will be provided free to the general public while 
+Our basic service will be provided for free to the general public while 
 premiums will be collected over advanced services which require
-- higher quality of delver in terms of lower latency
-- recoding that requires storage on our servers
+- higher quality of delvery in terms of lower latency and/or higher 
+  MV resolution
+- recording that requires storage on our servers
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ~ Key Assets 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-We have the following key assets:
+We have acquired the following key assets at the time:
 
 1) Our technologies developed to deliver mixed Video/Audio streams over the 
    Internet.
@@ -82,6 +85,8 @@ like youtube. The copyright issues should have been addressed already.
 
 (TODO - need to research over this)
 
+Moving forward, we plan to form partnership with potential content providers.
+
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ~ Business Costs and Revenue Sources 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -90,6 +95,7 @@ like youtube. The copyright issues should have been addressed already.
   1) Technical Talents
   2) Operation Cost in terms of BW and computing powers for running the video 
      processing and stream dispatching servers 
+  3) Possible promotion of the web sites and Smart phone applications
  
 - Revenue:
   1) Premiums paid for value-added service 
