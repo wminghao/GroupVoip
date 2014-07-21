@@ -67,4 +67,28 @@
 - Ways to improve the audio quality?
 
 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~ Technology Barriers  
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+1) Client Audio 
+
+   We have the capabilty to develop client plug-in. For good user experience
+   one needs to be developed which embeds seemlessly into the browsers
+   and minimize Audio latency. 
+
+2) Video mixing. Hear voices from multiple channels at the same time.  
+
+   Q. Do I really need to mixing?
+      Why not just sending two streams - one for MV, one for singer picture.
+
+3) Mobile support.
+
+   Algoithms for B/W detection and frame dropping.
+
+4) Scalability on the server side. 
+
+ 
+
+
 
