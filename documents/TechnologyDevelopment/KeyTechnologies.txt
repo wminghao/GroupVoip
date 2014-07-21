@@ -78,6 +78,9 @@
    and minimize Audio latency. 
 
 2) Video mixing. Hear voices from multiple channels at the same time.  
+   This can futher enhance singing experiences by
+   - enabling multiple parties to sing in turns
+   - embedding singer image into the background MV
 
    Q. Do I really need to mixing?
       Why not just sending two streams - one for MV, one for singer picture.
@@ -89,6 +92,5 @@
 4) Scalability on the server side. 
 
  
-
 
 
