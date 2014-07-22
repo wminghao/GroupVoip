@@ -73,6 +73,10 @@ bool VideoDecoder::newAccessUnit( SmartPtr<AccessUnit> au, SmartPtr<VideoRawData
         inWidth_ = 640;
         inHeight_ = 480;
 
+        v->rawVideoSettings_.vcid = kAVCVideoPacket;
+        v->rawVideoSettings_.width = inWidth_;
+        v->rawVideoSettings_.height =inHeight_; 
+
         LOG("Video decoded sps pps, len=%ld, ts=%d\n", spspps_->dataLength(), au->pts);
     } else if( au->sp == kRawData ) {
         assert(inWidth_ && inHeight_);
@@ -112,14 +116,13 @@ bool VideoDecoder::newAccessUnit( SmartPtr<AccessUnit> au, SmartPtr<VideoRawData
                     v->rawVideoSettings_.height =inHeight_; 
 
                     bIsValidFrame = true;
-                    bHasFirstFrameStarted = true;
-                    
-                    //LOG( "video decoded pkt size=%d size=640*480 ts=%d, streamId=%d\n", pkt.size, au->pts, streamId_);
-                    /*
-                    LOG( "video decoded pkt size=%d stride0=%d, stride1=%d, stride2=%d, width=%d, height=%d, ts=%d\n", pkt.size, 
-                             frame_->linesize[0], frame_->linesize[1], frame_->linesize[2],
-                             frame_->width, frame_->height, au->pts);
-                    */
+                    if( !bHasFirstFrameStarted ) {
+                        bHasFirstFrameStarted = true;
+                        firstFramePts_ = au->pts;
+                    }
+                    LOG( "video decoded pkt size=%d stride0=%d, stride1=%d, stride2=%d, width=%d, height=%d, ts=%d, streamId_=%d\n", pkt.size, 
+                         frame_->linesize[0], frame_->linesize[1], frame_->linesize[2],
+                         frame_->width, frame_->height, au->pts, streamId_);
                 } else {
                     LOG( "DIDNT get video frame\n");
                 }

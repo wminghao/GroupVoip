@@ -30,6 +30,9 @@ class AudioResampler
     }
     ~AudioResampler(){
         reset();
+        while( mp3FrameList_.size() > 0 ) {
+            mp3FrameList_.pop_back();
+        }
     }
     
     //return success or failure
@@ -53,9 +56,6 @@ class AudioResampler
         if( resamplerState_) {            
             src_delete( resamplerState_ );
             resamplerState_ = 0;
-        }
-        while( mp3FrameList_.size() > 0 ) {
-            mp3FrameList_.pop_back();
         }
         remainingSampleCnt_ = 0;
     }

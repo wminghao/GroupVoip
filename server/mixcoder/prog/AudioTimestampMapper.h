@@ -12,18 +12,16 @@ class AudioTimestampMapper
     AudioTimestampMapper() : startingTimestamp_(MAX_INT), cnt_(0), curTimestamp_(MAX_INT) {}
     ~AudioTimestampMapper() {}
 
-    bool shouldAdjustTs(u32 ts) {
-        return ts > ( curTimestamp_ + 100 );
-    }
-
     u32 getNextTimestamp(u32 ts) {
         if( MAX_INT == startingTimestamp_ ) {
             startingTimestamp_ = ts;
             cnt_ = 0;
+            LOG("-----------Timestamp Init, startingTimestamp_=%.2f", startingTimestamp_);
+
         } else {
             //if timestamp has drifted more than 100ms, reset startingTimestamp_ and cnt
-            if( shouldAdjustTs( ts ) ) {
-                LOG("-----------Timestamp JUMP, oldStartingTimestamp_=%d, newStartingTimestamp_=%d\r\n", startingTimestamp_, ts);
+            if( ts > ( curTimestamp_ + 100 ) ) {
+                LOG("-----------Timestamp JUMP, oldStartingTimestamp_=%.2f, newStartingTimestamp_=%d\r\n", startingTimestamp_, ts);
                 startingTimestamp_ = ts;
                 cnt_ = 0;
             }
