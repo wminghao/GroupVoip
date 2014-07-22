@@ -101,8 +101,8 @@ bool readData(u8* data, u32 len)
                     
                     //handle mask here 
                     numStreams_ = count_bits(streamMask);
-                    printf( "---streamMask=0x%x\r\n", streamMask);
-                    printf( "---numStreams_=%d\r\n", numStreams_);
+                    //printf( "---streamMask=0x%x\r\n", streamMask);
+                    //printf( "---numStreams_=%d\r\n", numStreams_);
 
                     int index = 0;
                     while( index < (int)MAX_XCODING_INSTANCES ) {

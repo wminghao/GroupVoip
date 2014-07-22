@@ -8,6 +8,7 @@ extern "C" {
 #include <assert.h>
 #include <list>
 #include <stdlib.h>
+#include "fwk/SmartBuffer.h"
 
 
 //each mp3 frame, contains 1152 samples
@@ -36,8 +37,8 @@ class AudioResampler
 
     //get the next batch of mp3 1152 samples
     bool isNextRawMp3FrameReady();
-    //return a buffer, must be freed outside
-    u8* getNextRawMp3Frame(u32& totalBytes);
+    //return a smartbuffer
+    SmartPtr<SmartBuffer> getNextRawMp3Frame(u32& totalBytes);
 
     //when a timestamp jump happens, discard the previous resampler residual
     void discardResidual();
@@ -54,9 +55,7 @@ class AudioResampler
             resamplerState_ = 0;
         }
         while( mp3FrameList_.size() > 0 ) {
-            u8* res = mp3FrameList_.back();
             mp3FrameList_.pop_back();
-            free( res );
         }
         remainingSampleCnt_ = 0;
         samplesToSkip_ = 0;
@@ -79,7 +78,7 @@ class AudioResampler
     int outputChannels_;
 
     //linked list of mp3 raw frame of 1152 samples
-    std::list<u8*> mp3FrameList_; // integer list
+    std::list<SmartPtr<SmartBuffer> > mp3FrameList_; // integer list
     short resampleShortRemaining_[MP3_FRAME_SAMPLE_SIZE * 2]; //save reamining data from the previous read
     u32 remainingSampleCnt_;
     u32 samplesToSkip_;
