@@ -1,0 +1,103 @@
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~ Competitions in the on-line Karaoke Space
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+................................................................................
+~ 9158KTV 
+................................................................................
+
+o 9158KTV: 
+  - Instructions on how to use the 9158KTV 
+    * http://v.youku.com/v_show/id_XMjI2NTQ4ODU2.html
+
+  - client app not integrated in the browser
+    * not as easy to use as our proposed solutions
+
+................................................................................
+~ Changba 
+................................................................................
+
+* http://changba.com
+
+* 唱吧(changba)用互联网思维做线下KTV
+  - http://www.huxiu.com/article/37754/1.html
+
+................................................................................
+~ YY.com
+................................................................................
+
+  - teenage girls singing, which got broadcasted via the Internet
+  - no spearate MV available to viewers
+
+  - one revenue source, viwers paying for flower etc
+
+  - How did the MV shown to the singers? Do they get their own?
+
+    What did singner hear from the head phones?
+
+  - channels 2085, 3649, 2873
+
+  - not many good channes
+    fewer good singers
+    * 12PM better
+
+~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~ 
+. Smart Phone App for Karaoke 
+~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~
+
+  * Just sing it
+  * Smule Sing
+  * Yokee
+  * Disney Karaoke
+  * Singsnap
+  * Stage it (Live)
+  * Backstage Pass
+
+................................................................................
+~ Smule Sing 
+................................................................................
+
+* People can sing togehter
+* got stuck sometimes
+* Quality of singing is poort
+* Feature to add sound effects
+* Example
+  "Call me maybe"
+  - joined someone else's singing
+* Nice to have the original songs
+* Tried searching for "Polic", "Joan Baez", dont' see them
+  - no problem with Youtube of cause
+
+................................................................................
+~ Yokee 
+................................................................................
+
+o in-app ads at the bottom of the initial page
+o MV got downloaded first
+  - Quality is good
+  - no delay issue
+
+o record, save, and share
+
+
+................................................................................
+~ Singsnap 
+................................................................................
+
+o Watch and listen
+o Sing, Record and upload
+o Looks kinda primitive
+o Ads at the bottome of the app
+  - for example, Google Search App
+
+................................................................................
+~ Disney Karaoke 
+................................................................................
+
+* Registration page has obvious bug
+* Recoding locally
+  - nice and no latency
+
+
+

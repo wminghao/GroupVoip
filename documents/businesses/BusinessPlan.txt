@@ -1,76 +1,105 @@
 ################################################################################
 #
-#    InnoVideo Laboratory, Inc.
+#    I3 Media Laboratory, Inc.
 #
 ################################################################################
 
 - Company Introduction
-- Technology Advantages
-- Market Analysis
+- Value Proposition
+- Target Market and Customer Segments 
+- Key Assets
+- Business Costs and Revenue Sources
+- Competition Analysis
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ~ Company Introduction
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Mission:
-- Working on innovative video solutions.
+
+- Working on innovative, interactive, and Internet-based Video solutions to 
+  make people's life and work more enjoyable.
 
 Founders:
 
 - Howard Minghao Wang
 
   * BS in CS, FuDang University
-  * MS in CS, UCSC
+  * MS in CS, University of California, Santa Cruz 
   * Team Leader and Sr. Engineer, FlashMobile/FlashPlayer Department, Adobe
   * Principal Engineer, Veetle Inc.
 
 - Jian Raymond Li
 
   * BS, Beijing University
-  * PhD, UIUC
+  * PhD, University of Illinois at Urbana-Champaign (UIUC)
   * Technical Leader, and Engineering Manager, Cisco Systems, Inc
   * Principal Engineer, Futurewei Technology, Huawei USA 
   * MTS, Riverbed Technology
 
 Company History:
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-~ Technology Advantages 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-1) Adaptability. Our solution works at a wide range of the bandwidth conditions 
-   between publishers and viewers. Our solution also works under changing network 
-   conditions. Bandwidth supported are between 64Kbps to 800Kbps currently.
-
-2) Cross platforms. Our client code can be easily ported to different platforms, 
-   namely, Mac, Windows, Linux, iOS, Android etc.
-
-3) Light-weight clients. Video/audio processing and mixing are put on the 
-   servers.  It allows low-end devices such as google glass and iWatch 
-   to be used.
-
-4) Scalable, high-quality video chat services. VGA 640*480. 32 people 
-   conferencing per session with unlimited number f viewing streams.
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-~ Product Description
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Our tool/platform allows people to sing following on-screen lyrics. 
-It's an on-line form of the well-known Karaoke system.
-
-(TODO)
-Tool = anyone can use at any time.
-Platform = social, public platform, i.e., YY, spreecast.
-
-(TODO) - Raymond will expand to cover the 3 forms) 
-1) Product core value. (What)
-2) Use case. (scenario)
-
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-ADD 2 chapters
+~ Value Proposition 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-1) Customer segmentation. (Who)
+We are targeting at providing a Internet-based platform for music lovers 
+to sing Karaoke on-line and social with their friends, families, 
+and people of similar interest.
+
+TODO - to add more description here.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~ Target Market and Customer Segments 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The general population who listen to songs and sing as a hobby or sing during
+social occasions are our targeted customer base. The primary segment in this 
+consumer base are the teenage girls who spend significant amount of time 
+following popular music and practicing singing.  
+
+Our service will start in the US where there no established service of 
+the same kind.
+
+Our basic service will be provided for free to the general public while 
+premiums will be collected over advanced services which require
+- higher quality of delvery in terms of lower latency and/or higher 
+  MV resolution
+- recording that requires storage on our servers
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~ Key Assets 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+We have acquired the following key assets at the time:
+
+1) Our technologies developed to deliver mixed Video/Audio streams over the 
+   Internet.
+ 
+2) Technical expertise our founders have accumulated in Video and networking 
+   areas over the years working for leading technology companies in the Silicon 
+   Valley.
+
+The contents we need can be obtained for free initially from other websites
+like youtube. The copyright issues should have been addressed already.
+
+(TODO - need to research over this)
+
+Moving forward, we plan to form partnership with potential content providers.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~ Business Costs and Revenue Sources 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Major Costs
+  1) Technical Talents
+  2) Operation Cost in terms of BW and computing powers for running the video 
+     processing and stream dispatching servers 
+  3) Possible promotion of the web sites and Smart phone applications
+ 
+- Revenue:
+  1) Premiums paid for value-added service 
+  2) Advertisements
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ~ Competition Analysis 
@@ -100,5 +129,21 @@ ADD 2 chapters
   * Stage it (Live)
   * Backstage Pass
   None of them offer a real-time solution as we do.
+
+TODO - to go through these website.
+
+- Existing On-line Karaoke services in other markets
+
+  There are successful on-line Karaoke services provided in China.
+  While their service is available to customer in US, we see several
+  major factors holding them back from acceptance in the US markets
+  1) inferior technologies 
+  2) Language and Culture differences
+  3) extra latency due to physical distance between US markets and
+     video severs located in China. (not noticable for broadcast)
+
+  Major competing on-line Karaoke service in China markets
+  - 9158 
+  - huxiu
 
 
