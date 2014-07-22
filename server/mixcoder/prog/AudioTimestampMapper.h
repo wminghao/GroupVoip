@@ -2,6 +2,7 @@
 #define __AUDIOTIMESTAMP_MAPPER__
 
 #include "AudioResampler.h"
+#include "fwk/log.h"
 
 #define MAX_INT 0xffffffff
 //audio timestamp mapper from #ofsamples to ms
@@ -22,6 +23,7 @@ class AudioTimestampMapper
         } else {
             //if timestamp has drifted more than 100ms, reset startingTimestamp_ and cnt
             if( shouldAdjustTs( ts ) ) {
+                LOG("-----------Timestamp JUMP, oldStartingTimestamp_=%d, newStartingTimestamp_=%d\r\n", startingTimestamp_, ts);
                 startingTimestamp_ = ts;
                 cnt_ = 0;
             }

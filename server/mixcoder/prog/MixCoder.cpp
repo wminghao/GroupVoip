@@ -34,7 +34,7 @@ MixCoder::MixCoder(int vBitrate, int width, int height,
 
     if( bUseSpeex_ ) {
         aOutputSetting.acid = kSpeex;
-    } //otherwise, it's 16kHz mp3 audio(customized format)
+    } //otherwise, it's 44.1kHz mp3 audio
 
     for( u32 i = 0; i < MAX_XCODING_INSTANCES+1; i++ ) {
         if( bUseSpeex_ ) {

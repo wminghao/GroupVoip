@@ -176,7 +176,6 @@ void FLVSegmentParser::onFLVFrameParsed( SmartPtr<AccessUnit> au, int index )
         //if there is a timestamp jump, restart the resampler
         if( audioTsMapper_[index].shouldAdjustTs( origPts ) ) {
             audioDecoder_[index]->discardResamplerResidual();
-            LOG("-----------Timestamp JUMP\r\n");
         }
 
         //read a couple of 1152 samples/frame here
