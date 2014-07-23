@@ -13,7 +13,7 @@ bool AudioResampler::resample(u8* inputData, u32 sampleSize)
         //direct copy w/o resampling
         memcpy(resampleShortBufOut_, inputData, totalInputBytes);
         sampleCount = sampleSize;
-        LOG("======no need for resampling, copy over sampleSize=%d\r\n", sampleSize);        
+        //LOG("======no need for resampling, copy over sampleSize=%d\r\n", sampleSize);        
     } else {
         //convert to float
         src_short_to_float_array( (const short* )inputData,

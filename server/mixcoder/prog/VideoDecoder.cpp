@@ -120,9 +120,11 @@ bool VideoDecoder::newAccessUnit( SmartPtr<AccessUnit> au, SmartPtr<VideoRawData
                         bHasFirstFrameStarted = true;
                         firstFramePts_ = au->pts;
                     }
+                    /*
                     LOG( "video decoded pkt size=%d stride0=%d, stride1=%d, stride2=%d, width=%d, height=%d, ts=%d, streamId_=%d\n", pkt.size, 
                          frame_->linesize[0], frame_->linesize[1], frame_->linesize[2],
                          frame_->width, frame_->height, au->pts, streamId_);
+                    */
                 } else {
                     LOG( "DIDNT get video frame\n");
                 }
