@@ -22,9 +22,9 @@ Mission:
 
 Founders:
 
-- Howard Minghao Wang
+- Minghao Howard Wang
 
-  * BS in CS, FuDang University
+  * BS in CS, Fudan University
   * MS in CS, University of California, Santa Cruz 
   * Team Leader and Sr. Engineer, FlashMobile/FlashPlayer Department, Adobe
   * Principal Engineer, Veetle Inc.
@@ -43,11 +43,19 @@ Company History:
 ~ Value Proposition 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-We are targeting at providing a Internet-based platform for music lovers 
-to sing Karaoke on-line and social with their friends, families, 
-and people of similar interest.
+We are providing a Internet-based platform for music lovers to sing Karaoke on-line and social with their friends, families, and people of similar interest.
 
-TODO - to add more description here.
+Our core values:
+
+1. High Entertainment
+
+Singing karaoke online over mobile or desktop should have the similar effect as singing
+in the professional karaoke room. We provide the excellent technology and user experience to enable it to achieve highly enjoyable entertainment value.
+
+2. Deep Interactivity
+
+Singing karaoke and video chatting in realtime with friends or fans achieves the perfect interaction, which standalone karaoke service or app does not allow. Our cross-platform video over IP solution makes it more fun to enjoy the service.
+
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ~ Target Market and Customer Segments 
@@ -55,7 +63,7 @@ TODO - to add more description here.
 
 The general population who listen to songs and sing as a hobby or sing during
 social occasions are our targeted customer base. The primary segment in this 
-consumer base are the teenage girls who spend significant amount of time 
+consumer base are the teenagers who spend significant amount of time 
 following popular music and practicing singing.  
 
 Our service will start in the US where there no established service of 
@@ -63,9 +71,10 @@ the same kind.
 
 Our basic service will be provided for free to the general public while 
 premiums will be collected over advanced services which require
-- higher quality of delvery in terms of lower latency and/or higher 
+- delivering higher quality video in terms of lower latency and/or higher 
   MV resolution
 - recording that requires storage on our servers
+- sending rewards/virtual gifts to each other for excellency in singing.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ~ Key Assets 
@@ -73,8 +82,8 @@ premiums will be collected over advanced services which require
 
 We have acquired the following key assets at the time:
 
-1) Our technologies developed to deliver mixed Video/Audio streams over the 
-   Internet.
+1) Our technologies developed to deliver realtime mixed Video/Audio streams over the 
+   Internet and mobile.
  
 2) Technical expertise our founders have accumulated in Video and networking 
    areas over the years working for leading technology companies in the Silicon 
@@ -128,6 +137,7 @@ Moving forward, we plan to form partnership with potential content providers.
   * Singsnap
   * Stage it (Live)
   * Backstage Pass
+  * Changba
   None of them offer a real-time solution as we do.
 
 TODO - to go through these website.
@@ -138,12 +148,11 @@ TODO - to go through these website.
   While their service is available to customer in US, we see several
   major factors holding them back from acceptance in the US markets
   1) inferior technologies 
-  2) Language and Culture differences
+  2) language and Culture differences
   3) extra latency due to physical distance between US markets and
-     video severs located in China. (not noticable for broadcast)
+     video severs located in China. (not noticeable for broadcast)
 
   Major competing on-line Karaoke service in China markets
   - 9158 
-  - huxiu
-
-
+  - yy
+  - kk
