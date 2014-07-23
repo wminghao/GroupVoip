@@ -49,13 +49,15 @@ Our core values:
 
 1. High Entertainment
 
-Singing karaoke online over mobile or desktop should have the similar effect as singing
-in the professional karaoke room. We provide the excellent technology and user experience to enable it to achieve highly enjoyable entertainment value.
+Singing karaoke online over mobile or desktop should have the similar effect as singing in the professional karaoke room. We provide the excellent audio+video technology and user experience to enable it to achieve highly enjoyable entertainment value.
 
 2. Deep Interactivity
 
 Singing karaoke and video chatting in realtime with friends or fans achieves the perfect interaction, which standalone karaoke service or app does not allow. Our cross-platform video over IP solution makes it more fun to enjoy the service.
 
+3. Social Environment
+
+Allowing users to share his/her singing with friends and/or fans. Allow friends to social online in realtime and offline at the same time.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ~ Target Market and Customer Segments 
