@@ -84,10 +84,10 @@ premiums will be collected over advanced services which require
 
 We have acquired the following key assets at the time:
 
-1) Our technologies developed to deliver realtime mixed Video/Audio streams over the 
-   Internet and mobile.
+1) Our technologies developed to deliver realtime mixed high-quality Video/Audio 
+   streams over the Internet and mobile.
  
-2) Technical expertise our founders have accumulated in Video and networking 
+2) Technical expertise our founders have accumulated in Video/Audio and networking 
    areas over the years working for leading technology companies in the Silicon 
    Valley.
 
@@ -103,6 +103,7 @@ Moving forward, we plan to form partnership with potential content providers.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - Major Costs
+
   1) Technical Talents
   2) Operation Cost in terms of BW and computing powers for running the video 
      processing and stream dispatching servers 
@@ -129,22 +130,21 @@ Moving forward, we plan to form partnership with potential content providers.
   Karaoke shops. The on-line solution helps to cut their cost while
   making the original contents more readily accessible to them. 
 
-- Existing Smart Phone Applications that Enable Karaoke
+- Existing Smart Phone Applications/Website that Enable Karaoke
 
   There are existing solution allows people to sing along: 
-  * Just sing it
-  * Smule Sing
-  * Yokee
-  * Disney Karaoke
-  * Singsnap
-  * Stage it (Live)
-  * Backstage Pass
-  * Changba
-  None of them offer a real-time solution as we do.
+  * Just sing it(Pure singing, no Karaoke)
+  * Smule Sing(Social network with karaoke)
+  * Yokee(Karaoke singing tool)
+  * Disney Karaoke(Disney music karaoke tool)
+  * Singsnap(Desktop karaoke singing tool)
+  * Backstage Pass(???)
+  * Changba (China's equivalent of Smule)
 
-TODO - to go through these website.
+  None of them offer a high interactivity real-time solution as we do. 
+  All of them provies an online platform or tool for people to sing.
 
-- Existing On-line Karaoke services in other markets
+- Existing Live On-line Karaoke services in other markets
 
   There are successful on-line Karaoke services provided in China.
   While their service is available to customer in US, we see several
@@ -155,6 +155,19 @@ TODO - to go through these website.
      video severs located in China. (not noticeable for broadcast)
 
   Major competing on-line Karaoke service in China markets
-  - 9158 
-  - yy
-  - kk
+  - 9158 (Video focused, up to 3 broadcasters to many)
+  - yy (Audio focused, 1 broadcaster to many)
+  - kk (Similiar to yy)
+
+- Our competitative advantage.
+
+-- Technology Barriers
+
+   1) Cutting-edge audio karaoke technology for singing.
+   2) HD realtime video over IP interactive singing rooms.
+   3) Seamless cross platform experience, mobile + desktop. (Pending patents)
+
+-- Market
+
+  1) US/Western world has a large population of untapped/underdeveloped music lovers
+  2) Teenagers have time, passion and energy to sing over the internet with friends/fans
