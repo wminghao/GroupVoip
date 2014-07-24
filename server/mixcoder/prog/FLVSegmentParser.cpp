@@ -232,7 +232,7 @@ bool FLVSegmentParser::readData(SmartPtr<SmartBuffer> input)
                     //handle mask here 
                     numStreams_ = count_bits(streamMask);
                     assert(numStreams_ < (u32)MAX_XCODING_INSTANCES);
-                    LOG( "---streamMask=0x%x\r\n", streamMask);
+                    //LOG( "---streamMask=0x%x\r\n", streamMask);
                     int index = 0;
                     while( index < (int)MAX_XCODING_INSTANCES ) {
                         u32 value = ((streamMask<<31)>>31); //mask off all other bits
@@ -280,7 +280,7 @@ bool FLVSegmentParser::readData(SmartPtr<SmartBuffer> input)
                     assert(curBuf_[1] == 0x0); //ignore the special property
 
                     memcpy(&curStreamLen_, curBuf_.data()+2, 4); //read the len
-                    LOG( "---curStreamCnt_=%d, curBuf_[0]=0x%x, curStreamId_=%d curStreamSource=%d, curStreamLen_=%d\r\n", curStreamCnt_, curBuf_[0], curStreamId_, curStreamSource, curStreamLen_);
+                    //LOG( "---curStreamCnt_=%d, curBuf_[0]=0x%x, curStreamId_=%d curStreamSource=%d, curStreamLen_=%d\r\n", curStreamCnt_, curBuf_[0], curStreamId_, curStreamSource, curStreamLen_);
 
                     curBuf_.clear();
                     curSegTagSize_ = 0;
@@ -300,7 +300,7 @@ bool FLVSegmentParser::readData(SmartPtr<SmartBuffer> input)
                         data += cpLen;
                     }
                     if ( curBuf_.size() >= curStreamLen_ ) {
-                        LOG( "---curStreamId_=%d curStreamLen_=%d\r\n", curStreamId_, curStreamLen_);
+                        //LOG( "---curStreamId_=%d curStreamLen_=%d\r\n", curStreamId_, curStreamLen_);
                         //read the actual buffer
                         SmartPtr<SmartBuffer> curStream = new SmartBuffer( curStreamLen_, curBuf_.data());
                         parser_[curStreamId_]->readData(curStream); 
