@@ -170,8 +170,8 @@ public class GroupMixer implements SegmentParser.Delegate, KaraokeGenerator.Dele
             			//send delayedKaraoke to mixer
             			if( isDelayedKaraoke ) {
                 			IoBuffer buf = null;
-        					if (msg instanceof IStreamData && (buf = ((IStreamData<?>) msg).getData()) != null) {
-        						pushInputMessage(MIXED_STREAM_PREFIX+KARAOKE_DELAYED_STREAM_NAME, msgType, buf, msgTimestamp );
+        					if (msgEvent instanceof IStreamData && (buf = ((IStreamData<?>) msgEvent).getData()) != null) {
+        						pushInputMessage(KARAOKE_DELAYED_STREAM_NAME, msgType, buf, msgTimestamp );
         					}
             			}            			
             			break;
@@ -190,8 +190,8 @@ public class GroupMixer implements SegmentParser.Delegate, KaraokeGenerator.Dele
             			//send delayedKaraoke to mixer
             			if( isDelayedKaraoke ) {
                 			IoBuffer buf = null;
-        					if (msg instanceof IStreamData && (buf = ((IStreamData<?>) msg).getData()) != null) {
-        						pushInputMessage(MIXED_STREAM_PREFIX+KARAOKE_DELAYED_STREAM_NAME, msgType, buf, msgTimestamp );
+        					if (msgEvent instanceof IStreamData && (buf = ((IStreamData<?>) msgEvent).getData()) != null) {
+        						pushInputMessage(KARAOKE_DELAYED_STREAM_NAME, msgType, buf, msgTimestamp );
         					}
             			} 
             			break;
