@@ -47,7 +47,7 @@ public class InputObject {
         	if ( mixerId != -1 ) {     
         		int dataLen = flvFrame.limit();   	
         		int flvFrameLen = 11 + dataLen + 4;
-        		int segHeaderLen = 8 + 6*(result[1]-1); //additional headers, excluding all-in-one message
+        		int segHeaderLen = 8 + 6*result[1]; //additional headers
         		int totalLen = flvFrameLen+segHeaderLen;
         		flvSegment = ByteBuffer.allocate(totalLen); //TODO direct?
         		flvSegment.order(ByteOrder.LITTLE_ENDIAN);  // to use little endian
