@@ -19,6 +19,7 @@ import org.red5.server.net.rtmp.message.Constants;
 import org.red5.server.net.rtmp.message.Header;
 import org.red5.server.net.rtmp.message.Packet;
 import org.red5.server.service.PendingCall;
+import org.red5.server.stream.IStreamData;
 import org.slf4j.Logger;
 
 import java.nio.ByteBuffer;
@@ -123,10 +124,10 @@ public class GroupMixer implements SegmentParser.Delegate, KaraokeGenerator.Dele
     {
     	int streamId = idLookupTable.lookupStreamId(mixerId);
     	//log.info("=====>onFrameParsed mixerId {} len {} streamName {}", mixerId, len, streamName );
-    	onFrameGenerated( streamId, frame, flvFrameLen );
+    	onFrameGenerated( streamId, frame, flvFrameLen, false );
     }
     
-    private void onFrameGenerated( int streamId, ByteBuffer frame, int flvFrameLen) {	
+    private void onFrameGenerated( int streamId, ByteBuffer frame, int flvFrameLen, boolean isDelayedKaraoke) {	
     	if ( streamId != -1 ) {
     		byte[] flvFrame = frame.array();
     		int curIndex = 0;
@@ -166,6 +167,13 @@ public class GroupMixer implements SegmentParser.Delegate, KaraokeGenerator.Dele
             			Packet msg = new Packet(msgHeader, msgEvent);
             			conn.handleMessageReceived(msg);
             			
+            			//send delayedKaraoke to mixer
+            			if( isDelayedKaraoke ) {
+                			IoBuffer buf = null;
+        					if (msgEvent instanceof IStreamData && (buf = ((IStreamData<?>) msgEvent).getData()) != null) {
+        						pushInputMessage(KARAOKE_DELAYED_STREAM_NAME, msgType, buf, msgTimestamp );
+        					}
+            			}            			
             			break;
             		}
             		case Constants.TYPE_VIDEO_DATA:
@@ -178,6 +186,14 @@ public class GroupMixer implements SegmentParser.Delegate, KaraokeGenerator.Dele
             			
             			Packet msg = new Packet(msgHeader, msgEvent);
             			conn.handleMessageReceived(msg);
+            			
+            			//send delayedKaraoke to mixer
+            			if( isDelayedKaraoke ) {
+                			IoBuffer buf = null;
+        					if (msgEvent instanceof IStreamData && (buf = ((IStreamData<?>) msgEvent).getData()) != null) {
+        						pushInputMessage(KARAOKE_DELAYED_STREAM_NAME, msgType, buf, msgTimestamp );
+        					}
+            			} 
             			break;
             		}
         
@@ -375,7 +391,7 @@ public class GroupMixer implements SegmentParser.Delegate, KaraokeGenerator.Dele
 	public void onKaraokeFrameParsed(ByteBuffer frame, int len, boolean bIsDelayed) {
 		//either send it to the original stream or delayed stream.
 		int streamId = idLookupTable.lookupStreamId(bIsDelayed?KARAOKE_DELAYED_STREAM_NAME:KARAOKE_ORIG_STREAM_NAME);
-		onFrameGenerated(streamId, frame, len);
+		onFrameGenerated(streamId, frame, len, bIsDelayed);
 	}
 
 	@Override

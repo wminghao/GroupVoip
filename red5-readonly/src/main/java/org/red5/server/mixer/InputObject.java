@@ -30,6 +30,7 @@ public class InputObject {
 		flvFrame.order(ByteOrder.LITTLE_ENDIAN);  // to use little endian
 		byte[] inBuf = new byte[dataLen];
 		buf.get(inBuf);
+		buf.flip();
 		this.flvFrame.put(inBuf, 0, dataLen);
 		this.flvFrame.flip();
 		this.eventTime = eventTime;
@@ -46,7 +47,7 @@ public class InputObject {
         	if ( mixerId != -1 ) {     
         		int dataLen = flvFrame.limit();   	
         		int flvFrameLen = 11 + dataLen + 4;
-        		int segHeaderLen = 8 + 6*(result[1]-1); //additional headers, excluding all-in-one message
+        		int segHeaderLen = 8 + 6*result[1]; //additional headers
         		int totalLen = flvFrameLen+segHeaderLen;
         		flvSegment = ByteBuffer.allocate(totalLen); //TODO direct?
         		flvSegment.order(ByteOrder.LITTLE_ENDIAN);  // to use little endian
@@ -89,7 +90,7 @@ public class InputObject {
         			}
         		}
         		flvSegment.flip();
-        		log.info("=====>in message from {} mixerid {} type {} ts {} len {} totalLen {} on thread: {}", streamName, mixerId, (msgType==0x09)?"video":"audio", eventTime, dataLen, totalLen, Thread.currentThread().getName());
+        		//log.info("=====>in message from {} mixerid {} type {} ts {} len {} totalLen {} on thread: {}", streamName, mixerId, (msgType==0x09)?"video":"audio", eventTime, dataLen, totalLen, Thread.currentThread().getName());
         		return flvSegment;
         	}
 		}
