@@ -60,10 +60,10 @@ SmartPtr<SmartBuffer> AudioMp3Encoder::encodeAFrame(SmartPtr<SmartBuffer> input)
             int paddingSize = lame_encode_flush_nogap(lgf_, (u8*)encodedBits_+encodedSize, MAX_ENCODED_BYTES-encodedSize);
             encodedSize += paddingSize;
            
-            LOG("AudioMp3Encoder lame encoded pkt size=%d sample size=%d\n", encodedSize, sampleSize); 
+            //LOG("AudioMp3Encoder lame encoded pkt size=%d sample size=%d\n", encodedSize, sampleSize); 
             result = new SmartBuffer( encodedSize, encodedBits_);
         } else {
-            LOG("*** nothing encoded AudioMp3Encoder lame encoded pkt size=%d sample size=%d\n", encodedSize, sampleSize); 
+            //LOG("*** nothing encoded AudioMp3Encoder lame encoded pkt size=%d sample size=%d\n", encodedSize, sampleSize); 
         }
     }
     return result;
