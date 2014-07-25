@@ -133,20 +133,19 @@ Moving forward, we plan to form partnership with potential content providers.
 - Existing Smart Phone Applications/Website that Enable Karaoke
 
   There are existing solution allows people to sing along: 
-  * Just sing it(Pure singing, no Karaoke)
-  * Smule Sing(Social network with karaoke)
-  * Yokee(Karaoke singing tool)
-  * Disney Karaoke(Disney music karaoke tool)
-  * Singsnap(Desktop karaoke singing tool)
-  * Backstage Pass(???)
-  * Changba (China's equivalent of Smule)
+  * Just sing it(Pure singing, no Karaoke, target everyone)
+  * Smule Sing(Social network with karaoke, target teens)
+  * Yokee(Karaoke singing tool, target teens)
+  * Disney Karaoke(Disney music karaoke tool, target teens)
+  * Singsnap(karaoke singing tool, target adults)
+  * Changba (China's Instagram of karaoke)
 
   None of them offer a high interactivity real-time solution as we do. 
   All of them provies an online platform or tool for people to sing.
 
 - Existing Live On-line Karaoke services in other markets
 
-  There are successful on-line Karaoke services provided in China.
+  There are successful live on-line Karaoke services provided in China.
   While their service is available to customer in US, we see several
   major factors holding them back from acceptance in the US markets
   1) inferior technologies 
@@ -161,13 +160,13 @@ Moving forward, we plan to form partnership with potential content providers.
 
 - Our competitative advantage.
 
--- Technology Barriers
+  Technology Barriers
 
    1) Cutting-edge audio karaoke technology for singing.
    2) HD realtime video over IP interactive singing rooms.
    3) Seamless cross platform experience, mobile + desktop. (Pending patents)
 
--- Market
+  Market
 
-  1) US/Western world has a large population of untapped/underdeveloped music lovers
-  2) Teenagers have time, passion and energy to sing over the internet with friends/fans
+   1) US/Western world has a large population of untapped/underdeveloped music lovers
+   2) Teenagers have time, passion and energy to sing over the internet with friends/fans
