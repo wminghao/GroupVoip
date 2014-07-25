@@ -420,6 +420,7 @@
 				"OTHER_LDFLAGS[sdk=iphoneos*]" = "../vlclibs/Debug-iphoneos/libMobileVLCKit.a";
 				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = "../vlclibs/Debug-iphonesimulator/libMobileVLCKit.a";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = app;
 				test = "";
 			};
@@ -450,6 +451,7 @@
 				"OTHER_LDFLAGS[sdk=iphoneos*]" = "../vlclibs/Release-iphoneos/libMobileVLCKit.a";
 				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = "../vlclibs/Release-iphonesimulator/libMobileVLCKit.a";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = app;
 				test = "";
 			};
