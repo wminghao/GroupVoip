@@ -37,6 +37,7 @@ bool AudioResampler::resample(u8* inputData, u32 sampleSize)
             src_float_to_short_array( (const float*) resampleFloatBufOut_,
                                       resampleShortBufOneChannel_,
                                       srcData.output_frames_gen * inputChannels_ );
+            //TODO move the logic to mixer, no need to duplicate here
             //duplicate the channels from left to right interleaved
             int j = sampleCount*2-1; 
             int i = sampleCount-1;
