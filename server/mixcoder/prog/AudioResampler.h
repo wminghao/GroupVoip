@@ -44,7 +44,7 @@ class AudioResampler
     SmartPtr<SmartBuffer> getNextRawMp3Frame(u32& totalBytes);
 
     //when a timestamp jump happens, discard the previous resampler residual
-    void discardResidual();
+    //void discardResidual();
 
  private:
     void alloc() {

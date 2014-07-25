@@ -122,9 +122,3 @@ SmartPtr<SmartBuffer> AudioResampler::getNextRawMp3Frame(u32& totalBytes)
     }
     return res;
 }
-
-void AudioResampler::discardResidual()
-{
-    reset();
-    alloc();
-}
