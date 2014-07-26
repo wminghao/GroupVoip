@@ -53,7 +53,7 @@ Singing karaoke online over mobile or desktop should have the equal or better ef
 
 2. Deep Interactivity
 
-Singing karaoke and video chatting in realtime with friends or fans achieves the perfect interaction, which standalone karaoke service or app does not allow. Our cross-platform video over IP solution makes it more fun to enjoy the service.
+Singing karaoke and video chatting in real-time with friends or fans achieves the perfect interaction, which stand-alone karaoke service or app does not allow. Our cross-platform video over IP solution makes it more fun to enjoy the service.
 
 3. Social Environment
 
@@ -84,7 +84,7 @@ premiums will be collected over advanced services which require
 
 We have acquired the following key assets at the time:
 
-1) Our technologies developed to deliver realtime mixed high-quality Video/Audio 
+1) Our technologies developed to deliver real-time mixed high-quality Video/Audio 
    streams over the Internet and mobile.
  
 2) Technical expertise our founders have accumulated in Video/Audio and networking 
@@ -96,7 +96,7 @@ like youtube. The copyright issues should have been addressed already.
 
  (TODO - need to research over this)
  Howard guessed it could be illegally uploaded from people who purchased songs from 
- KaraokeCloud, KaraFun or other services.
+ Karaoke Cloud, KaraFun or other services.
 
 Moving forward, we plan to form partnership with potential content providers.
 
@@ -171,15 +171,15 @@ Questions:
   - yy (Audio focused, 1 broadcaster to many)
   - kk (Similiar to yy)
 
-- Our competitative advantage.
+- Our competitive advantage.
 
   Technology Barriers
 
    1) Cutting-edge audio karaoke technology for singing.
-   2) HD realtime video over IP interactive singing rooms.
+   2) HD real-time video over IP interactive singing rooms.
    3) Seamless cross platform experience, mobile + desktop. (Pending patents)
 
   Market
 
    1) US/Western world has a large population of untapped/underdeveloped music lovers
-   2) Teenagers have time, passion and energy to sing over the internet with friends/fans
+   2) Teenagers have time, passion and energy to sing over the Internet with friends/fans
