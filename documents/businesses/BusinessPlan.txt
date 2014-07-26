@@ -66,10 +66,12 @@ Allowing a user to show off his/her singing with friends and/or fans, and allowi
 The general population who listen to songs and sing as a hobby or sing during
 social occasions are our targeted customer base. The primary segment in this 
 consumer base are the teenagers who spend significant amount of time 
-following popular music and practicing singing.  
+following popular music and practicing singing. They typicallt have time,
+passion, and interest to sing over the Internet with friends and fans. 
 
 Our service will start in the US where there no established service of 
-the same kind.
+the similar kind. While the China market appears already crowded with
+players, the US and wetern markets at large are more or less untapped.  
 
 Our basic service will be provided for free to the general public while 
 premiums will be collected over advanced services which require
@@ -171,7 +173,7 @@ Questions:
   - yy (Audio focused, 1 broadcaster to many)
   - kk (Similiar to yy)
 
-- Our competitive advantage.
+- Our competitive advantages
 
   Technology Barriers
 
@@ -179,7 +181,4 @@ Questions:
    2) HD real-time video over IP interactive singing rooms.
    3) Seamless cross platform experience, mobile + desktop. (Pending patents)
 
-  Market
 
-   1) US/Western world has a large population of untapped/underdeveloped music lovers
-   2) Teenagers have time, passion and energy to sing over the Internet with friends/fans
