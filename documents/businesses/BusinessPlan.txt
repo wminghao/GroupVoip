@@ -92,11 +92,24 @@ We have acquired the following key assets at the time:
    Valley.
 
 The contents we need can be obtained for free initially from other websites
-like youtube. The copyright issues should have been addressed already.
+like youtube. The copyright issues should have been addressed already. 
 
-(TODO - need to research over this)
+ (TODO - need to research over this)
+ Howard guessed it could be illegally uploaded from people who purchased songs from 
+ KaraokeCloud, KaraFun or other services.
 
 Moving forward, we plan to form partnership with potential content providers.
+
+Professional Karaoke services: 
+ Karaoke Cloud-17k songs https://www.youtube.com/watch?v=Mg7Ag8E_AkY
+ KaraFun-18k songs https://www.karafun.com/subscribe-pro.html
+ KJBill http://kjbill.com
+ The Karaoke Channel http://www.thekaraokechannel.com
+
+Questions: 
+ Pay per play(Pandora type)? 
+ Subscription Fee? 
+ Format conversion?
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ~ Business Costs and Revenue Sources 
