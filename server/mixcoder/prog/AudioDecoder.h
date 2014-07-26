@@ -24,7 +24,9 @@ class AudioDecoder
         hasFirstFrameDecoded_ = false;
         streamId_ = streamId;       
     }
-    virtual ~AudioDecoder() {}
+    virtual ~AudioDecoder() {
+        delete( resampler_ );
+    }
     //send it to the decoder, return the target settings for mixing
     virtual void newAccessUnit( SmartPtr<AccessUnit> au, AudioStreamSetting* rawAudioSetting) = 0;
 
@@ -43,18 +45,18 @@ class AudioDecoder
         SmartPtr<SmartBuffer> result;
         if( resampler_ ) {
             u32 totalBytes = 0;
-            u8* rawData = resampler_->getNextRawMp3Frame(totalBytes);
-            result = new SmartBuffer(totalBytes, rawData);
-            free(rawData);
+            result = resampler_->getNextRawMp3Frame(totalBytes);
         }
         return result;
     }
 
+    /*
     void discardResamplerResidual() {
         if( resampler_ ) {
             resampler_->discardResidual();
         }
     }
+    */
 
  protected:    
     //send it to resampler

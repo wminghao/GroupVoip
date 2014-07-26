@@ -79,7 +79,7 @@ class FLVSegmentParser:public FLVSegmentParserDelegate
     //check the status of a stream to see if it's online
     bool isStreamOnlineStarted(StreamType streamType, int index);
 
-    bool hasFirstFrameDecoded(int i, bool bIsVideo) { return bIsVideo?videoDecoder_[i]->hasFirstFrameDecoded():audioDecoder_[i]->hasFirstFrameDecoded(); }
+    bool hasFirstFrameDecoded(int i, bool bIsVideo, u32 pts) { return bIsVideo?videoDecoder_[i]->hasFirstFrameDecoded(pts):audioDecoder_[i]->hasFirstFrameDecoded(); }
 
     //get next decoded frame
     SmartPtr<AudioRawData> getNextAudioFrame(u32 index); //return at most 1 frame

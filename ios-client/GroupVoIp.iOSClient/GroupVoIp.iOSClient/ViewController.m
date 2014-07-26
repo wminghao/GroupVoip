@@ -14,7 +14,7 @@
 {
     VLCMediaPlayer *_mediaplayer;
 }
-@property (weak, nonatomic) IBOutlet UITextField *ipAddrTextField;
+//@property (weak, nonatomic) IBOutlet UITextField *ipAddrTextField;
 @property (nonatomic) NSString* ipAddr;
 @end
 
@@ -32,11 +32,13 @@
     _mediaplayer.media = nil;
     
     self.ipAddr = @"54.186.122.59";
+    /*
     self.ipAddrTextField.text = self.ipAddr;
     self.ipAddrTextField.delegate = self;
     [self.ipAddrTextField addTarget:self
                   action:@selector(editingChanged:)
         forControlEvents:UIControlEventEditingChanged];
+     */
     
 }
 - (IBAction)onPlay:(id)sender {
@@ -65,6 +67,7 @@
         [_mediaplayer stop];
     }
 }
+/*
 -(void) editingChanged:(id)sender {
     // your code
     self.ipAddr = self.ipAddrTextField.text;
@@ -74,10 +77,10 @@
     [textField resignFirstResponder];
     return YES;
 }
+*/
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
-
 @end

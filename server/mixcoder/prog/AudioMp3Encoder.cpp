@@ -7,7 +7,8 @@
 void error_handler_function(const char *format, va_list ap)
 {
     LOG( format, ap);
-    assert(0);
+    //Not critical
+    //assert(0);
 }
 AudioMp3Encoder::AudioMp3Encoder(AudioStreamSetting* outputSetting, int aBitrate):AudioEncoder(outputSetting, aBitrate)
 {
@@ -44,7 +45,6 @@ SmartPtr<SmartBuffer> AudioMp3Encoder::encodeAFrame(SmartPtr<SmartBuffer> input)
 {
     SmartPtr<SmartBuffer> result = NULL;
     if ( input && input->dataLength() ) {
-
         int numChannels = getNumChannels(outputSetting_.at);
         int sampleSize = input->dataLength()/(sizeof(short)*numChannels);
 
@@ -57,16 +57,13 @@ SmartPtr<SmartBuffer> AudioMp3Encoder::encodeAFrame(SmartPtr<SmartBuffer> input)
         
         if( encodedSize ) {
             //LOG("AudioMp3Encoder lame =====sample size=%d, channels=%d, encodedSize=%d, sampling rate=%d\n", sampleSize, numChannels, encodedSize, getFreq(outputSetting_.ar)); 
-           #if 0
-            //TODO for mp3 no need to flush nogap????
             int paddingSize = lame_encode_flush_nogap(lgf_, (u8*)encodedBits_+encodedSize, MAX_ENCODED_BYTES-encodedSize);
             encodedSize += paddingSize;
-           #endif
-
-            LOG("AudioMp3Encoder lame encoded pkt size=%d sample size=%d\n", encodedSize, sampleSize); 
+           
+            //LOG("AudioMp3Encoder lame encoded pkt size=%d sample size=%d\n", encodedSize, sampleSize); 
             result = new SmartBuffer( encodedSize, encodedBits_);
         } else {
-            LOG("*** nothing encoded AudioMp3Encoder lame encoded pkt size=%d sample size=%d\n", encodedSize, sampleSize); 
+            //LOG("*** nothing encoded AudioMp3Encoder lame encoded pkt size=%d sample size=%d\n", encodedSize, sampleSize); 
         }
     }
     return result;

@@ -34,7 +34,7 @@ MixCoder::MixCoder(int vBitrate, int width, int height,
 
     if( bUseSpeex_ ) {
         aOutputSetting.acid = kSpeex;
-    } //otherwise, it's 16kHz mp3 audio(customized format)
+    } //otherwise, it's 44.1kHz mp3 audio
 
     for( u32 i = 0; i < MAX_XCODING_INSTANCES+1; i++ ) {
         if( bUseSpeex_ ) {
@@ -110,7 +110,7 @@ SmartPtr<SmartBuffer> MixCoder::getOutput()
 
                     //if no frame generated, and never has any frames generated before, do nothing, 
                     //else use the cached video frame 
-                    if( flvSegParser_->hasFirstFrameDecoded(i, true)) {
+                    if( flvSegParser_->hasFirstFrameDecoded(i, true, videoPts)) {
                         bIsValidFrame = true; //use the cached frame
                     }
                 }
@@ -118,6 +118,7 @@ SmartPtr<SmartBuffer> MixCoder::getOutput()
                     rawVideoData_[i]->rawVideoSettings_.ss= flvSegParser_->getStreamSource(i);
                     rawVideoData_[i]->rawVideoSettings_.bIsValid = bIsStreamStarted && bIsValidFrame;
                     if( rawVideoData_[i]->rawVideoSettings_.bIsValid ) {
+                        //LOG("------rawVideoData_[%d] is valid\r\n", i);
                         totalStreams++;
                         if( kMobileStreamSource == rawVideoData_[i]->rawVideoSettings_.ss ) {
                             totalMobileStreams++;
@@ -159,7 +160,7 @@ SmartPtr<SmartBuffer> MixCoder::getOutput()
                     } else {
                         //if no frame generated, and never has any frames generated before, do nothing, 
                         //else use the cached audio frame 
-                        if( flvSegParser_->hasFirstFrameDecoded(i, false)) {
+                        if( flvSegParser_->hasFirstFrameDecoded(i, false, a->pts)) {
                             bIsValidFrame = true; //use the cached frame
                         } 
                     }

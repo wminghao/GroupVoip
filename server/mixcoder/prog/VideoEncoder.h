@@ -21,7 +21,7 @@ extern "C" {
 //we choose to use 5 layers of temporal scalability
 #define NUM_LAYERS 5
 
-#define DEBUG_SAVE_IVF
+//#define DEBUG_SAVE_IVF
 
 //video encoder implementation, vp8 encoder   
 class VideoEncoder

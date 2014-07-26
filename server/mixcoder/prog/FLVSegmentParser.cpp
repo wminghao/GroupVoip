@@ -173,11 +173,6 @@ void FLVSegmentParser::onFLVFrameParsed( SmartPtr<AccessUnit> au, int index )
         }
         u32 origPts = au->pts;
         audioDecoder_[index]->newAccessUnit(au, &rawAudioSettings_); //decode here
-        //if there is a timestamp jump, restart the resampler
-        if( audioTsMapper_[index].shouldAdjustTs( origPts ) ) {
-            audioDecoder_[index]->discardResamplerResidual();
-            LOG("-----------Timestamp JUMP\r\n");
-        }
 
         //read a couple of 1152 samples/frame here
         while(audioDecoder_[index]->isNextRawMp3FrameReady() ) {
@@ -185,7 +180,6 @@ void FLVSegmentParser::onFLVFrameParsed( SmartPtr<AccessUnit> au, int index )
             a->rawAudioFrame_ = audioDecoder_[index]->getNextRawMp3Frame();
             a->pts = audioTsMapper_[index].getNextTimestamp( origPts ); 
             //LOG("-----------After resampling, pts=%d to %d\r\n", au->pts, a->pts);
-
             audioQueue_[index].push( a );
             globalAudioTimestamp_ = a->pts; //global audio timestamp updated here
         }
@@ -354,7 +348,7 @@ SmartPtr<VideoRawData> FLVSegmentParser::getNextVideoFrame(u32 index, u32 timest
     if ( videoQueue_[index].size() > 0 ) {
         v = videoQueue_[index].front();
         if ( v && v->pts <= timestamp ) {
-            //LOG("------pop Next video frame, index=%d pts=%d\r\n", index, au->pts);
+            //LOG("------pop Next video frame, index=%d pts=%d timestamp=%d\r\n", index, v->pts, timestamp);
             videoQueue_[index].pop();
         } else {
             //LOG("------nopop Next video frame, index=%d pts=%d\r\n", index, au->pts);
