@@ -66,12 +66,12 @@ Allowing a user to show off his/her singing with friends and/or fans, and allowi
 The general population who listen to songs and sing as a hobby or sing during
 social occasions are our targeted customer base. The primary segment in this 
 consumer base are the teenagers who spend significant amount of time 
-following popular music and practicing singing. They typicallt have time,
+following popular music and practicing singing. They typically have time,
 passion, and interest to sing over the Internet with friends and fans. 
 
 Our service will start in the US where there no established service of 
 the similar kind. While the China market appears already crowded with
-players, the US and wetern markets at large are more or less untapped.  
+players, the US and western markets at large are more or less untapped.  
 
 Our basic service will be provided for free to the general public while 
 premiums will be collected over advanced services which require
@@ -156,7 +156,7 @@ Questions:
   * Changba (China's Instagram of karaoke)
 
   None of them offer a high interactivity real-time solution as we do. 
-  All of them provies an online platform or tool for people to sing.
+  All of them provides an online platform or tool for people to sing.
 
 - Existing Live On-line Karaoke services in other markets
 
@@ -171,14 +171,26 @@ Questions:
   Major competing on-line Karaoke service in China markets
   - 9158 (Video focused, up to 3 broadcasters to many)
   - yy (Audio focused, 1 broadcaster to many)
-  - kk (Similiar to yy)
+  - kk (Similar to yy)
 
-- Our competitive advantages
+- Our Competitive Advantages
 
-  Technology Barriers
+  We have acquired the key technologies that enable more impressive singing 
+  experiences compared to what's offered by the existing players in
+  the China markets.
 
-   1) Cutting-edge audio karaoke technology for singing.
-   2) HD real-time video over IP interactive singing rooms.
-   3) Seamless cross platform experience, mobile + desktop. (Pending patents)
+   1) Technologies to produce Karaoke audio effects. 
+   2) Technologies to deliver high-definition real-time video over Internet 
+      from interactive virtual singing rooms.
+   3) Seamless cross-platform experience between mobile and desktop platforms. 
+      (Patent pending.)
+   4) Technologies to mix between music video streams and streams from 
+      singing sessions.
+   5) Technologies to scale to large amount of simultaneous users.
 
+  While the players from China market can expand their services to 
+  US, we have the advantages compared to them.
+  - Better understanding of the customer and market.
+  - Better connection to technology providers needed for the intended business.
+  - No language and culture barrier. 
 
