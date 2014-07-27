@@ -28,6 +28,7 @@ Founders:
   * MS in CS, University of California, Santa Cruz 
   * Team Leader and Sr. Engineer, FlashMobile/FlashPlayer Department, Adobe
   * Principal Engineer, Veetle Inc.
+  * Mobile and Video expert with 1 Patent filed in the past
 
 - Jian Raymond Li
 
@@ -36,6 +37,7 @@ Founders:
   * Technical Leader, and Engineering Manager, Cisco Systems, Inc
   * Principal Engineer, Futurewei Technology, Huawei USA 
   * MTS, Riverbed Technology
+  * Networking expert with ? Patentes filed in the past
 
 Company History:
 
@@ -191,6 +193,6 @@ Questions:
   While the players from China market can expand their services to 
   US, we have the advantages compared to them.
   - Better understanding of the customer and market.
-  - Better connection to technology providers needed for the intended business.
+  - Better connection to technology providers needed for the intended business. ???
   - No language and culture barrier. 
 
