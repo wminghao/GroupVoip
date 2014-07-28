@@ -6,6 +6,7 @@
 
 - Company Introduction
 - Value Proposition
+- Use cases
 - Target Market and Customer Segments 
 - Key Assets
 - Business Costs and Revenue Sources
@@ -17,7 +18,7 @@
 
 Mission:
 
-- Working on innovative, interactive, and Internet-based Video solutions to 
+- Providing innovative, interactive, and informative Video solutions to 
   make people's life and work more enjoyable.
 
 Founders:
@@ -25,7 +26,7 @@ Founders:
 - Minghao Howard Wang
 
   * BS in CS, Fudan University
-  * MS in CS, University of California, Santa Cruz 
+  * MS in CS, University of California, Santa Barbara
   * Team Leader and Sr. Engineer, FlashMobile/FlashPlayer Department, Adobe
   * Principal Engineer, Veetle Inc.
   * Mobile, Video and Web expert with 1 Patent filed in the past
@@ -37,7 +38,7 @@ Founders:
   * Technical Leader, and Engineering Manager, Cisco Systems, Inc
   * Principal Engineer, Futurewei Technology, Huawei USA 
   * MTS, Riverbed Technology
-  * Networking expert with ? Patentes filed in the past
+  * Networking expert with ??? Patentes filed in the past
 
 Company History:
 
@@ -60,6 +61,19 @@ Singing karaoke and video chatting in real-time with friends or fans achieves th
 3. Social Environment
 
 Allowing a user to show off his/her singing with friends and/or fans, and allowing a user to build a singing social network of common interest.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~ Use cases 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+1. Singing alone. Kimi likes to practise singing, and she's shy in front of crowds, so she uses our website/app to select songs to sing by herself
+and record her songs to share with her close friends.
+
+2. Singing with friends. Tina loves singing with her girlfriends, Sue and Elaine, from her school, everynight they scheduled to go online to sing karaoke in realtime 
+in their private room and chat over the internet.
+
+3. Singing with fans. Lisa dreams of becoming a rock star, and she opens her own karaoke bar online, while she's singing, hundreds of her fans are listening at the same time.
+Periodically she invites her friend, Michael and John, to join the bar to sing with her, and her fans can chat with her in realtime.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ~ Target Market and Customer Segments 
