@@ -99,20 +99,17 @@ The contents we need can be obtained for free initially from other websites
 like youtube. The copyright issues should have been addressed already. 
 
  (TODO - need to research over this)
- Howard guessed it could be illegally uploaded from people who purchased songs from 
- Karaoke Cloud, KaraFun or other services.
+ ***Howard guessed it could be illegally uploaded from people who purchased songs from Karaoke Cloud, KaraFun or other services.
 
 Moving forward, we plan to form partnership with potential content providers.
 
-Professional Karaoke services: 
- Karaoke Cloud-17k songs https://www.youtube.com/watch?v=Mg7Ag8E_AkY
- KaraFun-18k songs https://www.karafun.com/subscribe-pro.html
- KJBill http://kjbill.com
- The Karaoke Channel http://www.thekaraokechannel.com
+Professional Karaoke song listing services: 
+ Karaoke Cloud-17k songs https://www.youtube.com/watch?v=Mg7Ag8E_AkY (Allow licensing directly)
+ KaraFun-18k songs https://www.karafun.com/subscribe-pro.html (Does not allow licensing directly)
+ KJBill-10k songs http://kjbill.com (CDG graphics file+mp3 needs to convert to video, does not allow licensing directly)
 
-Questions: 
- Pay per play(Pandora type)? 
- Subscription Fee? 
+Questions???: 
+ Total estimated cost? (Pay per play(Pandora mode) or Subscription Fee)
  Format conversion?
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -129,6 +126,9 @@ Questions:
 - Revenue:
   1) Premiums paid for value-added service 
   2) Advertisements
+
+Questions:
+  *Cost of recording for premium service. Does it inncur licensing/copyright issue?
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ~ Competition Analysis 
@@ -155,7 +155,8 @@ Questions:
   * Yokee(Karaoke singing tool, target teens)
   * Disney Karaoke(Disney music karaoke tool, target teens)
   * Singsnap(karaoke singing tool, target adults)
-  * Changba (China's Instagram of karaoke)
+  * Changba (China's Instagram of karaoke, target mostly teens)
+  * The Karaoke Channel - 8K songs http://www.thekaraokechannel.com (target everyone)
 
   None of them offer a high interactivity real-time solution as we do. 
   All of them provides an online platform or tool for people to sing.
@@ -190,7 +191,7 @@ Questions:
       singing sessions.
    5) Technologies to scale to large amount of simultaneous users.
 
-  While the players from China market can expand their services to 
+  While the players from China market can expand their services to the
   US, we have the advantages compared to them.
   - Better understanding of the customer and market.
   - Better connection to technology providers needed for the intended business. ???
