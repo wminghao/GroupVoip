@@ -60,7 +60,7 @@ We allow users to sing karaoke and video chat with friends/fans in real-time. Ou
 
 3. Social Environment
 
-We allow users to show off his/her singing with friends and/or fans, and build a singing social network of common interest.
+We allow users to show off their singing with friends and/or fans, and build a singing social network of common interest.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ~ Use cases 
@@ -73,7 +73,7 @@ and record her songs to share with her close friends.
 in their private room and chat over the internet.
 
 3. Singing with fans. Lisa dreams of becoming a rock star, and she opens her own karaoke bar online, while she's singing, hundreds of her fans are listening at the same time.
-Periodically she invites her friend, Michael and John, to join the bar to sing with her, and her fans can chat with her in realtime.
+Periodically she invites her friends, Michael and John, to join the bar to sing with her, and her fans can chat with her in realtime.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ~ Target Market and Customer Segments 
