@@ -4,6 +4,11 @@
 
 AudioFfmpegDecoder::~AudioFfmpegDecoder()
 {
+    reset();
+}
+
+void AudioFfmpegDecoder::reset()
+{
     if( decoderCtx_ ) {
         if ( decoderCtx_->extradata ) {
             free(decoderCtx_->extradata);
@@ -17,7 +22,7 @@ AudioFfmpegDecoder::~AudioFfmpegDecoder()
     if( decoderFrame_ ) {
         av_free( decoderFrame_ );
         decoderFrame_ = 0;
-    }
+    }    
 }
 
 //send it to the decoder

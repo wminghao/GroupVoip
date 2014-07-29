@@ -8,6 +8,7 @@ class AudioDecoder;
 class AudioDecoderFactory
 {
  public:
-    static AudioDecoder* CreateAudioDecoder(SmartPtr<AccessUnit> au, int streamId);
+    static AudioDecoder* CreateAudioDecoder(const SmartPtr<AccessUnit> au, int streamId);
+    static bool isSameDecoder(const SmartPtr<AccessUnit> au, const AudioStreamSetting* origSetting);
 };
 #endif
