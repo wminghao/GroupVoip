@@ -67,6 +67,7 @@ bool VideoDecoder::newAccessUnit( SmartPtr<AccessUnit> au, SmartPtr<VideoRawData
 
     //it can be a sps-pps header or regular nalu    
     if ( au->sp == kSpsPps ) {
+        bHasFirstFrameStarted = false;
         spspps_ = au->payload;
         initDecoder( spspps_ );
         //TODO parse sps/pps to get width and height, now assume it's 640*480

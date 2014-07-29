@@ -160,8 +160,8 @@ SmartPtr<SmartBuffer> VideoMixer::mixStreams(SmartPtr<VideoRawData>* rawData,
                     startingOffsetUV += scaledWidth/2;                    
                 } 
             } else if( totalStreams == 3 ) {                
-                int startingOffsetY = 0;
-                int startingOffsetUV = 0;
+                int startingOffsetY = scaledWidth/2;
+                int startingOffsetUV = scaledWidth/4;
                 //somehow it's green
                 int blackY = 16;
                 memset(out, blackY, outputWidth*outputHeight);
@@ -172,7 +172,7 @@ SmartPtr<SmartBuffer> VideoMixer::mixStreams(SmartPtr<VideoRawData>* rawData,
                     int curStreamId = validStreamId[index];
                     if(videoRect) {
                         videoRect[curStreamId].x = startingOffsetY%outputWidth;
-                        videoRect[curStreamId].y = outputHeight/4;
+                        videoRect[curStreamId].y = startingOffsetY/outputWidth;
                         videoRect[curStreamId].width = scaledWidth;
                         videoRect[curStreamId].height = scaledHeight;
                         //LOG("----i=%d, x=%d, y=%d, w=%d,h=%d\r\n", curStreamId, videoRect[curStreamId].x, videoRect[curStreamId].y, videoRect[curStreamId].width, videoRect[curStreamId].height);
@@ -209,11 +209,10 @@ SmartPtr<SmartBuffer> VideoMixer::mixStreams(SmartPtr<VideoRawData>* rawData,
                         offsetInV += bytesPerLineInV;
                         offsetOut += outputWidth/2;
                     }
-
                     
-                    if((index + 1) == 2) {
-                        startingOffsetY = outputWidth*outputHeight/2+scaledWidth/2;
-                        startingOffsetUV = outputWidth*outputHeight/8+scaledWidth/4;
+                    if( index == 0 ) {
+                        startingOffsetY = outputWidth*outputHeight/2;
+                        startingOffsetUV = outputWidth*outputHeight/8;
                     } else {
                         startingOffsetY += scaledWidth;
                         startingOffsetUV += scaledWidth/2;                    
@@ -233,7 +232,7 @@ SmartPtr<SmartBuffer> VideoMixer::mixStreams(SmartPtr<VideoRawData>* rawData,
                     int curStreamId = validStreamId[index];
                     if(videoRect) {
                         videoRect[curStreamId].x = startingOffsetY%outputWidth;
-                        videoRect[curStreamId].y = outputHeight/4;
+                        videoRect[curStreamId].y = startingOffsetY/outputWidth;
                         videoRect[curStreamId].width = scaledWidth;
                         videoRect[curStreamId].height = scaledHeight;
                         //LOG("----i=%d, x=%d, y=%d, w=%d,h=%d\r\n", 

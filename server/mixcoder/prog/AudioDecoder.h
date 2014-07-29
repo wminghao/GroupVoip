@@ -30,6 +30,8 @@ class AudioDecoder
     //send it to the decoder, return the target settings for mixing
     virtual void newAccessUnit( SmartPtr<AccessUnit> au, AudioStreamSetting* rawAudioSetting) = 0;
 
+    const AudioStreamSetting* getAudioInputSetting() const { return &setting_; }
+
     bool hasFirstFrameDecoded(){ return hasFirstFrameDecoded_; }
     
     //get the next batch of mp3 1152 samples

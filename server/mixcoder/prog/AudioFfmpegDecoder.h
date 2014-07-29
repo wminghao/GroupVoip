@@ -19,6 +19,9 @@ class AudioFfmpegDecoder:public AudioDecoder
     virtual void newAccessUnit( SmartPtr<AccessUnit> au, AudioStreamSetting* rawAudioSetting);
 
  private:
+    void reset();
+
+ private:
     short* outputFrame_;
 
     /* decode */

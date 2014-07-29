@@ -6,7 +6,7 @@
 #include "AudioFfmpegDecoder.h"
 #include "fwk/log.h"
 
-AudioDecoder* AudioDecoderFactory::CreateAudioDecoder(SmartPtr<AccessUnit> au, int streamId)
+AudioDecoder* AudioDecoderFactory::CreateAudioDecoder(const SmartPtr<AccessUnit> au, int streamId)
 {
     AudioDecoder* decoder = NULL;
     if( au ) {
@@ -33,4 +33,21 @@ AudioDecoder* AudioDecoderFactory::CreateAudioDecoder(SmartPtr<AccessUnit> au, i
         }
     }
     return decoder;
+}
+
+bool AudioDecoderFactory::isSameDecoder(const SmartPtr<AccessUnit> au, const AudioStreamSetting* origSetting)
+{
+    if( au && origSetting ) {
+        unsigned char firstByte = au->ctype;
+        AudioCodecId codecType = (AudioCodecId)((firstByte & 0xf0)>>4);
+        AudioRate audioRate = (AudioRate)((firstByte & 0x0c)>>2);
+        AudioSize audioSize = (AudioSize)((firstByte & 0x02)>>1);
+        AudioType audioType = (AudioType)(firstByte & 0x01);
+        
+        return ( codecType == origSetting->acid &&
+                 audioRate == origSetting->ar &&
+                 audioSize == origSetting->as &&
+                 audioType == origSetting->at);
+    }
+    return false;
 }

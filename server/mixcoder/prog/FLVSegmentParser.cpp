@@ -170,6 +170,12 @@ void FLVSegmentParser::onFLVFrameParsed( SmartPtr<AccessUnit> au, int index )
     } else if ( au->st == kAudioStreamType ) {
         if( !audioDecoder_[index] )  {
             audioDecoder_[index] = AudioDecoderFactory::CreateAudioDecoder(au, index);
+        } else {
+            if( !AudioDecoderFactory::isSameDecoder(au, audioDecoder_[index]->getAudioInputSetting()) ) {
+                delete(audioDecoder_[index]);
+                audioDecoder_[index] = AudioDecoderFactory::CreateAudioDecoder(au, index);
+                LOG("-----------brand new audio, different setting!!!!!\r\n");
+            }
         }
         u32 origPts = au->pts;
         audioDecoder_[index]->newAccessUnit(au, &rawAudioSettings_); //decode here
