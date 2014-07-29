@@ -3,7 +3,7 @@
 
 #include "fwk/SmartBuffer.h"
 #include "CodecInfo.h"
-#include "MediaTarget.h"
+#include "AccessUnit.h"
 
 class FLVSegmentParserDelegate
 {

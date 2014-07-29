@@ -8,7 +8,7 @@ extern "C" {
 #include "fwk/SmartBuffer.h"
 #include <queue>
 #include "CodecInfo.h"
-#include "MediaTarget.h"
+#include "AccessUnit.h"
 #include "RawData.h"
 
 //video decoder implementation, h264 only

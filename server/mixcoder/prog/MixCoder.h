@@ -10,7 +10,6 @@
 #define __MIXCODERCOMMON_H__
 
 #include "fwk/SmartBuffer.h"
-#include "MediaTarget.h"
 #include "CodecInfo.h"
 #include "RawData.h"
 

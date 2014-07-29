@@ -7,7 +7,6 @@ extern "C" {
 }
 
 #include "fwk/SmartBuffer.h"
-#include "MediaTarget.h"
 #include "CodecInfo.h"
 #include "RawData.h"
 

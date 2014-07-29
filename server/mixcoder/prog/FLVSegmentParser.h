@@ -1,7 +1,6 @@
  #ifndef __FLVSEGMENTPARSER_H
 #define __FLVSEGMENTPARSER_H
 
-#include "MediaTarget.h"
 #include "fwk/SmartBuffer.h"
 #include "fwk/Time.h"
 #include "FLVParser.h"
