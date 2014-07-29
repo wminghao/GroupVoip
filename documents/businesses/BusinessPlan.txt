@@ -112,15 +112,16 @@ We have acquired the following key assets at the time:
 The contents we need can be obtained for free initially from other websites
 like youtube. The copyright issues should have been addressed already. 
 
- (TODO - need to research over this)
- ***Howard guessed it could be illegally uploaded from people who purchased songs from Karaoke Cloud, KaraFun or other services.
+1) Most songs are uploaded from those listing service themselves.
+2) The songs on youtube has default people singing in the background.
+3) The songs are not comprehensive, cannot be matched from their paid service.
 
 Moving forward, we plan to form partnership with potential content providers.
 
 Professional Karaoke song listing services: 
- Karaoke Cloud-17k songs https://www.youtube.com/watch?v=Mg7Ag8E_AkY (Allow licensing directly)
- KaraFun-18k songs https://www.karafun.com/subscribe-pro.html (Does not allow licensing directly)
- KJBill-10k songs http://kjbill.com (CDG graphics file+mp3 needs to convert to video, does not allow licensing directly)
+1) Karaoke Cloud-17k songs https://www.youtube.com/watch?v=Mg7Ag8E_AkY (Allow licensing directly)
+2) KaraFun-18k songs https://www.karafun.com/subscribe-pro.html (Does not allow licensing directly)
+3) KJBill-10k songs http://kjbill.com (CDG graphics file+mp3 needs to convert to video, does not allow licensing directly)
 
 Questions???: 
  Total estimated cost? (Pay per play(Pandora mode) or Subscription Fee)
