@@ -6,6 +6,7 @@
 
 - Company Introduction
 - Value Proposition
+- Use cases
 - Target Market and Customer Segments 
 - Key Assets
 - Business Costs and Revenue Sources
@@ -17,7 +18,7 @@
 
 Mission:
 
-- Working on innovative, interactive, and Internet-based Video solutions to 
+- Providing innovative, interactive, and informative Video solutions to 
   make people's life and work more enjoyable.
 
 Founders:
@@ -25,9 +26,10 @@ Founders:
 - Minghao Howard Wang
 
   * BS in CS, Fudan University
-  * MS in CS, University of California, Santa Cruz 
+  * MS in CS, University of California, Santa Barbara
   * Team Leader and Sr. Engineer, FlashMobile/FlashPlayer Department, Adobe
   * Principal Engineer, Veetle Inc.
+  * Mobile, Video and Web expert with 1 Patent filed in the past
 
 - Jian Raymond Li
 
@@ -36,6 +38,7 @@ Founders:
   * Technical Leader, and Engineering Manager, Cisco Systems, Inc
   * Principal Engineer, Futurewei Technology, Huawei USA 
   * MTS, Riverbed Technology
+  * Networking expert with ??? Patentes filed in the past
 
 Company History:
 
@@ -47,17 +50,30 @@ We are providing a Internet-based platform for music lovers to sing Karaoke on-l
 
 Our core values:
 
-1. High Entertainment
+1. Superior singing experience
 
-Singing karaoke online over mobile or desktop should have the equal or better effect as singing in a professional karaoke room. We provide the excellent audio+video technology and user experience to enable it to achieve highly enjoyable entertainment value.
+We allow users to sing karaoke online over mobile or desktop with superior sound/visual effect and user experience.
 
-2. Deep Interactivity
+2. Real-time interaction
 
-Singing karaoke and video chatting in realtime with friends or fans achieves the perfect interaction, which standalone karaoke service or app does not allow. Our cross-platform video over IP solution makes it more fun to enjoy the service.
+We allow users to sing karaoke and video chat with friends/fans in real-time.
 
-3. Social Environment
+3. Social network
 
-Allowing a user to show off his/her singing with friends and/or fans, and allowing a user to build a singing social network of common interest.
+We allow users to show off their singing with friends and/or fans, and build a singing social network of common interest.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~ Use cases 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+1. Singing alone. Kimi likes to practise singing, and she's shy in front of crowds, so she uses our website/app to select songs to sing by herself
+and record her songs to share with her close friends.
+
+2. Singing with friends. Tina loves singing with her girlfriends, Sue and Elaine, from her school, everynight they scheduled to go online to sing karaoke in realtime 
+in their private room and chat over the internet.
+
+3. Singing with fans. Lisa dreams of becoming a rock star, and she opens her own karaoke bar online, while she's singing, hundreds of her fans are listening at the same time.
+Periodically she invites her friends, Michael and John, to join the bar to sing with her, and her fans can chat with her in realtime.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ~ Target Market and Customer Segments 
@@ -66,10 +82,12 @@ Allowing a user to show off his/her singing with friends and/or fans, and allowi
 The general population who listen to songs and sing as a hobby or sing during
 social occasions are our targeted customer base. The primary segment in this 
 consumer base are the teenagers who spend significant amount of time 
-following popular music and practicing singing.  
+following popular music and practicing singing. They typically have time,
+passion, and interest to sing over the Internet with friends and fans. 
 
 Our service will start in the US where there no established service of 
-the same kind.
+the similar kind. While the China market appears already crowded with
+players, the US and western markets at large are more or less untapped.  
 
 Our basic service will be provided for free to the general public while 
 premiums will be collected over advanced services which require
@@ -84,7 +102,7 @@ premiums will be collected over advanced services which require
 
 We have acquired the following key assets at the time:
 
-1) Our technologies developed to deliver realtime mixed high-quality Video/Audio 
+1) Our technologies developed to deliver real-time mixed high-quality Video/Audio 
    streams over the Internet and mobile.
  
 2) Technical expertise our founders have accumulated in Video/Audio and networking 
@@ -92,11 +110,22 @@ We have acquired the following key assets at the time:
    Valley.
 
 The contents we need can be obtained for free initially from other websites
-like youtube. The copyright issues should have been addressed already.
+like youtube. The copyright issues should have been addressed already. 
 
-(TODO - need to research over this)
+1) Most songs are uploaded from those listing service themselves.
+2) The songs on youtube has default people singing in the background.
+3) The songs are not comprehensive, cannot be matched from their paid service.
 
 Moving forward, we plan to form partnership with potential content providers.
+
+Professional Karaoke song listing services: 
+1) Karaoke Cloud-17k songs https://www.youtube.com/watch?v=Mg7Ag8E_AkY (Allow licensing directly)
+2) KaraFun-18k songs https://www.karafun.com/subscribe-pro.html (Does not allow licensing directly)
+3) KJBill-10k songs http://kjbill.com (CDG graphics file+mp3 needs to convert to video, does not allow licensing directly)
+
+Questions???: 
+ Total estimated cost? (Pay per play(Pandora mode) or Subscription Fee)
+ Format conversion?
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ~ Business Costs and Revenue Sources 
@@ -112,6 +141,9 @@ Moving forward, we plan to form partnership with potential content providers.
 - Revenue:
   1) Premiums paid for value-added service 
   2) Advertisements
+
+Questions:
+  *Cost of recording for premium service. Does it inncur licensing/copyright issue?
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ~ Competition Analysis 
@@ -133,20 +165,20 @@ Moving forward, we plan to form partnership with potential content providers.
 - Existing Smart Phone Applications/Website that Enable Karaoke
 
   There are existing solution allows people to sing along: 
-  * Just sing it(Pure singing, no Karaoke)
-  * Smule Sing(Social network with karaoke)
-  * Yokee(Karaoke singing tool)
-  * Disney Karaoke(Disney music karaoke tool)
-  * Singsnap(Desktop karaoke singing tool)
-  * Backstage Pass(???)
-  * Changba (China's equivalent of Smule)
+  * Just sing it(Pure singing, no Karaoke, target everyone)
+  * Smule Sing(Social network with karaoke, target teens)
+  * Yokee(Karaoke singing tool, target teens)
+  * Disney Karaoke(Disney music karaoke tool, target teens)
+  * Singsnap(karaoke singing tool, target adults)
+  * Changba (China's Instagram of karaoke, target mostly teens)
+  * The Karaoke Channel - 8K songs http://www.thekaraokechannel.com (target everyone)
 
   None of them offer a high interactivity real-time solution as we do. 
-  All of them provies an online platform or tool for people to sing.
+  All of them provides an online platform or tool for people to sing.
 
 - Existing Live On-line Karaoke services in other markets
 
-  There are successful on-line Karaoke services provided in China.
+  There are successful live on-line Karaoke services provided in China.
   While their service is available to customer in US, we see several
   major factors holding them back from acceptance in the US markets
   1) inferior technologies 
@@ -157,17 +189,26 @@ Moving forward, we plan to form partnership with potential content providers.
   Major competing on-line Karaoke service in China markets
   - 9158 (Video focused, up to 3 broadcasters to many)
   - yy (Audio focused, 1 broadcaster to many)
-  - kk (Similiar to yy)
+  - kk (Similar to yy)
 
-- Our competitative advantage.
+- Our Competitive Advantages
 
--- Technology Barriers
+  We have acquired the key technologies that enable more impressive singing 
+  experiences compared to what's offered by the existing players in
+  the China markets.
 
-   1) Cutting-edge audio karaoke technology for singing.
-   2) HD realtime video over IP interactive singing rooms.
-   3) Seamless cross platform experience, mobile + desktop. (Pending patents)
+   1) Technologies to produce Karaoke audio effects. 
+   2) Technologies to deliver high-definition real-time video over Internet 
+      from interactive virtual singing rooms.
+   3) Seamless cross-platform experience between mobile and desktop platforms. 
+      (Patent pending.)
+   4) Technologies to mix between music video streams and streams from 
+      singing sessions.
+   5) Technologies to scale to large amount of simultaneous users.
 
--- Market
+  While the players from China market can expand their services to the
+  US, we have the advantages compared to them.
+  - Better understanding of the customer and market.
+  - Better connection to technology providers needed for the intended business. ???
+  - No language and culture barrier. 
 
-  1) US/Western world has a large population of untapped/underdeveloped music lovers
-  2) Teenagers have time, passion and energy to sing over the internet with friends/fans
