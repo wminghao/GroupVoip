@@ -21,7 +21,7 @@ AudioDecoder* AudioDecoderFactory::CreateAudioDecoder(const SmartPtr<AccessUnit>
         if( codecType == kSpeex ) {
             decoder = new AudioSpeexDecoder(streamId, 
                                             kSpeex,
-                                            k16kHz,
+                                            k16kHz, //audioRate is 0, but it's 16khz
                                             kSnd16Bit,
                                             kSndMono);
         } else {
@@ -44,10 +44,18 @@ bool AudioDecoderFactory::isSameDecoder(const SmartPtr<AccessUnit> au, const Aud
         AudioSize audioSize = (AudioSize)((firstByte & 0x02)>>1);
         AudioType audioType = (AudioType)(firstByte & 0x01);
         
-        return ( codecType == origSetting->acid &&
-                 audioRate == origSetting->ar &&
-                 audioSize == origSetting->as &&
-                 audioType == origSetting->at);
+        //LOG("AudioDecoderFactory::isSameDecoder: firstByte=0x%x, codecType=%d, audioRate=%d, audioSize=%d, audioType=%d\r\n", firstByte, codecType, audioRate, audioSize, audioType);
+        //LOG("AudioDecoderFactory::value, codecType=%d, audioRate=%d, audioSize=%d, audioType=%d\r\n", origSetting->acid, origSetting->ar,origSetting->as, origSetting->at);
+            
+        //flash speex is always same settings
+        if( codecType == kSpeex && origSetting->acid == kSpeex) {
+            return true;
+        } else {
+            return ( codecType == origSetting->acid &&
+                     audioRate == origSetting->ar &&
+                     audioSize == origSetting->as &&
+                     audioType == origSetting->at);
+        }
     }
     return false;
 }
