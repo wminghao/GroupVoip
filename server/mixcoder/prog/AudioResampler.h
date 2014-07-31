@@ -41,7 +41,7 @@ class AudioResampler
     //get the next batch of mp3 1152 samples
     bool isNextRawMp3FrameReady();
     //return a smartbuffer
-    SmartPtr<SmartBuffer> getNextRawMp3Frame(u32& totalBytes);
+    SmartPtr<SmartBuffer> getNextRawMp3Frame(bool& bIsStereo);
 
     //when a timestamp jump happens, discard the previous resampler residual
     //void discardResidual();
@@ -67,7 +67,6 @@ class AudioResampler
     /* temp buffers, one second at 44 khz times two channels - its PLENTY */
     float resampleFloatBufIn_[44100 * 2];
     float resampleFloatBufOut_[44100 * 2];
-    short resampleShortBufOneChannel_[44100];
     short resampleShortBufOut_[44100 * 2];
 
     //channel info

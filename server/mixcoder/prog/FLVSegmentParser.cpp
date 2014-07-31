@@ -183,9 +183,11 @@ void FLVSegmentParser::onFLVFrameParsed( SmartPtr<AccessUnit> au, int index )
         //read a couple of 1152 samples/frame here
         while(audioDecoder_[index]->isNextRawMp3FrameReady() ) {
             SmartPtr<AudioRawData> a = new AudioRawData();
-            a->rawAudioFrame_ = audioDecoder_[index]->getNextRawMp3Frame();
+            bool bIsStereo = false;
+            a->rawAudioFrame_ = audioDecoder_[index]->getNextRawMp3Frame(bIsStereo);
+            a->bIsStereo = bIsStereo;
             a->pts = audioTsMapper_[index].getNextTimestamp( origPts ); 
-            //LOG("-----------After resampling, pts=%d to %d\r\n", au->pts, a->pts);
+            //LOG("-----------After resampling, pts=%d to %d, isStereo=%d\r\n", au->pts, a->pts, a->bIsStereo);
             audioQueue_[index].push( a );
             globalAudioTimestamp_ = a->pts; //global audio timestamp updated here
         }

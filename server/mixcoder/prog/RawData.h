@@ -18,6 +18,7 @@ class AudioRawData;
 class AudioRawData: public SmartPtrInterface<AudioRawData>{
  public:
     SmartPtr<SmartBuffer> rawAudioFrame_;
+    bool bIsStereo; //if it's two channels or single channel, used in mixing
     bool bIsValid;
     StreamSource ss; //special flag, mobile or desktop stream
     u32 pts; //pts == dts

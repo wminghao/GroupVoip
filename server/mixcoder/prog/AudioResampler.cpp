@@ -32,29 +32,11 @@ bool AudioResampler::resample(u8* inputData, u32 sampleSize)
             return false;
         }
         sampleCount = srcData.output_frames_gen;
-        //convert back to short
-        if( inputChannels_ == 1 ) {
-            src_float_to_short_array( (const float*) resampleFloatBufOut_,
-                                      resampleShortBufOneChannel_,
-                                      srcData.output_frames_gen * inputChannels_ );
-            //TODO move the logic to mixer, no need to duplicate here
-            //duplicate the channels from left to right interleaved
-            int j = sampleCount*2-1; 
-            int i = sampleCount-1;
-            while( i>=0 ) {
-                short singleSample = resampleShortBufOneChannel_[i];
-                resampleShortBufOut_[j--] = singleSample;
-                resampleShortBufOut_[j--] = singleSample;
-                i--;
-            }
-            //LOG( "resampling from %d to %d, inputSamples=%ld, inputChannels_=%d, outputSamples=%ld, outputChannels=%d\n", inputFreq_, outputFreq_, sampleSize, inputChannels_, sampleCount, outputChannels_);
-        } else {            
-            src_float_to_short_array( (const float*) resampleFloatBufOut_,
-                                      resampleShortBufOut_,
-                                      srcData.output_frames_gen * inputChannels_ );
-            //LOG("---same # of channels, copy over");
-        }
 
+        //convert back to short
+        src_float_to_short_array( (const float*) resampleFloatBufOut_,
+                                  resampleShortBufOut_,
+                                  sampleCount * inputChannels_ );
     }
     //push the samples into an linked list
     u32 samplesToSkip = 0;
@@ -63,20 +45,20 @@ bool AudioResampler::resample(u8* inputData, u32 sampleSize)
         u32 samplesToCopyFromOutBuf = 0;
 
         if( remainingSampleCnt_ ) {
-            u32 remainingBytes = remainingSampleCnt_ * sizeof(short) * outputChannels_;
+            u32 remainingBytes = remainingSampleCnt_ * sizeof(short) * inputChannels_;
             //copy the remaining sample count first
             if( remainingSampleCnt_ + sampleCount >= MP3_FRAME_SAMPLE_SIZE ) {
-                SmartPtr<SmartBuffer> rawFrame = new SmartBuffer( MP3_FRAME_SAMPLE_SIZE * sizeof(short) * outputChannels_ );
+                SmartPtr<SmartBuffer> rawFrame = new SmartBuffer( MP3_FRAME_SAMPLE_SIZE * sizeof(short) * inputChannels_ );
                 u8* mp3RawFrame = rawFrame->data();
                 memcpy(mp3RawFrame, (u8*)resampleShortRemaining_, remainingBytes);
                 samplesToCopyFromOutBuf = MP3_FRAME_SAMPLE_SIZE-remainingSampleCnt_;
-                memcpy(mp3RawFrame + remainingBytes, (u8*)resampleShortBufOut_, samplesToCopyFromOutBuf * sizeof(short) * outputChannels_);
+                memcpy(mp3RawFrame + remainingBytes, (u8*)resampleShortBufOut_, samplesToCopyFromOutBuf * sizeof(short) * inputChannels_);
                 samplesToSkip = samplesToCopyFromOutBuf;
                 remainingSampleCnt_ = 0;
                 mp3FrameList_.push_back( rawFrame );
                 //LOG("======got a part-part frame, remainingSampleCnt_=%d, samplesToCopyFromOutBuf=%d===\r\n", remainingSampleCnt_, samplesToCopyFromOutBuf);
             } else {
-                memcpy((u8*)resampleShortRemaining_+remainingBytes, (u8*)resampleShortBufOut_, sampleCount * sizeof(short) * outputChannels_);
+                memcpy((u8*)resampleShortRemaining_+remainingBytes, (u8*)resampleShortBufOut_, sampleCount * sizeof(short) * inputChannels_);
                 remainingSampleCnt_ += sampleCount;
                 samplesToCopyFromOutBuf = sampleCount;
                 samplesToSkip = 0;
@@ -85,7 +67,7 @@ bool AudioResampler::resample(u8* inputData, u32 sampleSize)
         } else {
             //no residual, so create a new buffer
             if( sampleCount >= MP3_FRAME_SAMPLE_SIZE ) {
-                u32 bytesToCopy = MP3_FRAME_SAMPLE_SIZE * sizeof(short) * outputChannels_;
+                u32 bytesToCopy = MP3_FRAME_SAMPLE_SIZE * sizeof(short) * inputChannels_;
                 SmartPtr<SmartBuffer> rawFrame = new SmartBuffer( bytesToCopy );
                 u8* mp3RawFrame = rawFrame->data();
                 samplesToCopyFromOutBuf = MP3_FRAME_SAMPLE_SIZE;
@@ -95,7 +77,7 @@ bool AudioResampler::resample(u8* inputData, u32 sampleSize)
                 mp3FrameList_.push_back( rawFrame );
                 //LOG("======got a brand new frame, remainingSampleCnt_=%d, samplesToCopyFromOutBuf=%d===\r\n", remainingSampleCnt_, samplesToCopyFromOutBuf);
             } else {
-                memcpy((u8*)resampleShortRemaining_, (u8*)(resampleShortBufOut_+samplesToSkip*outputChannels_), sampleCount * sizeof(short) * outputChannels_);
+                memcpy((u8*)resampleShortRemaining_, (u8*)(resampleShortBufOut_+samplesToSkip*inputChannels_), sampleCount * sizeof(short) * inputChannels_);
                 remainingSampleCnt_ = sampleCount;
                 samplesToCopyFromOutBuf = sampleCount;
                 samplesToSkip = 0;
@@ -113,11 +95,11 @@ bool AudioResampler::isNextRawMp3FrameReady()
 }
 
 //return a buffer, must be freed outside
-SmartPtr<SmartBuffer> AudioResampler::getNextRawMp3Frame(u32& totalBytes)
+SmartPtr<SmartBuffer> AudioResampler::getNextRawMp3Frame(bool& bIsStereo)
 {
     SmartPtr<SmartBuffer> res;
     if( mp3FrameList_.size() > 0 ) {
-        totalBytes = frameSize_;
+        bIsStereo = (inputChannels_ == 2);
         res = mp3FrameList_.back();
         mp3FrameList_.pop_back();
     }

@@ -15,14 +15,17 @@ class AudioMixer
 {
  public:
     AudioMixer() {}
-    //do the mixing, for now, always mix n speex streams into 1 speex stream
-    //sampleChannelSize = #ofsample * #ofchannel
+    //do the mixing, for now, always mix n streams into 1 mp3 stream
     SmartPtr<SmartBuffer> mixStreams(SmartPtr<AudioRawData>* rawData,
-                                     int sampleChannelSize,
+                                     int sampleSize,
                                      int totalStreams,
                                      u32 excludeStreamId);
 
  private:
+    void mixOneStreams(SmartPtr<AudioRawData>* rawData, 
+                       int oneIndex,
+                       short* valShort,
+                       int sampleSize);
     void mixTwoStreams(SmartPtr<AudioRawData>* rawData, 
                        int* twoIndex,
                        short* valShort,

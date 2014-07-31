@@ -43,11 +43,10 @@ class AudioDecoder
     }
 
     //return a buffer, must be freed outside
-    SmartPtr<SmartBuffer>  getNextRawMp3Frame() {
+    SmartPtr<SmartBuffer>  getNextRawMp3Frame(bool& bIsStereo) {
         SmartPtr<SmartBuffer> result;
         if( resampler_ ) {
-            u32 totalBytes = 0;
-            result = resampler_->getNextRawMp3Frame(totalBytes);
+            result = resampler_->getNextRawMp3Frame(bIsStereo);
         }
         return result;
     }
