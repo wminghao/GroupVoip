@@ -63,7 +63,7 @@ We allow users to sing karaoke and video chat with friends/fans in real-time.
 
 3. Social network
 
-We allow users to show off their singing with friends and/or fans, and build a singing social network of common interest.
+We allow users to share their singing with friends/fans, and build a singing social network of common interest.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ~ Use cases 
