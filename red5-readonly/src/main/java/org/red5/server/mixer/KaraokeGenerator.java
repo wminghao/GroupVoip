@@ -19,6 +19,7 @@ import org.red5.server.api.Red5;
 import org.slf4j.Logger;
 
 public class KaraokeGenerator implements Runnable, FLVParser.Delegate {
+	private final static String defaultSong = "Default";
 	private Delegate delegate_;
 	private String karaokeFilePath_;
 	private FLVParser flvParser_ = null;
@@ -82,6 +83,7 @@ public class KaraokeGenerator implements Runnable, FLVParser.Delegate {
 	private void loadASong(String fileName) {
         firstPTS_ = 0xffffffff;
 		File file = new File(fileName);
+		nextAsDefaultSong(); //set next as default song
         log.info("File {} size: {}", fileName, file.length());
         long startTime = System.currentTimeMillis();
         try {
@@ -264,5 +266,10 @@ public class KaraokeGenerator implements Runnable, FLVParser.Delegate {
 			bCancelCurrentSong.set(true);
 			log.info("-------A song selected: Key : {}, Value : {}", fileName, songName);
 		}
+	}
+	//set next as the default song, an ad for viewing only
+	private void nextAsDefaultSong() {
+		curSongFile_ = defaultSong;
+		curSongName_ = defaultSong;
 	}
 }
