@@ -163,10 +163,10 @@ public class Application extends ApplicationAdapter implements
 		log.info("Received result {} for {}", new Object[]{call.getResult(), call.getServiceMethodName()});
 	}
 	
-	private void sendToClient(IConnection conn, String methodName, String publisherName) {
+	private void sendToClient(IConnection conn, String methodName, String param) {
 		if (conn instanceof IServiceCapableConnection) {
             ((IServiceCapableConnection) conn).invoke(methodName,
-                    new Object[] { publisherName }, this);
+                    new Object[] { param }, this);
             if (log.isDebugEnabled()) {
                 log.debug("sending {} notification to {}", methodName, conn);
             }
