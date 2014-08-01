@@ -18,7 +18,7 @@
 
 Mission:
 
-- Providing innovative, interactive, and internet Video solutions to 
+- Providing innovative, interactive, and Internet Video solutions to 
   make people's life and work more enjoyable.
 
 Founders:
@@ -38,7 +38,7 @@ Founders:
   * Technical Leader, and Engineering Manager, Cisco Systems, Inc
   * Principal Engineer, Futurewei Technology, Huawei USA 
   * MTS, Riverbed Technology
-  * Networking expert with ??? Patentes filed in the past
+  * Networking expert with ??? Patents filed in the past
 
 Company History:
 
@@ -51,7 +51,7 @@ Our core values:
 
 1. High quality audio & video
 
-Users can stream HD quality video and sing Karaoke with studio level audio. They can also broadcast and record their singing videos in HD quality.
+Users can stream HD quality video and sing Karaoke with studio level audio. They can also broadcast and record their singing using webcams or smartphone cameras in HD quality video.
 
 2. Face-to-Face interaction
 
@@ -68,11 +68,11 @@ Users can share their singing with friends/fans, and build a singing social netw
 1. Singing alone. Kimi likes to practise singing, and she's shy in front of crowds, so she uses our website/app to select songs to sing by herself
 and record her songs to share with her close friends.
 
-2. Singing with friends. Tina loves singing with her girlfriends, Sue and Elaine, from her school, everynight they scheduled to go online to sing karaoke in realtime 
-in their private room and chat over the internet.
+2. Singing with friends. Tina loves singing with her girlfriends, Sue and Elaine, from her school, every night they scheduled to go online to sing karaoke in real-time 
+in their private room and chat over the Internet.
 
 3. Singing with fans. Lisa dreams of becoming a rock star, and she opens her own karaoke bar online, while she's singing, hundreds of her fans are listening at the same time.
-Periodically she invites her friends, Michael and John, to join the bar to sing with her, and her fans can chat with her in realtime.
+Periodically she invites her friends, Michael and John, to join the bar to sing with her, and her fans can chat with her in real-time.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ~ Target Market and Customer Segments 
@@ -91,7 +91,7 @@ players, the US and western markets at large are more or less untapped.
 Our basic service will be provided for free to the general public while 
 premiums will be collected over advanced services which require
 - delivering higher quality video in terms of lower latency and/or higher 
-  MV resolution
+  resolution
 - recording that requires storage on our servers
 - sending rewards/virtual gifts to singers.
 
@@ -143,7 +143,7 @@ Questions???:
   2) Advertisements
 
 Questions:
-  *Cost of recording for premium service. Does it inncur licensing/copyright issue?
+  *Cost of recording for premium service. Does it incur licensing/copyright issue?
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ~ Competition Analysis 
