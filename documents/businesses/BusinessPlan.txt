@@ -18,7 +18,7 @@
 
 Mission:
 
-- Providing innovative, interactive, and informative Video solutions to 
+- Providing innovative, interactive, and internet Video solutions to 
   make people's life and work more enjoyable.
 
 Founders:
@@ -47,23 +47,19 @@ Company History:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 We are providing a Internet-based platform for music lovers to sing Karaoke on-line and social with their friends, families, and people of similar interest.
 
-Or:
-
-We are an online social platform for music lovers to sing Karaoke with their friends or fans face-to-face.
-
 Our core values:
 
-1. High quality sound/visual effects
+1. High quality audio & video
 
-We allow users to sing karaoke online over mobile or desktop with high quality sound/visual effects and user experience.
+Users can stream HD quality video and sing Karaoke with studio level audio. They can also broadcast and record their singing videos in HD quality.
 
 2. Face-to-Face interaction
 
-We allow users to sing karaoke and video chat with friends/fans in real-time.
+Users can sing karaoke and video chat with friends/fans in real-time. Singers and listeners can see each other, and interact as if they are in the same room.
 
 3. Social network
 
-We allow users to share their singing with friends/fans, and build a singing social network of common interest.
+Users can share their singing with friends/fans, and build a singing social network of common interest using our platform.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ~ Use cases 
@@ -97,7 +93,7 @@ premiums will be collected over advanced services which require
 - delivering higher quality video in terms of lower latency and/or higher 
   MV resolution
 - recording that requires storage on our servers
-- sending rewards/virtual gifts to each other for excellency in singing.
+- sending rewards/virtual gifts to singers.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ~ Key Assets 
@@ -140,6 +136,7 @@ Questions???:
   2) Operation Cost in terms of BW and computing powers for running the video 
      processing and stream dispatching servers 
   3) Possible promotion of the web sites and Smart phone applications
+  4) License cost of Karaoke MTV.
  
 - Revenue:
   1) Premiums paid for value-added service 
