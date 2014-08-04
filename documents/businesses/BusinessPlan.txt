@@ -124,7 +124,6 @@ Professional Karaoke song listing services:
 
 Questions???: 
  Total estimated cost? (Pay per play(Pandora mode) or Subscription Fee)
- Format conversion?
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ~ Business Costs and Revenue Sources 
@@ -164,14 +163,18 @@ Questions:
 
 - Existing Smart Phone Applications/Website that Enable Karaoke
 
-  There are existing solution allows people to sing along: 
-  * Just sing it(Pure singing, no Karaoke, target everyone)
-  * Smule Sing(Social network with karaoke, target teens)
-  * Yokee(Karaoke singing tool, target teens)
-  * Disney Karaoke(Disney music karaoke tool, target teens)
-  * Singsnap(karaoke singing tool, target adults)
-  * Changba (China's Instagram of karaoke, target mostly teens)
-  * The Karaoke Channel - 8K songs http://www.thekaraokechannel.com (target everyone)
+  There are existing solution allows people to sing along:
+  
+  Singing Social Networks
+  * Changba (China's Instagram of Karaoke singing with anyone, target mostly teens)
+  * Just sing it (U.S.'s Instagram of pure singing with anyone, target mostly teens)
+  * Singsnap (Social network with karaoke with anyone, target mostly adults)
+  * Smule Sing (Social network with karaoke with friends, target mostly teens)
+  * Yokee (Social network with karaoke with friends, target mostly teens)
+
+  Singing Tools:
+  * Disney Karaoke (Disney music karaoke tool, target mostly teens)
+  * The Karaoke Channel - 8K songs http://www.thekaraokechannel.com (Karoke singing tool, target everyone)
 
   None of them offer a high interactivity real-time solution as we do. 
   All of them provides an online platform or tool for people to sing.
