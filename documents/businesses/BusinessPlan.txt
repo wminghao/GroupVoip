@@ -166,15 +166,17 @@ Questions:
   There are existing solution allows people to sing along:
   
   Singing Social Networks
-  * Changba (China's Instagram of Karaoke singing with anyone, target mostly teens)
-  * Just sing it (U.S.'s Instagram of pure singing with anyone, target mostly teens)
-  * Singsnap (Social network with karaoke with anyone, target mostly adults)
-  * Smule Sing (Social network with karaoke with friends, target mostly teens)
-  * Yokee (Social network with karaoke with friends, target mostly teens)
 
-  Singing Tools:
-  * Disney Karaoke (Disney music karaoke tool, target mostly teens)
-  * The Karaoke Channel - 8K songs http://www.thekaraokechannel.com (Karoke singing tool, target everyone)
+  * Changba (China's Instagram of Karaoke singing with anyone, target mostly teens, free, focus on people, mobile)
+  * Just sing it (U.S.'s Instagram of voice-only singing with anyone, target mostly teens, free, focus on people, mobile)
+  * Singsnap (U.S.'s singing social network with anyone, target mostly adults, paid, focus on singing, desktop)
+  * Smule Sing (U.S.'s social network with karaoke with friends, target mostly teens, paid, focus on singing, mobile)
+  * Yokee (U.S.'s social network with karaoke with friends, target mostly teens, paid, focus on singing, mobile)
+
+  Pure singing Tools:
+  * Disney Karaoke - Disney songs. (karaoke singing tool, target mostly teens)
+  * The Karaoke Channel - 8K songs(Karoke singing tool, target everyone)
+  * KaraFun - 18k songs (Karaoke singing tool, target everyone)
 
   None of them offer a high interactivity real-time solution as we do. 
   All of them provides an online platform or tool for people to sing.
@@ -190,8 +192,8 @@ Questions:
      video severs located in China. (not noticeable for broadcast)
 
   Major competing on-line Karaoke service in China markets
-  - 9158 (Video focused, up to 3 broadcasters to many)
-  - yy (Audio focused, 1 broadcaster to many)
+  - 9158 (Video focused, up to 3 broadcasters to many, > 300million user, public company)
+  - yy (Audio focused, 1 broadcaster to many, >400million users, public company)
   - kk (Similar to yy)
 
 - Our Competitive Advantages
