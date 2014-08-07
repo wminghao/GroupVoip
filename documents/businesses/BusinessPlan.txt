@@ -167,16 +167,17 @@ Questions:
   
   Singing Social Networks
 
-  * Changba (China's Instagram of Karaoke singing with anyone, target mostly teens, free, focus on people, mobile)
-  * Just sing it (U.S.'s Instagram of voice-only singing with anyone, target mostly teens, free, focus on people, mobile)
+  * Changba (China's Instagram of Karaoke singing with anyone, target mostly teens, free, focus on people, mobile, 100 million downloads)
+  * Just sing it (U.S.'s Instagram of voice-only singing with anyone, target mostly teens, free, focus on people, mobile, 1 million downloads)
+  * Smule Sing (U.S.'s social network with karaoke with friends, target mostly teens, paid, focus on singing, mobile, 20 million downloads)
+  * Yokee (U.S.'s social network with karaoke with friends, target mostly teens, paid, focus on singing, mobile, 10 million downloads)
   * Singsnap (U.S.'s singing social network with anyone, target mostly adults, paid, focus on singing, desktop)
-  * Smule Sing (U.S.'s social network with karaoke with friends, target mostly teens, paid, focus on singing, mobile)
-  * Yokee (U.S.'s social network with karaoke with friends, target mostly teens, paid, focus on singing, mobile)
 
   Pure singing Tools:
-  * Disney Karaoke - Disney songs. (karaoke singing tool, target mostly teens)
-  * The Karaoke Channel - 8K songs(Karoke singing tool, target everyone)
-  * KaraFun - 18k songs (Karaoke singing tool, target everyone)
+  * Disney Karaoke - Disney songs. (karaoke singing tool, paid, target mostly teens)
+  * The Karaoke Channel - 8K songs(Karoke singing tool, paid, target everyone)
+  * KaraFun - 18k songs. (Karaoke singing tool, paid, target everyone)
+  * RedKaraoke - 50k songs. (Karaoke singing tool, paid, target everyone)
 
   None of them offer a high interactivity real-time solution as we do. 
   All of them provides an online platform or tool for people to sing.
