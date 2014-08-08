@@ -70,7 +70,7 @@ and record her songs to share with her close friends.
 
 2. Singing alone and share with fans. Joe from California likes to practise singing, and he's not good in front of crowds, but he wants to share his singing with the world. So he uses 
 our website/app to select songs to sing and record his singings. Among them, he picks his best recording of "You raise me up" to share with the world. Jimmy from Kentucky is practising the same song.
-He finds Joe on our website/app, listens to his music and clicks to like it.
+He finds Joe on our website/app, listens to his music, clicks to like it and becomes Joe's fan.
 
 3. Singing with friends. Tina loves singing with her girlfriends, Sue and Elaine, from her school, every night they scheduled to go online to sing karaoke in real-time 
 in their private room and chat over the Internet.
@@ -174,7 +174,7 @@ Questions:
   * Changba (China's Instagram of Karaoke singing with anyone, target mostly teens, free, focus on people, mobile, 100 million downloads)
   * Just sing it (U.S.'s Instagram of voice-only singing with anyone, target mostly teens, free, focus on people, mobile, 1 million downloads)
   * Smule Sing (U.S.'s social network with karaoke with friends, target mostly teens, paid, focus on singing, mobile, 20 million downloads)
-  * Yokee (U.S.'s social network with karaoke with friends, target mostly teens, paid, focus on singing, mobile, 10 million downloads)
+  * Yokee (U.S.'s social network with karaoke with friends, target mostly teens, paid, focus on singing, mobile, 10-20 million downloads)
   * Singsnap (U.S.'s singing social network with anyone, target mostly adults, paid, focus on singing, desktop)
 
   Pure singing Tools:
