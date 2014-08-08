@@ -65,13 +65,17 @@ Users can share their singing with friends/fans, and build a singing social netw
 ~ Use cases 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-1. Singing alone. Kimi likes to practise singing, and she's shy in front of crowds, so she uses our website/app to select songs to sing by herself
-and record her songs to share with her close friends.
+1. Singing alone and share with friends. Kimi likes to practise singing, and she's shy in front of crowds, so she uses our website/app to select songs to sing by herself
+and record her songs to share with her close friends. 
 
-2. Singing with friends. Tina loves singing with her girlfriends, Sue and Elaine, from her school, every night they scheduled to go online to sing karaoke in real-time 
+2. Singing alone and share with fans. Joe from California likes to practise singing, and he's not good in front of crowds, but he wants to share his singing with the world. So he uses 
+our website/app to select songs to sing and record his singings. Among them, he picks his best recording of "You raise me up" to share with the world. Jimmy from Kentucky is practising the same song.
+He finds Joe on our website/app, listens to his music and clicks to like it.
+
+3. Singing with friends. Tina loves singing with her girlfriends, Sue and Elaine, from her school, every night they scheduled to go online to sing karaoke in real-time 
 in their private room and chat over the Internet.
 
-3. Singing with fans. Lisa dreams of becoming a rock star, and she opens her own karaoke bar online, while she's singing, hundreds of her fans are listening at the same time.
+4. Singing with fans. Lisa dreams of becoming a rock star, and she opens her own karaoke bar online, while she's singing, hundreds of her fans are listening at the same time.
 Periodically she invites her friends, Michael and John, to join the bar to sing with her, and her fans can chat with her in real-time.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
