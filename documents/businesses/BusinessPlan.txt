@@ -178,10 +178,13 @@ Questions:
   * Singsnap (U.S.'s singing social network with anyone, target mostly adults, paid, focus on singing, desktop)
 
   Pure singing Tools:
-  * Disney Karaoke - Disney songs. (karaoke singing tool, paid, target mostly teens)
-  * The Karaoke Channel - 8K songs(Karoke singing tool, paid, target everyone)
-  * KaraFun - 18k songs. (Karaoke singing tool, paid, target everyone)
-  * RedKaraoke - 50k songs. (Karaoke singing tool, paid, target everyone)
+  * StarMaker - Gamified singing tool. (limited social/community based, paid, target everyone, mobile)
+  * Karaoke Anywhere - pure singing tool. (singing only, paid, target everyone, mobile)
+  * Disney Karaoke - Disney songs. (karaoke singing tool, paid, target mostly teens, mobile)
+  * The Karaoke Channel - 8K songs(Karoke singing tool, paid, target everyone, mobile/desktop)
+  * KaraFun - 18k songs. (Karaoke singing tool, paid, target everyone, mobile/desktop)
+  * RedKaraoke - 50k songs. (Karaoke singing tool, paid, target everyone, mobile/desktop)
+
 
   None of them offer a high interactivity real-time solution as we do. 
   All of them provides an online platform or tool for people to sing.
