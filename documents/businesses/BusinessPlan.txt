@@ -45,21 +45,27 @@ Company History:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ~ Value Proposition 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-We are providing a Internet-based platform for music lovers to sing Karaoke on-line and social with their friends, families, and people of similar interest.
+We are providing a Internet-based platform for music lovers to sing Karaoke 
+on-line and social with their friends, families, and people 
+of similar interest.
 
 Our core values:
 
-1. High quality audio & video
+1. High quality audio and video
 
-We provide studio level audio and high definition quality video for users to sing karaoke.
+We provide studio-level audio and high definition video for users 
+to sing karaoke.
 
-2. Face-to-Face interaction
+2. Face-to-face interaction
 
-Users can sing karaoke and video chat with friends/fans in real-time. Singers and listeners can see each other, and interact as if they are in the same room.
+Users can sing karaoke and video chat with friends and fans in real-time. 
+Singers and listeners can see each other, and interact as if they are 
+in the same room.
 
 3. Social network
 
-Users can share their singing with friends/fans, and build a singing social network of common interest using our platform.
+Users can share their singing with friends/fans, and build 
+a singing social network using our platform.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ~ Use cases 
