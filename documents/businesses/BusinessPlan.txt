@@ -162,6 +162,9 @@ Here is a list of Karaoke music video services:
    - CDG graphics file+mp3 needs to convert to video. 
    - Does not allow licensing directly.
 
+#RL#
+Should the discussions over content be part of it?
+
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ~ Business Costs and Revenue Sources 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -169,10 +172,10 @@ Here is a list of Karaoke music video services:
 - Major Costs
 
   1) Technical Talents
-  2) Operation Cost in terms of BW and computing powers for running the video 
-     processing and stream dispatching servers 
-  3) Possible promotion of the web sites and Smart phone applications
-  4) License cost of Karaoke MTV.
+  2) Operation cost from network bandwidth and computing powers for 
+     running the video processing and stream dispatching servers
+  3) Promotion of the web sites and Smart phone applications
+  4) License cost over Karaoke music videos
  
 - Revenue:
   1) Premiums paid for value-added service 
