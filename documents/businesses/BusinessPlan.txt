@@ -71,18 +71,36 @@ a singing social network using our platform.
 ~ Use cases 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-1. Singing alone and share with friends. Kimi likes to practise singing, and she's shy in front of crowds, so she uses our website/app to select songs to sing by herself
-and record her songs to share with her close friends. 
+1. Singing alone and share the recording with friends. 
 
-2. Singing alone and share with fans. Joe from California likes to practise singing, and he's not good in front of crowds, but he wants to share his singing with the world. So he uses 
-our website/app to select songs to sing and record his singings. Among them, he picks his best recording of "You raise me up" to share with the world. Jimmy from Kentucky is practising the same song.
-He finds Joe on our website/app, listens to his music, clicks to like it and becomes Joe's fan.
+   Kim likes to practise singing. She's shy in front of crowds. So she uses 
+    our website/app to select songs,  sing by herself, record the singing,
+    and then share the recording with her close friends. 
 
-3. Singing with friends. Tina loves singing with her girlfriends, Sue and Elaine, from her school, every night they scheduled to go online to sing karaoke in real-time 
-in their private room and chat over the Internet.
+2. Singing alone and share the recording with with fans. 
 
-4. Singing with fans. Lisa dreams of becoming a rock star, and she opens her own karaoke bar online, while she's singing, hundreds of her fans are listening at the same time.
-Periodically she invites her friends, Michael and John, to join the bar to sing with her, and her fans can chat with her in real-time.
+   Joe from California likes to practise singing. He is not good in front 
+   of crowds either. While he still wants fans to hear him singing. 
+   So he uses our website/app to select songs,  sing,  and record his singings. 
+
+   Among the recordings, he is proud of one paritulcar one - "You raise me up".
+   He makes it public for others to listen. Jimmy from Kentucky likes
+   the same song, he sees the recording from Joe on our website/app, 
+   listens to it, likeis it, and even comments on it. Now he has
+   become one of Joe's fans.
+
+3. Singing togehter with friends. 
+
+   Tina loves singing with her girlfriends, Sue and Elaine from her school.
+   They sing togetherer often in our "virtual private room" in real time
+   using our platform.  
+
+4. Singing to fans. 
+
+   Lisa dreams of becoming a rock star. She has set up her own on-line 
+   karaoke bar on our platform. While she's singing, hundreds of her fans 
+   listens in real time.  Periodically she invites her friends, Michael 
+   and John, to sing with her. 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ~ Target Market and Customer Segments 
