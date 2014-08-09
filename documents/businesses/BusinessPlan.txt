@@ -29,7 +29,7 @@ Founders:
   * MS in CS, University of California, Santa Barbara
   * Team Leader and Sr. Engineer, FlashMobile/FlashPlayer Department, Adobe
   * Principal Engineer, Veetle Inc.
-  * Mobile, Video and Web expert with 1 Patent filed in the past
+  * Mobile, Video and Web expert with 1 issued US patent.
 
 - Jian Raymond Li
 
@@ -38,7 +38,7 @@ Founders:
   * Technical Leader, and Engineering Manager, Cisco Systems, Inc
   * Principal Engineer, Futurewei Technology, Huawei USA 
   * MTS, Riverbed Technology
-  * Networking and server expert with 1 issued US pagets, and 2 more filed 
+  * Networking and server expert with 1 issued US patent, and 2 more filed 
 
 Company History:
 
@@ -74,19 +74,19 @@ a singing social network using our platform.
 1. Singing alone and share the recording with friends. 
 
    Kim likes to practise singing. She's shy in front of crowds. So she uses 
-    our website/app to select songs,  sing by herself, record the singing,
+    our website/app to select songs, sing by herself, record the singing,
     and then share the recording with her close friends. 
 
 2. Singing alone and share the recording with with fans. 
 
    Joe from California likes to practise singing. He is not good in front 
    of crowds either. While he still wants fans to hear him singing. 
-   So he uses our website/app to select songs,  sing,  and record his singings. 
+   So he uses our website/app to select songs, sing, and record his singings. 
 
    Among the recordings, he is proud of one paritulcar one - "You raise me up".
    He makes it public for others to listen. Jimmy from Kentucky likes
-   the same song, he sees the recording from Joe on our website/app, 
-   listens to it, likeis it, and even comments on it. Now he has
+   the same song, he finds the recording from Joe on our website/app, 
+   listens to it, likes it, and even comments on it. Now he has
    become one of Joe's fans.
 
 3. Singing togehter with friends. 
