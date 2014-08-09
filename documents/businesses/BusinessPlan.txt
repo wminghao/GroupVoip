@@ -192,20 +192,22 @@ Questions:
 
   The on-line solution we offer is significantly more flexible and easily
   accessible via smart phone, pads, or mobile desktops. With songs fetched
-  on-line, our collection of songs can not be matched by individual shops
-  running on DVD discs. It's easier for consumer to get connected with
+  on-line, our collection of songs can not be matched by brick and motar 
+  shops running on DVD discs. It's easier for consumer to get connected with
   friends and family w/o the need to be in the same physical location.
 
-  While the solution having edge over traditional business model, we
-  can partner instead of going head-on competition against individual 
-  Karaoke shops. The on-line solution helps to cut their cost while
-  making the original contents more readily accessible to them. 
+  While our solution a clear edge over traditional business model, we
+  plan to partner with physical Karaoke shops instead. The on-line solution 
+  helps to cut their cost while making the original contents more readily 
+  accessible to them. 
 
 - Existing Smart Phone Applications/Website that Enable Karaoke
 
-  There are existing solution allows people to sing along:
+  There are existing solutions which allow people to sing along. 
+  We group them into two categries: 1) singing social network platfroms, 
+  and 2) singing software tools. 
   
-  Singing Social Networks
+  Singing Social Network Platforms
 
   * Changba (China's Instagram of Karaoke singing with anyone, target mostly teens, free, focus on people, mobile, 100 million downloads)
   * Just sing it (U.S.'s Instagram of voice-only singing with anyone, target mostly teens, free, focus on people, mobile, 1 million downloads)
@@ -213,7 +215,7 @@ Questions:
   * Yokee (U.S.'s social network with karaoke with friends, target mostly teens, paid, focus on singing, mobile, 10-20 million downloads)
   * Singsnap (U.S.'s singing social network with anyone, target mostly adults, paid, focus on singing, desktop)
 
-  Pure singing Tools:
+  Pure singing Software Tools:
   * StarMaker - Gamified singing tool. (limited social/community based, paid, target everyone, mobile)
   * Karaoke Anywhere - pure singing tool. (singing only, paid, target everyone, mobile)
   * Disney Karaoke - Disney songs. (karaoke singing tool, paid, target mostly teens, mobile)
@@ -221,9 +223,10 @@ Questions:
   * KaraFun - 18k songs. (Karaoke singing tool, paid, target everyone, mobile/desktop)
   * RedKaraoke - 50k songs. (Karaoke singing tool, paid, target everyone, mobile/desktop)
 
+  None of these solution offer a highly interactiv real-time solution 
+  as we plan to do. 
 
-  None of them offer a high interactivity real-time solution as we do. 
-  All of them provides an online platform or tool for people to sing.
+#RL# This is section overlapping with the next section?
 
 - Existing Live On-line Karaoke services in other markets
 
