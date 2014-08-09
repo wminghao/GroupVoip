@@ -1,0 +1,26 @@
+The contents we need can be obtained for free initially from other websites
+like youtube. The copyright issues have been addressed already by these
+players. We need to follow what they have been doing.
+
+1) Most songs are uploaded by a few listing services(Karaoke Cloud/Karafun) themselves.
+2) The songs on youtube has default people singing in the background.
+3) The songs are not comprehensive as what's available from paid service.
+
+Moving forward, we plan to form partnership with the musiv video providers.
+Here is a list of Karaoke music video services:
+1) Karaoke Cloud
+   - 17k songs
+   - https://www.youtube.com/watch?v=Mg7Ag8E_AkY
+   - Allow licensing directly.
+2) KaraFun
+   - 18k songs https://www.karafun.com/subscribe-pro.html
+   - Does not allow licensing directly
+3) KJBill
+   - 10k songs
+   - http://kjbill.com
+   - CDG graphics file+mp3 needs to convert to video.
+   - Does not allow licensing directly.
+
+Questions:
+  *Cost of recording for premium service. Does it incur licensing/copyright issue?
+
