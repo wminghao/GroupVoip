@@ -108,18 +108,18 @@ a singing social network using our platform.
 
 The general population who listen to songs and sing as a hobby or sing during
 social occasions are our targeted customer base. The primary segment in this 
-consumer base are the teenagers who spend significant amount of time 
+consumer base are the teenager girls who spend significant amount of time 
 following popular music and practicing singing. They typically have time,
 passion, and interest to sing over the Internet with friends and fans. 
 
 Our service will start in the US where there no established service of 
 the similar kind. While the China market appears already crowded with
-players, the US and western markets at large are more or less untapped.  
+established players, the US and western markets at large are more 
+or less untapped.  
 
 Our basic service will be provided for free to the general public while 
-premiums will be collected over advanced services which require
-- delivering higher quality video in terms of lower latency and/or higher 
-  resolution
+premiums will be collected over value added services, including
+- higher quality video in terms of lower latency and/or higher resolution
 - recording that requires storage on our servers
 - sending rewards/virtual gifts to singers.
 
