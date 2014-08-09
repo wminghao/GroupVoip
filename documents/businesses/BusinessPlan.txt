@@ -256,10 +256,10 @@ Questions:
       (Patent pending.)
    4) Technologies to mix between music video streams and streams from 
       singing sessions.
-   5) Technologies to scale to large amount of simultaneous users.
+   5) Technologies to scale to large number of simultaneous users.
 
   While the players from China market can expand their services to the
-  US, we have the advantages compared to them.
+  US, we have the following advantages compared to them.
   - Better understanding of the customer and market.
   - Better connection to technology providers needed for the intended business. ???
   - No language and culture barrier. 
