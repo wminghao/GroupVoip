@@ -63,7 +63,12 @@
 					{value:"The Little Birch Tree", code:"The Little Birch Tree"},	
 					{value:"It's a small world", code:"It's a small world"},	
 					{value:"Rassa seya eh", code:"Rassa seya eh"},	
-					{value:"Crazy colored creatures", code:"Crazy colored creatures"}	
+					{value:"Crazy colored creatures", code:"Crazy colored creatures"},
+					{value:"Yellow submarine", code:"Yellow submarine"},
+					{value:"Burn", code:"Burn"},
+					{value:"Dark horse", code:"Dark horse"},
+					{value:"Heart attack", code:"Heart attack"},
+					{value:"A thousand miles", code:"A thousand miles"}					
 				]
 			);
 			private var publishDest:String = null;
