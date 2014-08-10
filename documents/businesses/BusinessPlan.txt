@@ -136,35 +136,6 @@ We have acquired the following key assets at the time:
    areas over the years working for leading technology companies in the Silicon 
    Valley.
 
-The contents we need can be obtained for free initially from other websites
-like youtube. The copyright issues have been addressed already by these 
-players. We need to follow what they have been doing.
-
-1) Most songs are uploaded from those listing services themselves.
-
-#RL#   Who are they?
-
-2) The songs on youtube has default people singing in the background.
-3) The songs are not comprehensive as what's available from paid service.
-
-Moving forward, we plan to form partnership with the musiv video providers.
-Here is a list of Karaoke music video services: 
-1) Karaoke Cloud
-   - 17k songs 
-   - https://www.youtube.com/watch?v=Mg7Ag8E_AkY 
-   - Allow licensing directly.
-2) KaraFun
-   - 18k songs https://www.karafun.com/subscribe-pro.html 
-   - Does not allow licensing directly
-3) KJBill
-   - 10k songs 
-   - http://kjbill.com 
-   - CDG graphics file+mp3 needs to convert to video. 
-   - Does not allow licensing directly.
-
-#RL#
-Should the discussions over content be part of it?
-
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ~ Business Costs and Revenue Sources 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -207,7 +178,7 @@ Questions:
   We group them into two categries: 1) singing social network platfroms, 
   and 2) singing software tools. 
   
-  Singing Social Network Platforms
+  Singing Social Network Platforms:
 
   * Changba (China's Instagram of Karaoke singing with anyone, target mostly teens, free, focus on people, mobile, 100 million downloads)
   * Just sing it (U.S.'s Instagram of voice-only singing with anyone, target mostly teens, free, focus on people, mobile, 1 million downloads)
@@ -216,6 +187,7 @@ Questions:
   * Singsnap (U.S.'s singing social network with anyone, target mostly adults, paid, focus on singing, desktop)
 
   Pure singing Software Tools:
+
   * StarMaker - Gamified singing tool. (limited social/community based, paid, target everyone, mobile)
   * Karaoke Anywhere - pure singing tool. (singing only, paid, target everyone, mobile)
   * Disney Karaoke - Disney songs. (karaoke singing tool, paid, target mostly teens, mobile)
@@ -223,10 +195,8 @@ Questions:
   * KaraFun - 18k songs. (Karaoke singing tool, paid, target everyone, mobile/desktop)
   * RedKaraoke - 50k songs. (Karaoke singing tool, paid, target everyone, mobile/desktop)
 
-  None of these solution offer a highly interactiv real-time solution 
+  None of these solution offer a highly interactive real-time solution 
   as we plan to do. 
-
-#RL# This is section overlapping with the next section?
 
 - Existing Live On-line Karaoke services in other markets
 
@@ -261,6 +231,6 @@ Questions:
   While the players from China market can expand their services to the
   US, we have the following advantages compared to them.
   - Better understanding of the customer and market.
-  - Better connection to technology providers needed for the intended business. ???
+  - Better connection to technology providers needed for the intended business.
   - No language and culture barrier. 
 
