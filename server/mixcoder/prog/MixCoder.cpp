@@ -99,7 +99,7 @@ SmartPtr<SmartBuffer> MixCoder::getOutput()
             for( u32 i = 0; i < MAX_XCODING_INSTANCES; i ++ ) {
                 bool bIsStreamStarted = flvSegParser_->isStreamOnlineStarted(curStreamType, i );
                 bool bIsValidFrame = false;
-                if( bIsStreamStarted ) {
+                if( bIsStreamStarted ) { 
                     SmartPtr<VideoRawData> v;
                     do {
                         v = flvSegParser_->getNextVideoFrame(i, videoPts);

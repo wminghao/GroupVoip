@@ -270,7 +270,7 @@ void FLVParser::parseNextFLVFrame( string& strFlvTag )
             accessUnit->pts = prevVideoAdjPts_+1;
         } else {
             s32 relTimestampOffset = (relTimeStampOffset_ == MAX_S32)?0:relTimeStampOffset_; 
-            if( relTimestampOffset < 0 && (tsUnion.timestamp > -relTimestampOffset) ) {
+            if( relTimestampOffset >= 0 || (s32)(tsUnion.timestamp + relTimestampOffset) >= 0) {
                 accessUnit->pts = tsUnion.timestamp + relTimestampOffset;
             } else {
                 //cannot be negative

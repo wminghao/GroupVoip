@@ -164,7 +164,7 @@ void FLVSegmentParser::onFLVFrameParsed( SmartPtr<AccessUnit> au, int index )
         SmartPtr<VideoRawData> v = new VideoRawData();
         bool bIsValidFrame = videoDecoder_[index]->newAccessUnit(au, v); //decode here
         if( bIsValidFrame || v->sp == kSpsPps ) { //if decoded successfully or it's an sps pps frame
-            LOG("------Enqueue video frame, index=%d, queuesize=%d, pts=%d, aupts=%d\r\n", index, videoQueue_[index].size(), v->pts, au->pts);
+            //LOG("------Enqueue video frame, index=%d, queuesize=%d, pts=%d\r\n", index, videoQueue_[index].size(), v->pts);
             videoQueue_[index].push( v );
             videoStreamStatus_[index] = kStreamOnlineStarted;
         }
@@ -356,12 +356,6 @@ SmartPtr<VideoRawData> FLVSegmentParser::getNextVideoFrame(u32 index, u32 timest
     SmartPtr<VideoRawData> v;
     if ( videoQueue_[index].size() > 0 ) {
         v = videoQueue_[index].front();
-        if( v ) {
-            LOG("------Next video frame, index=%d, queuesize=%d, pts=%d, timestamp=%d\r\n", index, videoQueue_[index].size(), v->pts, timestamp);
-        } else {
-            LOG("------Next video frame, index=%d, queuesize=%d, pts=wrong,timestamp=%d\r\n", index, videoQueue_[index].size(), timestamp);
-        }
-
         if ( v && v->pts <= timestamp ) {
             //LOG("------pop Next video frame, index=%d pts=%d timestamp=%d\r\n", index, v->pts, timestamp);
             videoQueue_[index].pop();
