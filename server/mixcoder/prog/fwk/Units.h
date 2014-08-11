@@ -16,6 +16,7 @@ typedef int64_t s64;
 #define MIN(a, b) (a < b)? a : b
 
 #define MAX_U32 0xffffffff
+#define MAX_S32 0x0fffffff
 
 #ifdef DEBUG
 #include <assert.h>

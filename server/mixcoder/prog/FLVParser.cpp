@@ -252,7 +252,7 @@ void FLVParser::parseNextFLVFrame( string& strFlvTag )
 
         //if there is NO global timestamp, we use a relative timestamp to re-adjust the clock
         //based on the very 1st audio frame or very 1st video frame(not sps)
-        if( MAX_U32 == relTimeStampOffset_ && accessUnit->st != kDataStreamType && accessUnit->sp != kSpsPps) {
+        if( MAX_S32 == relTimeStampOffset_ && accessUnit->st != kDataStreamType && accessUnit->sp != kSpsPps) {
             //u64 curEpocTime = getEpocTime();
             //assert( curEpocTime > startEpocTime_ );
             //relTimeStampOffset_ = ( curEpocTime - startEpocTime_ ) - tsUnion.timestamp;
@@ -269,12 +269,23 @@ void FLVParser::parseNextFLVFrame( string& strFlvTag )
             //reset the spspps timestamp to be next ts
             accessUnit->pts = prevVideoAdjPts_+1;
         } else {
-            accessUnit->pts = tsUnion.timestamp + ((relTimeStampOffset_ == MAX_U32)?0:relTimeStampOffset_);
+            s32 relTimestampOffset = (relTimeStampOffset_ == MAX_S32)?0:relTimeStampOffset_; 
+            if( relTimestampOffset < 0 && (tsUnion.timestamp > -relTimestampOffset) ) {
+                accessUnit->pts = tsUnion.timestamp + relTimestampOffset;
+            } else {
+                //cannot be negative
+                if( accessUnit->st == kVideoStreamType ) {
+                    accessUnit->pts = prevVideoAdjPts_ + 1;
+                } else {
+                    accessUnit->pts = prevAudioAdjPts_ + 1;
+                }
+            }
         }
 
         if( accessUnit->st == kVideoStreamType ) {
             prevVideoAdjPts_ = accessUnit->pts;
         } else if( accessUnit->st == kAudioStreamType ) {
+            prevAudioAdjPts_ = accessUnit->pts;
             prevAudioOrigPts_ = tsUnion.timestamp;
         }
         LOG( "---index=%d, ready=%d, streamType=%d, flvTagSize=%d, oPts=%d,  relTsOffset_=%d, npts=%d\r\n", index_, frameReady, curStreamType_, curFlvTagSize_, tsUnion.timestamp, relTimeStampOffset_, (u32)accessUnit->pts );
