@@ -34,7 +34,7 @@ int main( int argc, char** argv ) {
     
     Logger::initLog("MixCoder", kStderr);
 
-    int videoBitrate = 40;
+    int videoBitrate = 100; //increase from 40 to 100
     int videoWidth = 640;
     int videoHeight = 480;
 
