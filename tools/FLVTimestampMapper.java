@@ -91,7 +91,7 @@ public class FLVTimestampMapper {
 			    curBuf_.flip();     
 			    try {
 				//write it to a file
-				outputFile_.write(curBuf_.array(), 0, curFlvTagSize_);                 	
+				outputFile_.write(curBuf_.array(), 0, curFlvTagSize_+11);                 	
 			    } catch (IOException ex) {
 				System.out.println("IOxception: "+ex);
 			    }
@@ -109,12 +109,13 @@ public class FLVTimestampMapper {
 
     // method main(): ALWAYS the APPLICATION entry point
     public static void main (String[] args) {
-	System.out.println ("FLVTimestampMapper!");
-	if( args.length != 3 ) {
+	System.out.println ("FLVTimestampMapper, total arg="+args.length);
+	if( args.length != 2 ) {
 	    return;
 	}
-	String inputFilePath = args[1];
-	String outputFilePath = args[2];
+	String inputFilePath = args[0];
+	String outputFilePath = args[1];
+	System.out.println ("FLVTimestampMapper, input="+inputFilePath+" output="+outputFilePath);
 	try {
 	    InputStream input = null;
 	    BufferedOutputStream out = null;
