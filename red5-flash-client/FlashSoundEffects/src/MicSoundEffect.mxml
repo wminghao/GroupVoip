@@ -11,12 +11,19 @@
 		import flash.events.SampleDataEvent;
 		import flash.media.Microphone;
 		import flash.media.Sound;
+		
 		import mx.collections.ArrayCollection;
 		import mx.controls.Alert;
 	
 		private const BUFFER_SIZE:int = 2048; // output buffer size, minimal 2048
 		private const MIN_SAFETY_BUFFER:int = 1024; // minimum collected input before output starts 
-	
+			
+		//reverb effects
+		private const delayMilliseconds:int = 200; // half a second
+		private const decay:Number = 0.5;
+		private const delaySamples:int = 44100*delayMilliseconds/100; // assumes 44100 Hz sample rate, half a second
+		private var delayBuffer:Vector.<Number> = new Vector.<Number>(delaySamples+BUFFER_SIZE*2); //half a second of history data
+			
 		private var outputActive:Boolean = false; // will be set to true once MIN_SAFETY_BUFFER samples have been collected. 
 	
 		private var mic:Microphone = Microphone.getMicrophone(); 
@@ -41,7 +48,7 @@
 			} 
 			if (!outputActive && inputBuffer.length >= MIN_SAFETY_BUFFER) 
 			{ 
-				this.status.text = "Native playback!"; 
+				//status.text = "Native playback!"; 
 				outputActive = true; 
 			} 
 		} 
@@ -54,7 +61,7 @@
 					mic.codec = SoundCodec.SPEEX; 
 					mic.framesPerPacket = 1; //20ms per frame, instead of 40ms per frame
 					mic.setLoopBack(true);
-					this.status.text = "Speex";
+					status.text = "Speex";
 					break;
 				}
 				case 1: {
@@ -62,7 +69,7 @@
 					mic.codec = SoundCodec.NELLYMOSER;
 					mic.rate = 44;
 					mic.setLoopBack(true);
-					this.status.text = "Nellymoser";
+					status.text = "Nellymoser";
 					break;
 				}
 				case 2: {
@@ -73,7 +80,7 @@
 					mic.addEventListener(SampleDataEvent.SAMPLE_DATA, micSampleDataHandler); 
 					playbackSound.addEventListener(SampleDataEvent.SAMPLE_DATA, soundSampleDataHandler); 
 					playbackSound.play(); 
-					this.status.text = "Native";
+					status.text = "Native";
 					break;
 				}
 			}
@@ -89,18 +96,34 @@
 			 	outputBuffer = inputBuffer.splice(0, BUFFER_SIZE); 
 			 	if (outputBuffer.length < BUFFER_SIZE) 
 			 	{ 
-					this.status.text = "Underflow len="+outputBuffer.length;
+					status.text = "Underflow len="+outputBuffer.length;
 			 		while (outputBuffer.length < BUFFER_SIZE) {
 						outputBuffer.push(0); 
 					}
+					
 			 	} else {
-					//this.status.text = "Good";
+					status.text = "Good";
+				}
+				
+				//save it as history of last half a second
+				delayBuffer = delayBuffer.concat(outputBuffer);
+				if( delayBuffer.length > (BUFFER_SIZE + delaySamples) ) {
+					var cutPos:int = delayBuffer.length-(BUFFER_SIZE + delaySamples);
+					delayBuffer = delayBuffer.slice(cutPos,  (BUFFER_SIZE + delaySamples));
+					status.text = "cutPos="+cutPos;
 				}
 			 } else {
 				 // ... otherwise create an empty output buffer of the right size 
 				 outputBuffer = new Vector.<Number>(BUFFER_SIZE); 
-				 this.status.text = "Empty";
-			 } 
+				 status.text = "Empty";
+			 }
+			 //reverb
+			 if( delayBuffer.length >= (BUFFER_SIZE + delaySamples) ) {
+				 for (var i:int = 0; i < BUFFER_SIZE; i++) {
+					 outputBuffer[i] += delayBuffer[i] * decay;
+				 }
+			 }
+			 
 			 // process samples and add them to the SampleDataEvent's data. 
 			 for (var i:int=0; i<BUFFER_SIZE; i++) 
 			 { 
