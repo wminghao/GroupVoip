@@ -59,6 +59,9 @@
 - B/W measurements 
   * To integrate the methods obtained. 
 
+- Karaoke Sound Effects
+  * http://audacity.sourceforge.net/download/source
+
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ~ Future Needs:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
