@@ -1,0 +1,82 @@
+Engineering side of bootstrap process
+
+I list all the items I can think of now, there could be items missing or items too early at current stage.
+
+================
+Server backend
+================
+
+1. AWS setup for multiple machines.
+2. Mixer process pipe optimization from Java code to C/C++ code.
+3. Nginx chunk-encoding to support live text chat.
+4. Resource lookup to support multiple video sessions.
+5. Basic monitoring of video session load.
+6. BW estimation server side for upstream and downstream.
+7. Caching server for input from Karaoke listing service.
+8. Format conversion for input from karaoke listing service to our own format.
+9. Nginx+Apache server setup.
+10. Mysql server setup.
+
+==============================
+Video playback module
+==============================
+1. VLC realtime playback support. 
+2. Downstream BW estimation client.
+
+====================================
+Plugin = desktop broadcasting module
+====================================
+1. Networking module for broadcasting data to red5. (Platform independent)
+2. Hardware access to read video and audio data from the device. (Windows, Mac)
+3. BW estimation for video rate control. (Platform independent)
+4. Audio processing for special effects.  (Platform independent)
+5. Plugin hookup for a browser X n browsers. (Starting from Chrome only)
+6. Installer (WIndows, Mac)
+7. Audio encoding 
+8. Video encoding
+
+==========================
+Mobile broadcasting module
+==========================
+
+1. Networking module for broadcasting data to red5. (Platform independent)
+2. Hardware access to read video and audio data from the device. (iOS, Android)
+3. BW estimation for video rate control. (Platform independent)
+4. Audio processing for special effects.  (Platform independent)
+5. Installer (iOS, Android)
+6. Audio encoding 
+7. Video encoding
+
+===============
+Simple Web site
+===============
+
+1. Design website graphics
+2. Login and register
+3. Music listing
+4. Database for users and songs.
+5. Workflow for microphone to be passed around.
+6. Live text chatting.
+7. Plugin hookup.
+8. Invitation mechanism. Each user can invite others to join his/her room with unique URL.
+9. Workflow for users to select songs in a queue.
+10. Workflow for users to select public/private room.
+11. Workflow for owner to select people to join a room.
+12. Public listing.
+
+===============
+Simple Mobile App
+===============
+
+1. Design mobile graphics
+2. Login and register
+3. Music listing
+4. Notification when people join and leave.
+5. Workflow for microphone to be passed around.
+6. Live text chatting.
+7. Screen orientation, fullscreen vs. partial screen.
+8. Invitation mechanism. Each user can invite others to join his/her room with unique URL.
+9. Workflow for users to select songs in a queue.
+10. Workflow for users to select public/private room.
+11. Workflow for owner to select people to join a room.
+12. Public listing

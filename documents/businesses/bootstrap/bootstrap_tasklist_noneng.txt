@@ -1,0 +1,26 @@
+Non engineering work load of the bootstrap process.
+
+Business side:
+
+1. Register a company.
+2. File patents. (Time consuming)
+3. Register website.
+4. Design trademark.
+5. Strike business deal with karaoke company. (Time consuming)
+6. Hire lawyers to set up legal terms of the company.
+7. Set up a bank service for small business.
+
+HR side
+1. Hire temp graphic designer. 
+2. Hire temp web developer. (Hard to control quality)
+3. Hire temp mobile app developer. (Hard to control quality)
+4. Potentially talk to different people to join force as early employee or cofounder. (Time consuming)
+5. Start payroll process for payment etc. (Outsource)
+
+Product side
+1. Design product work flow for desktop.
+2. Design product work flow for mobile.
+3. Mini-project management.
+4. Find test users, and talk to them.
+5. Get feedbacks and improve the basic workflow.
+6. Limited promotion of the website and mobile app to a small group of people.
