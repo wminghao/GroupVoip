@@ -1,0 +1,45 @@
+newmtl logo1SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd logo1flipped.jpg
+Ni 1.00
+Ks 0.50 0.50 0.50
+newmtl phongE1SG
+illum 4
+Kd 0.72 0.43 0.29
+Ka 0.00 0.00 0.00
+Tf 0.97 0.97 0.97
+Ni 1.00
+Ks 0.50 0.50 0.50
+newmtl phongE2SG1
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 0.51 0.51 0.51
+map_Kd ramp1-nurbsToPoly1.png
+Ni 1.00
+Ks 0.50 0.50 0.50
+newmtl phongE3SG
+illum 4
+Kd 1.00 1.00 1.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+Ks 0.50 0.50 0.50
+newmtl phongE4SG
+illum 4
+Kd 0.61 0.42 0.41
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+Ks 0.50 0.50 0.50
+newmtl phongE5SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd logo1.jpg
+Ni 1.00
+Ks 0.50 0.50 0.50

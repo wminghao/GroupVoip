@@ -1,0 +1,40 @@
+This is a tool to automatically generate static images from 3d models.
+
+It compiles and runs in Ubuntu.
+
+=====
+The following libraries are required:
+=====
+
+1. Build environment, python, gcc, scons, etc.
+
+%apt-get install scons
+
+2. libassimp 
+
+%apt-get install libassimp-dev
+
+3. libMagicWand 
+
+%apt-get install libmagickwand-dev
+
+4. libOpenCV 
+
+%apt-get install libopencv-dev
+
+5. libOpenCV-nonfree 
+
+%apt-get install software-properties-common
+%add-apt-repository --yes ppa:xqms/opencv-nonfree
+%apt-get update
+%apt-get install libopencv-nonfree-dev
+
+=====
+To compile the code
+=====
+
+1. Release mode:
+scons 
+
+2. Debug mode:
+scons type=debug

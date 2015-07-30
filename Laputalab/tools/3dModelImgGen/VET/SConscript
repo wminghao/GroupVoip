@@ -1,0 +1,50 @@
+Import("*")
+import os
+
+GLCodePath   =  'GL/'
+MainCodePath =  './'
+GlmCodePath =  '../thirdpartylib/glm/'
+ImageMagickPath = '/usr/include/ImageMagick/'
+
+VETCflags = CCFLAGS
+VETCflags.append( '-Wno-unused' )
+VETCflags.append( '-DTHREED_MODEL_ONLY' )
+
+VETCPPPath = []
+VETCPPPath.append( GLCodePath )
+VETCPPPath.append( MainCodePath )
+VETCPPPath.append( GlmCodePath )
+VETCPPPath.append( ImageMagickPath )
+
+#objects
+candide3Obj = env.Object(GLCodePath + 'candide3.cpp', CCFLAGS=VETCflags )
+candide3TextureObj = env.Object(GLCodePath + 'candide3Texture.cpp', CCFLAGS=VETCflags )
+colorObj = env.Object(GLCodePath + 'color.cpp', CCFLAGS=VETCflags )
+glassesObj = env.Object(GLCodePath + 'glasses.cpp', CCFLAGS=VETCflags )
+glUtilitiesObj = env.Object(GLCodePath + 'glUtilities.cpp', CCFLAGS=VETCflags )
+matrixObj = env.Object(GLCodePath + 'matrix.c', CCFLAGS=VETCflags )
+meshObj = env.Object(GLCodePath + 'mesh.cpp', CCFLAGS=VETCflags )
+reflectionTextureObj = env.Object(GLCodePath + 'reflectionTexture.cpp', CCFLAGS=VETCflags )
+ShaderUtilitiesObj = env.Object(GLCodePath + 'ShaderUtilities.cpp', CCFLAGS=VETCflags )
+textureObj = env.Object(GLCodePath + 'texture.cpp', CCFLAGS=VETCflags )
+mainWindowlessObj = env.Object(MainCodePath + 'mainWindowless.cpp', CCFLAGS=VETCflags )
+
+#target 1 with Window
+VETProg = File("prog/3dModelImgGen")
+progs.append( VETProg )
+env.Replace( CPPPATH = VETCPPPath )
+env.Program( VETProg,
+	     [ candide3Obj,
+	       candide3TextureObj,
+	       colorObj,
+	       glassesObj,
+	       glUtilitiesObj,
+	       matrixObj,
+	       meshObj,
+	       reflectionTextureObj,
+	       ShaderUtilitiesObj,
+	       textureObj,
+	       mainWindowlessObj],	
+	     LIBS=['GL', 'OSMesa', 'pthread', 'rt', 'dl', 'm', 'assimp', 'MagickWand', 'opencv_calib3d', 'opencv_contrib', 'opencv_core', 'opencv_features2d', 'opencv_flann','opencv_gpu', 'opencv_highgui', 'opencv_imgproc','opencv_legacy', 'opencv_ml', 'opencv_nonfree', 'opencv_objdetect', 'opencv_ocl', 'opencv_photo', 'opencv_stitching', 'opencv_superres', 'opencv_ts', 'opencv_video', 'opencv_videostab'],
+	     LIBPATH = ['/usr/lib', '/usr/local/lib'],
+	     CCFLAGS = VETCflags)
