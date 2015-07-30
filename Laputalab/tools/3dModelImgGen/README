@@ -38,3 +38,12 @@ scons
 
 2. Debug mode:
 scons type=debug
+
+=====
+To run test
+=====
+
+cd test
+./runtest.sh
+
+Then the results are under 3dmodels/result/ directory.
