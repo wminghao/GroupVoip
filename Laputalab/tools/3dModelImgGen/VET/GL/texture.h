@@ -18,9 +18,11 @@ public:
     Texture(GLint texCountLocation,
             GLint diffuseColorLocation,
             GLint ambientColorLocation,
+            GLint specularColorLocation,
             GLint textureImageLocation,
             const Vector4f& diffuseColor,
             const Vector4f& ambientColor,
+            const Vector4f& specularColor,
             const std::string& fileName);
     
     virtual ~Texture() {

@@ -3,6 +3,7 @@
 uniform int texCount;
 uniform vec4 diffuseColor;
 uniform vec4 ambientColor;
+uniform vec4 specularColor;
 uniform sampler2D textureImage;
 uniform samplerCube envMap;
 
@@ -14,6 +15,7 @@ void main()
 {
     vec4 color;
     vec4 amb;
+    vec4 spec;
     float brightness;
         
     //calcuate lighting brightness
@@ -31,8 +33,10 @@ void main()
         gl_FragColor = 0.5 * vec4(color.rgb*brightness, color.a) + 0.5 * vec4(envColor.rgb*brightness, envColor.a);
     } else if( texCount == 1 ) {
         color = texture2D(textureImage, texCoordFrag);
-        amb = color * 0.33;
-        gl_FragColor = vec4(color.rgb*brightness, color.a) + amb;
+        amb = vec4(color.rgb * 0.33, color.a); //light's ambient coefficient=0.33
+        spec = specularColor; //assume shininess=0, specularCoefficient = 1;
+        gl_FragColor = vec4(color.rgb*brightness + amb.rgb, color.a);// + spec.rgb;
+        //need gamma correction?
     } else if( texCount == 3 ) {
         //candide3 simple mask
         gl_FragColor = texture2D(textureImage, texCoordFrag);
@@ -40,6 +44,7 @@ void main()
     } else {
         color = diffuseColor;
         amb = ambientColor;
-        gl_FragColor = vec4(color.rgb*brightness, color.a) + amb;
+        spec = specularColor; //assume shininess=0, specularCoefficient = 1;
+        gl_FragColor = vec4(color.rgb*brightness + amb.rgb, color.a);// + spec.rgb;
     }
 }

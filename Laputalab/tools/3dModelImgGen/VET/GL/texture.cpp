@@ -16,12 +16,15 @@
 Texture::Texture(GLint texCountLocation,
                  GLint diffuseColorLocation,
                  GLint ambientColorLocation,
+                 GLint specularColorLocation,
                  GLint textureImageLocation,
                  const Vector4f& diffuseColor,
                  const Vector4f& ambientColor,
+                 const Vector4f& specularColor,
                  const std::string& FileName):Material(texCountLocation,
-                                                       diffuseColorLocation, ambientColorLocation, textureImageLocation,
-                                                       diffuseColor, ambientColor)
+                                                       diffuseColorLocation, ambientColorLocation, specularColorLocation,
+                                                       textureImageLocation,
+                                                       diffuseColor, ambientColor, specularColor)
 {
     m_fileName      = FileName;
 }
@@ -83,6 +86,7 @@ void Texture::bind(GLint textureId)
     glUniform1i(m_texCountLocation, 1);
     glUniform4f(m_diffuseColorLocation, m_diffuseColor.x, m_diffuseColor.y, m_diffuseColor.z, m_diffuseColor.w);
     glUniform4f(m_ambientColorLocation, m_ambientColor.x, m_ambientColor.y, m_ambientColor.z, m_ambientColor.w);
+    glUniform4f(m_specularColorLocation, m_specularColor.x, m_specularColor.y, m_specularColor.z, m_specularColor.w);
     glActiveTexture(GL_TEXTURE0 + textureId);
     glBindTexture(GL_TEXTURE_2D, m_textureObj);
     glUniform1i(m_textureImageLocation, textureId); //set the sampler texture to textureId

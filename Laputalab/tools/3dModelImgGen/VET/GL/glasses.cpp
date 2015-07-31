@@ -146,6 +146,7 @@ bool Glasses::init(const char* vertLFilePath,
         (GLchar *)"texCount",
         (GLchar *)"diffuseColor",
         (GLchar *)"ambientColor",
+        (GLchar *)"specularColor",
         (GLchar *)"textureImage",
         (GLchar *)"envMap",
     };
@@ -161,7 +162,8 @@ bool Glasses::init(const char* vertLFilePath,
         _matrixWorld = uniformLocation[UNIFORM_WORLD];
         _matrixNormalMatrix = uniformLocation[UNIFORM_NORMALMATRIX];
         
-        _pMesh->setAttrUni(uniformLocation[UNIFORM_TEXCOUNT], uniformLocation[UNIFORM_DIFFUSECOLOR], uniformLocation[UNIFORM_AMBIENTCOLOR],
+        _pMesh->setAttrUni(uniformLocation[UNIFORM_TEXCOUNT],
+                           uniformLocation[UNIFORM_DIFFUSECOLOR], uniformLocation[UNIFORM_AMBIENTCOLOR], uniformLocation[UNIFORM_SPECULARCOLOR],
                            uniformLocation[UNIFORM_TEXTUREIMAGE], uniformLocation[UNIFORM_ENVMAP],
                            attribLocation[ATTRIB_POSITION], attribLocation[ATTRIB_TEXCOORD], attribLocation[ATTRIB_NORMAL]);
         
