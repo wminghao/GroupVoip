@@ -304,12 +304,19 @@ bool Mesh::InitMaterials(const aiScene* pScene, const std::string& Filename)
         aiColor4D emissive;
         aiColor4D transparent;
         float shininess = 0.0;
+        float strength = 0.0;
         unsigned int max;
         aiGetMaterialFloatArray(pMaterial, AI_MATKEY_SHININESS, &shininess, &max);
+        aiGetMaterialFloatArray(pMaterial, AI_MATKEY_SHININESS_STRENGTH, &strength, &max);
         aiGetMaterialColor(pMaterial, AI_MATKEY_COLOR_SPECULAR, &specular);
         aiGetMaterialColor(pMaterial, AI_MATKEY_COLOR_EMISSIVE, &emissive);
         aiGetMaterialColor(pMaterial, AI_MATKEY_COLOR_TRANSPARENT, &transparent);
         
+        /*
+         According to this article. http://www.swiftless.com/tutorials/opengl/material_lighting.html
+         When it comes to shininess, the shininess factor is a number between
+         0 and 128, where 0 is the shiniest the object can be, means max = 1
+        */
         Vector4f diffuseColor(diffuse.r, diffuse.g, diffuse.b, diffuse.a);
         Vector4f ambientColor(ambient.r, ambient.g, ambient.b, ambient.a);
         Vector4f specularColor(specular.r, specular.g, specular.b, specular.a);
