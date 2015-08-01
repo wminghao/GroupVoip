@@ -29,6 +29,17 @@ The following libraries are required:
 %apt-get update
 %apt-get install libopencv-nonfree-dev
 
+6. OSMesa
+
+better build from scratch. osmesa latest version as of today is 8.0
+
+sudo apt-get install bison flex python-pip
+pip install Mako
+./configure --enable-osmesa
+make
+make install
+make distclean
+
 =====
 To compile the code
 =====
